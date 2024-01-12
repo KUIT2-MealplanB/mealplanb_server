@@ -12,6 +12,6 @@ public class PatchAvatarRequest {
     @NotNull(message = "nickname: {NotNull}")
     private String nickname;
 
-    @NotNull(message = "avartar_color: {NotNull}")
-    private String avartar_color;
+    @NotNull(message = "avatar_color: {NotNull}")
+    private String avatarColor;
 }

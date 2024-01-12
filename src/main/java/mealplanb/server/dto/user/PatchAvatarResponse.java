@@ -9,5 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PatchAvatarResponse {
-
+    private long user_id;
+    private String nickname;
+    private String avatarColor;
 }
