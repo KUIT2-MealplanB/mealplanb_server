@@ -9,9 +9,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PatchAvatarResponse {
-    @NotNull(message = "nickname: {NotNull}")
-    private String nickname;
 
-    @NotNull(message = "avartar_color: {NotNull}")
-    private String avartat_color;
 }
