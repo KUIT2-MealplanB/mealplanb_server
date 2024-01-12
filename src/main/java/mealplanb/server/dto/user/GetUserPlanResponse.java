@@ -11,9 +11,10 @@ public class GetUserPlanResponse {
 
     private double initial_weight;
     private double target_weight;
+    private String diet_type;
+    private int recommended_kcal;
     private int carbohydrate_rate;
     private int protein_rate;
     private int fat_rate;
-    private int recommended_kcal;
     private int target_kcal;
 }
