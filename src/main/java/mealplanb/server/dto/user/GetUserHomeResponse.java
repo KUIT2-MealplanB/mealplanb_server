@@ -1,5 +1,6 @@
 package mealplanb.server.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,10 @@ public class GetUserHomeResponse {
     private LocalDate date;
     private String day;
     private String nickname;
-    private int elapsed_days;
-    private int remaining_calories;
+
+    @JsonProperty("elapsed_days")
+    private int elapsedDays;
+
+    @JsonProperty("remaining_kcal")
+    private int remainingKcal;
 }
