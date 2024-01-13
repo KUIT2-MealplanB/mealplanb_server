@@ -1,6 +1,7 @@
 package mealplanb.server.dto.user;
 
 import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,24 +11,31 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PatchUserPlanRequest {
 
-    @NotNull(message = "initial_weight: {NotNull}")
-    private double initial_weight;
+    @NotNull(message = "initialWeight: {NotNull}")
+    @JsonProperty("initial_weight")
+    private double initialWeight;
 
-    @NotNull(message = "target_weight: {NotNull}")
-    private double target_weight;
+    @NotNull(message = "targetWeight: {NotNull}")
+    @JsonProperty("target_weight")
+    private double targetWeight;
 
-    @NotNull(message = "diet_type: {NotNull}")
-    private String diet_type;
+    @NotNull(message = "dietType: {NotNull}")
+    @JsonProperty("diet_type")
+    private String dietType;
 
-    @NotNull(message = "carbohydrate_rate: {NotNull}")
-    private int carbohydrate_rate;
+    @NotNull(message = "carbohydrateRate: {NotNull}")
+    @JsonProperty("carbohydrate_rate")
+    private int carbohydrateRate;
 
-    @NotNull(message = "protein_rate: {NotNull}")
-    private int protein_rate;
+    @NotNull(message = "proteinRate: {NotNull}")
+    @JsonProperty("protein_rate")
+    private int proteinRate;
 
-    @NotNull(message = "fat_rate: {NotNull}")
-    private int fat_rate;
+    @NotNull(message = "fatRate: {NotNull}")
+    @JsonProperty("fat_rate")
+    private int fatRate;
 
-    @NotNull(message = "target_kcal: {NotNull}")
-    private int target_kcal;
+    @NotNull(message = "targetKcal: {NotNull}")
+    @JsonProperty("target_kcal")
+    private int targetKcal;
 }

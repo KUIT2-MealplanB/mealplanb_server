@@ -1,5 +1,6 @@
 package mealplanb.server.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,12 +10,27 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GetUserPlanResponse {
 
-    private double initial_weight;
-    private double target_weight;
-    private String diet_type;
-    private int recommended_kcal;
-    private int carbohydrate_rate;
-    private int protein_rate;
-    private int fat_rate;
-    private int target_kcal;
+    @JsonProperty("initial_weight")
+    private double initialWeight;
+
+    @JsonProperty("target_weight")
+    private double targetWeight;
+
+    @JsonProperty("diet_type")
+    private String dietType;
+
+    @JsonProperty("recommended_kcal")
+    private int recommendedKcal;
+
+    @JsonProperty("carbohydrate_rate")
+    private int carbohydrateRate;
+
+    @JsonProperty("protein_rate")
+    private int proteinRate;
+
+    @JsonProperty("fat_rate")
+    private int fatRate;
+
+    @JsonProperty("target_kcal")
+    private int targetKcal;
 }
