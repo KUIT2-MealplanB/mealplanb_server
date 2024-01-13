@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LoginResponse {
+public class PostLoginResponse {
     /** 로그인 */
     @JsonProperty("user_id")
     private Long userId;
