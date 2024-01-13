@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetUserHomeRequest {
+public class GetHomeRequest {
 
     /** 홈화면 현재 날짜, 목표 경과일, 남은 칼로리 조회 */
     @NotNull(message = "date: {NotNull}")

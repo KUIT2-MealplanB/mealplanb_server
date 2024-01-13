@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetUserHomeResponse {
+public class GetHomeResponse {
 
     /** 홈화면 현재날짜, 목표 경과일, 남은 칼로리 조회 */
     private LocalDate date;

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetUserProfileRequest {
+public class GetProfileRequest {
 
     /** 아바타, 목표 칼로리 및 잔여 칼로리, 탄단지 기타 영양소 조회 */
     @NotNull(message = "date : {NotNull}")

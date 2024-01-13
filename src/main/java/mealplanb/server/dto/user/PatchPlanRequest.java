@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PatchUserPlanRequest {
+public class PatchPlanRequest {
 
     @NotNull(message = "initialWeight: {NotNull}")
     @JsonProperty("initial_weight")

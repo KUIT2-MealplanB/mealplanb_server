@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetUserPlanResponse {
+public class PatchPlanResponse {
 
     @JsonProperty("initial_weight")
     private double initialWeight;
@@ -18,9 +18,6 @@ public class GetUserPlanResponse {
 
     @JsonProperty("diet_type")
     private String dietType;
-
-    @JsonProperty("recommended_kcal")
-    private int recommendedKcal;
 
     @JsonProperty("carbohydrate_rate")
     private int carbohydrateRate;
