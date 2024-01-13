@@ -1,4 +1,4 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.weight;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -10,9 +10,12 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetUserHomeRequest {
+public class PostWeightRequest {
 
-    /** 홈화면 현재 날짜, 목표 경과일, 남은 칼로리 조회 */
+    /** 체중 등록 */
+    @NotNull(message = "weight: {NotNull}")
+    private double weight;
+
     @NotNull(message = "date: {NotNull}")
     private LocalDate date;
 }

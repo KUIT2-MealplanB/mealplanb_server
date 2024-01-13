@@ -1,14 +1,14 @@
 package mealplanb.server.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
-@NoArgsConstructor
-public class GetUserProfileResponse {
+@AllArgsConstructor
+public class GetProfileResponse {
 
     /** 아바타, 목표 칼로리 및 잔여 칼로리, 탄단지 기타 영양소 조회 */
     @JsonProperty("avatar_color")
