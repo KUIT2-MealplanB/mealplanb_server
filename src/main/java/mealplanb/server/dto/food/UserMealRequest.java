@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostUserMealRequest {
-    /** 끼니 등록 */
+public class UserMealRequest {
+    /** 끼니 등록, 끼니 수정 */
     private int mealType;
     private LocalDate mealDate;
     private List<MealItem> meals;
