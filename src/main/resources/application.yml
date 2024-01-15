@@ -5,6 +5,9 @@ spring:
       "dev": "devDB, devPort, secret, web-mvc"
       "prod": "prodDB, prodPort, secret, web-mvc"
 
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
 ---
 
 spring:
