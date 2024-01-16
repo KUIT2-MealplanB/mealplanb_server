@@ -11,11 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PatchAvatarResponse {
 
-    @JsonProperty("user_id")
     private long userId;
-
     private String nickname;
-
-    @JsonProperty("avatar_color")
     private String avatarColor;
 }

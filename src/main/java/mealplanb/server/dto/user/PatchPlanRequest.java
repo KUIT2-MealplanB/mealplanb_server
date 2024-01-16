@@ -12,30 +12,23 @@ import lombok.Setter;
 public class PatchPlanRequest {
 
     @NotNull(message = "initialWeight: {NotNull}")
-    @JsonProperty("initial_weight")
     private double initialWeight;
 
     @NotNull(message = "targetWeight: {NotNull}")
-    @JsonProperty("target_weight")
     private double targetWeight;
 
     @NotNull(message = "dietType: {NotNull}")
-    @JsonProperty("diet_type")
     private String dietType;
 
     @NotNull(message = "carbohydrateRate: {NotNull}")
-    @JsonProperty("carbohydrate_rate")
     private int carbohydrateRate;
 
     @NotNull(message = "proteinRate: {NotNull}")
-    @JsonProperty("protein_rate")
     private int proteinRate;
 
     @NotNull(message = "fatRate: {NotNull}")
-    @JsonProperty("fat_rate")
     private int fatRate;
 
     @NotNull(message = "targetKcal: {NotNull}")
-    @JsonProperty("target_kcal")
     private int targetKcal;
 }

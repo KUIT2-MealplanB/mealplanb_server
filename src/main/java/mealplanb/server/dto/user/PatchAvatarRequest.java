@@ -15,6 +15,5 @@ public class PatchAvatarRequest {
     private String nickname;
 
     @NotNull(message = "avatar_color: {NotNull}")
-    @JsonProperty("avatar_color")
     private String avatarColor;
 }

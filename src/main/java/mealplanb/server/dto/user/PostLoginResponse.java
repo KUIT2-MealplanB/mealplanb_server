@@ -8,8 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostLoginResponse {
     /** 로그인 */
-    @JsonProperty("user_id")
     private Long userId;
-
     private String jwt;
 }

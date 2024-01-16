@@ -16,10 +16,6 @@ public class GetHomeResponse {
     private LocalDate date;
     private String day;
     private String nickname;
-
-    @JsonProperty("elapsed_days")
     private int elapsedDays;
-
-    @JsonProperty("remaining_kcal")
     private int remainingKcal;
 }
