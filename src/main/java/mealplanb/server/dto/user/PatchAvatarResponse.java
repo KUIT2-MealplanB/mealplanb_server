@@ -11,11 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PatchAvatarResponse {
 
-    @JsonProperty("user_id")
+    /** 아바타 수정 */
     private long userId;
 
     private String nickname;
 
-    @JsonProperty("avatar_color")
     private String avatarColor;
 }
