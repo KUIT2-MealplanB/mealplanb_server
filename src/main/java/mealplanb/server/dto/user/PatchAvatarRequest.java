@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PatchAvatarRequest {
 
+    /** 아바타 수정 */
     @NotNull(message = "nickname: {NotNull}")
     private String nickname;
 
