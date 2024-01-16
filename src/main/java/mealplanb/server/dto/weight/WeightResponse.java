@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class WeightResponse {
 
-    /** 체중 수정 */
+    /** 체중 관련 response */
     private double weight;
     private LocalDate date;
 }

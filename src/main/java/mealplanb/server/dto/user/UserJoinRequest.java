@@ -28,19 +28,15 @@ public class UserJoinRequest {
     private int height;
 
     @NotNull(message = "initial_weight: {NotNull}")
-    @JsonProperty("initial_weight")
     private double initialWeight;
 
     @NotNull(message = "target_weight: {NotNull}")
-    @JsonProperty("target_weight")
     private double targetWeight;
 
     @NotNull(message = "diet_type: {NotNull}")
-    @JsonProperty("diet_type")
     private double dietType;
 
     @NotNull(message = "avatar_color: {NotNull}")
-    @JsonProperty("avatar_color")
     private double avatarColor;
 
     @NotNull(message = "nickname: {NotNull}")

@@ -13,8 +13,6 @@ public class PatchAvatarResponse {
 
     /** 아바타 수정 */
     private long userId;
-
     private String nickname;
-
     private String avatarColor;
 }

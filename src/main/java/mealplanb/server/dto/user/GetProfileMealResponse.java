@@ -19,14 +19,8 @@ public class GetProfileMealResponse {
     @Setter
     @NoArgsConstructor
     public static class Meal{
-
-        @JsonProperty("meal_id")
         private long mealId;
-
-        @JsonProperty("meal_type")
         private String mealType;
-
-        @JsonProperty("total_kcal")
         private int totalKcal;
     }
 
