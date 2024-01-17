@@ -3,6 +3,7 @@ package mealplanb.server.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import mealplanb.server.domain.BaseTimeEntity;
+import mealplanb.server.domain.Meal;
 import mealplanb.server.domain.Weight;
 
 import java.util.ArrayList;
