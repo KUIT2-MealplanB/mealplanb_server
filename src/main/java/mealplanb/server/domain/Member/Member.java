@@ -43,8 +43,8 @@ public class Member extends BaseTimeEntity{
     private int carbohydrateRate;
     private int proteinRate;
     private int fatRate;
-    private int nickname;
-    private int avatarColor;
+    private String nickname;
+    private String avatarColor;
     private int skeletalMuscleMass;
     private int bodyFatMass;
     private LocalDate targetUpdatedAt;
