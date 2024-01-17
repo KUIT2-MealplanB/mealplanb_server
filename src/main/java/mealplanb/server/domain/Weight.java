@@ -21,7 +21,6 @@ public class Weight extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
 }
