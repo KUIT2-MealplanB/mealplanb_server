@@ -36,4 +36,7 @@ public class Food extends BaseTimeEntity{
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodMealMappingTable> foodMealMappingTables = new ArrayList<>();
 
+    // Food 와 FoodFavorite : 일대다 관계
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodFavorite> foodFavorites = new ArrayList<>();
 }

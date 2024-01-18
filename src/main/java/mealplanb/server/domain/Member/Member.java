@@ -2,10 +2,7 @@ package mealplanb.server.domain.Member;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import mealplanb.server.domain.BaseTimeEntity;
-import mealplanb.server.domain.FoodMealMappingTable;
-import mealplanb.server.domain.Meal;
-import mealplanb.server.domain.Weight;
+import mealplanb.server.domain.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -64,4 +61,8 @@ public class Member extends BaseTimeEntity{
     // Member 와 FoodMealMappingTable : 일대다 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodMealMappingTable> foodMealMappingTables = new ArrayList<>();
+
+    // Member 와 Food_Favorite : 일대다 관계
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodFavorite> foodFavorites = new ArrayList<>();
 }
