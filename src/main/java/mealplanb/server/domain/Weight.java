@@ -2,8 +2,8 @@ package mealplanb.server.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import mealplanb.server.domain.BaseStatus;
-import mealplanb.server.domain.BaseTimeEntity;
+import mealplanb.server.domain.Base.BaseStatus;
+import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
 
 @Entity

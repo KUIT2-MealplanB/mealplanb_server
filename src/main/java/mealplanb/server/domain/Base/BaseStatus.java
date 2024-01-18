@@ -1,4 +1,4 @@
-package mealplanb.server.domain;
+package mealplanb.server.domain.Base;
 
 /**
  * A: 활성화된 상태

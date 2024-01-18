@@ -2,6 +2,8 @@ package mealplanb.server.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import mealplanb.server.domain.Base.BaseStatus;
+import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
 
 import java.time.LocalDate;
@@ -11,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "Meal")
-public class Meal extends BaseTimeEntity{
+public class Meal extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

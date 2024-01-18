@@ -2,12 +2,14 @@ package mealplanb.server.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import mealplanb.server.domain.Base.BaseStatus;
+import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
 @Table(name = "FoodMealMappingTable")
-public class FoodMealMappingTable extends BaseTimeEntity{
+public class FoodMealMappingTable extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

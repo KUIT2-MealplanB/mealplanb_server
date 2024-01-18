@@ -2,12 +2,14 @@ package mealplanb.server.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import mealplanb.server.domain.Base.BaseStatus;
+import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
 @Table(name = "Food_Favorite")
-public class FoodFavorite extends BaseTimeEntity{
+public class FoodFavorite extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
