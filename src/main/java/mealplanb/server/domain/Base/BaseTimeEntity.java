@@ -1,4 +1,4 @@
-package mealplanb.server.domain;
+package mealplanb.server.domain.Base;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

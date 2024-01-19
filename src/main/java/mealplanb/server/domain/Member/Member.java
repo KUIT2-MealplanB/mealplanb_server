@@ -2,9 +2,8 @@ package mealplanb.server.domain.Member;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import mealplanb.server.domain.BaseTimeEntity;
-import mealplanb.server.domain.Meal;
-import mealplanb.server.domain.Weight;
+import mealplanb.server.domain.*;
+import mealplanb.server.domain.Base.BaseTimeEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "Member")
-public class Member extends BaseTimeEntity{
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +55,15 @@ public class Member extends BaseTimeEntity{
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Weight> weights = new ArrayList<>();
 
-    // Member와 Meal : 일대다 관계
+    // Member 와 Meal : 일대다 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Meal> meals = new ArrayList<>();
 
-    //다른 테이블과의 관계 추가
+    // Member 와 FoodMealMappingTable : 일대다 관계
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodMealMappingTable> foodMealMappingTables = new ArrayList<>();
+
+    // Member 와 Food_Favorite : 일대다 관계
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodFavorite> foodFavorites = new ArrayList<>();
 }
