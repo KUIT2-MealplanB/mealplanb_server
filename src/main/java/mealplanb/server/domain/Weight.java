@@ -16,6 +16,8 @@ public class Weight extends BaseTimeEntity {
     @Column(name = "weight_id", updatable = false)
     private Long weightId;
 
+    private double weight;
+
     // Member : 일대다
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
