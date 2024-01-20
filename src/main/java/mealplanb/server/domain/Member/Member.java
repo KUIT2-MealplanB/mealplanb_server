@@ -1,7 +1,9 @@
 package mealplanb.server.domain.Member;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import mealplanb.server.domain.*;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 
@@ -14,6 +16,7 @@ import java.util.List;
  * */
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "Member")
 public class Member extends BaseTimeEntity {
 
