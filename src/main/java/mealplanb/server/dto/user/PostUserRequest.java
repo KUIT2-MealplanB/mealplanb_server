@@ -45,5 +45,5 @@ public class PostUserRequest {
     private double avatarColor;
 
     @NotNull(message = "nickname: {NotNull}")
-    private double nickname;
+    private String nickname;
 }
