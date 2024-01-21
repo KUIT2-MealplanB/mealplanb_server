@@ -1,6 +1,5 @@
 package mealplanb.server.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
@@ -25,6 +24,7 @@ import static mealplanb.server.util.BindingResultUtils.getErrorMessages;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     /**
      * 회원 가입
@@ -36,5 +36,20 @@ public class MemberController {
             throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         return new BaseResponse<>(memberService.signUp(postUserRequest));
+
+    /**
+     * 아바타 정보 조회
+     * */
+    @GetMapping("/avatar")
+    public BaseResponse<GetAvatarResponse> getAvatarInfo(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getAvatarInfo]");
+        // Authorization 헤더에서 JWT 토큰 추출
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+
+        // JWT 토큰에서 사용자 정보 추출
+        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+
+        return new BaseResponse<>(memberService.getAvatarResponse(memberId));
+
     }
 }

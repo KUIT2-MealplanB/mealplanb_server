@@ -66,3 +66,24 @@ public class JwtProvider {
                 .getBody().getSubject();
     }
 }
+
+    public String extractJwtToken(String authorizationHeader) {
+        String[] parts = authorizationHeader.split(" ");
+        if (parts.length == 2) {
+            return parts[1]; // 토큰 부분 추출
+        }
+        throw new JwtMalformedTokenException(MALFORMED_TOKEN);
+    }
+
+    public Long extractMemberIdFromJwtToken(String jwtToken) {
+        Claims claims = Jwts.parserBuilder().setSigningKey(JWT_SECRET_KEY).build().parseClaimsJws(jwtToken).getBody();
+        Long memberId = claims.get("memberId", Long.class);
+
+        if (memberId == null) {
+            throw new JwtMalformedTokenException(MALFORMED_TOKEN);
+        }
+
+        return memberId;
+    }
+}
+
