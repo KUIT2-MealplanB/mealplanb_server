@@ -1,6 +1,5 @@
 package mealplanb.server.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserJoinRequest {
+public class SignUpRequest {
 
     /** 회원 가입 */
     @NotNull(message = "provider: {NotNull}")
