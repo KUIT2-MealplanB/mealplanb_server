@@ -65,7 +65,7 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody().getSubject();
     }
-}
+
 
     public String extractJwtToken(String authorizationHeader) {
         String[] parts = authorizationHeader.split(" ");
