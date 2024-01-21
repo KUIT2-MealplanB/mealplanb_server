@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SignUpRequest {
+public class PostUserRequest {
 
     /** 회원 가입 */
 //    @NotNull(message = "provider: {NotNull}")

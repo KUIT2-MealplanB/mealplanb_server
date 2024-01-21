@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class SignUpResponse {
+public class PostUserResponse {
 
     /** 회원 가입 */
     private Long userId;
