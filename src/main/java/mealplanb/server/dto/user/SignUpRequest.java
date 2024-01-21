@@ -11,11 +11,17 @@ import lombok.Setter;
 public class SignUpRequest {
 
     /** 회원 가입 */
-    @NotNull(message = "provider: {NotNull}")
-    private String provider; //'kakao', 'google', 'naver'
+//    @NotNull(message = "provider: {NotNull}")
+//    private String provider; //'kakao', 'google', 'naver'
+//
+//    @NotNull
+//    private String socialToken;
 
-    @NotNull
-    private String socialToken;
+    @NotNull(message = "email: {NotNull}")
+    private String email;
+
+    @NotNull(message = "password: {NotNull}")
+    private String password;
 
     @NotNull(message = "sex: {NotNull}")
     private String sex;
