@@ -37,9 +37,16 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     TOKEN_MISMATCH(4006, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
 
     /**
-     * 5000: Member 오류
+     * 5000: User 오류
      */
-    MEMBER_NOT_FOUND(5000, HttpStatus.NOT_FOUND.value(), "회원을 찾을 수 없습니다.");
+    INVALID_USER_VALUE(5000, HttpStatus.BAD_REQUEST.value(), "회원가입 요청에서 잘못된 값이 존재합니다."),
+    MEMBER_NOT_FOUND(5001, HttpStatus.NOT_FOUND.value(), "회원을 찾을 수 없습니다."),
+    DUPLICATE_EMAIL(5002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 이메일입니다."),
+    DUPLICATE_NICKNAME(5003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 닉네임입니다."),
+    PASSWORD_NO_MATCH(5004, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
+    INVALID_USER_STATUS(5005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
+    EMAIL_NOT_FOUND(5006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다.");
+    
 
     private final int code;
     private final int status;

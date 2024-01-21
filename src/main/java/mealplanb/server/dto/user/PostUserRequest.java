@@ -1,6 +1,5 @@
 package mealplanb.server.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,14 +8,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserJoinRequest {
+public class PostUserRequest {
 
     /** 회원 가입 */
-    @NotNull(message = "provider: {NotNull}")
-    private String provider; //'kakao', 'google', 'naver'
+//    @NotNull(message = "provider: {NotNull}")
+//    private String provider; //'kakao', 'google', 'naver'
+//
+//    @NotNull
+//    private String socialToken;
 
-    @NotNull
-    private String socialToken;
+    @NotNull(message = "email: {NotNull}")
+    private String email;
+
+    @NotNull(message = "password: {NotNull}")
+    private String password;
 
     @NotNull(message = "sex: {NotNull}")
     private String sex;
@@ -40,5 +45,5 @@ public class UserJoinRequest {
     private double avatarColor;
 
     @NotNull(message = "nickname: {NotNull}")
-    private double nickname;
+    private String nickname;
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import mealplanb.server.domain.*;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * */
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "Member")
 public class Member extends BaseTimeEntity {
@@ -69,4 +71,8 @@ public class Member extends BaseTimeEntity {
     // Member 와 Food_Favorite : 일대다 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodFavorite> foodFavorites = new ArrayList<>();
+
+    public Member(String email, String password, String sex, int age, int height, double initialWeight, double targetWeight, double dietType, double avatarColor, String nickname) {
+        super();
+    }
 }

@@ -1,7 +1,7 @@
 package mealplanb.server.common.exception.jwt.unauthorized;
 
-import lombok.Getter;
 import mealplanb.server.common.response.status.ResponseStatus;
+import lombok.Getter;
 
 @Getter
 public class JwtExpiredTokenException extends JwtUnauthorizedTokenException {

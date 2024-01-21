@@ -1,16 +1,20 @@
 package mealplanb.server.common.exception;
 
-import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
+import lombok.Getter;
+import mealplanb.server.common.response.status.ResponseStatus;
 
-public class MemberException extends RuntimeException{
-    private final BaseExceptionResponseStatus status;
+@Getter
+public class MemberException extends RuntimeException {
 
-    public MemberException(BaseExceptionResponseStatus status) {
-        super(status.getMessage());
-        this.status = status;
+    private final ResponseStatus exceptionStatus;
+
+    public MemberException(ResponseStatus exceptionStatus) {
+        super(exceptionStatus.getMessage());
+        this.exceptionStatus = exceptionStatus;
     }
 
-    public BaseExceptionResponseStatus getStatus() {
-        return status;
+    public MemberException(ResponseStatus exceptionStatus, String message) {
+        super(message);
+        this.exceptionStatus = exceptionStatus;
     }
 }
