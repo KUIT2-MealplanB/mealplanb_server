@@ -28,7 +28,8 @@ public class FoodController {
     @GetMapping("/{foodId}")
     public BaseResponse<GetFoodResponse> getFoodDetail(@PathVariable long foodId) {
         System.out.println("[FoodController.getFoodDetail]");
-        return new BaseResponse<>(foodService.getFoodDetail(foodId));
+        long memberId = 1; // TODO: 이 부분은 나중에 Header의 jwt에서 값을 얻어야할 것 같다.
+        return new BaseResponse<>(foodService.getFoodDetail(memberId, foodId));
 
     }
 }

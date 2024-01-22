@@ -17,8 +17,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FoodService {
     private final FoodRepository foodRepository;
+    private final FoodFavoriteService foodFavoriteService;
 
-    public GetFoodResponse getFoodDetail(long foodId) {
+    public GetFoodResponse getFoodDetail(long memberId, long foodId) {
         System.out.println("[FoodService.getFoodDetail]");
 
         Food food = foodRepository.findById(foodId)
@@ -30,7 +31,8 @@ public class FoodService {
                 food.getKcal(),
                 food.getCarbohydrate(),
                 food.getProtein(),
-                food.getFat()
+                food.getFat(),
+                foodFavoriteService.isFavorite(memberId, foodId)
         );
     }
 }

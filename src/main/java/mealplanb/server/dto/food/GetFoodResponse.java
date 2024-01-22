@@ -13,4 +13,5 @@ public class GetFoodResponse {
     private double carbohydrates;
     private double protein;
     private double fat;
+    private boolean isFavorite;
 }
