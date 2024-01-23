@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.food.GetFoodResponse;
+import mealplanb.server.dto.food.PostNewFoodRequest;
+import mealplanb.server.dto.food.PostNewFoodResponse;
 import mealplanb.server.dto.user.PostUserRequest;
 import mealplanb.server.dto.user.PostUserResponse;
 import mealplanb.server.service.FoodService;
@@ -21,6 +23,18 @@ import static mealplanb.server.util.BindingResultUtils.getErrorMessages;
 @RequestMapping("/food")
 public class FoodController {
     private final FoodService foodService;
+
+    /**
+     * 식사 등록 by 사용자
+     */
+    @PostMapping("")
+    public BaseResponse<PostNewFoodResponse> postNewFood(@Validated @RequestBody PostNewFoodRequest postNewFoodRequest,  BindingResult bindingResult){
+        System.out.println("[FoodController.postNewFood]");
+        if (bindingResult.hasErrors()) {
+            throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
+        }
+        return new BaseResponse<>(foodService.postNewFood(postNewFoodRequest));
+    }
 
     /**
      * 특정 식사의 상세 정보 반환
