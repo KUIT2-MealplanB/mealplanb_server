@@ -30,6 +30,8 @@ public class Food extends BaseTimeEntity {
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFatAcid;
+    @Transient
+    private int quantity = 100; // 영양성분 기준양, 데이터베이스에 매핑되지 않음
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
