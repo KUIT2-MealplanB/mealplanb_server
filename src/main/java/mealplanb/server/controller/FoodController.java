@@ -25,6 +25,17 @@ public class FoodController {
     private final FoodService foodService;
 
     /**
+     * 특정 식사의 상세 정보 반환
+     */
+    @GetMapping("/{foodId}")
+    public BaseResponse<GetFoodResponse> getFoodDetail(@PathVariable long foodId) {
+        System.out.println("[FoodController.getFoodDetail]");
+        long memberId = 1; // TODO: 이 부분은 나중에 Header의 jwt에서 값을 얻어야할 것 같다.
+        return new BaseResponse<>(foodService.getFoodDetail(memberId, foodId));
+
+    }
+
+    /**
      * 식사 등록 by 사용자
      */
     @PostMapping("")
@@ -34,16 +45,5 @@ public class FoodController {
             throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         return new BaseResponse<>(foodService.postNewFood(postNewFoodRequest));
-    }
-
-    /**
-     * 특정 식사의 상세 정보 반환
-     */
-    @GetMapping("/{foodId}")
-    public BaseResponse<GetFoodResponse> getFoodDetail(@PathVariable long foodId) {
-        System.out.println("[FoodController.getFoodDetail]");
-        long memberId = 1; // TODO: 이 부분은 나중에 Header의 jwt에서 값을 얻어야할 것 같다.
-        return new BaseResponse<>(foodService.getFoodDetail(memberId, foodId));
-
     }
 }
