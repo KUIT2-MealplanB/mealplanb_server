@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostLoginResponse {
     /** 로그인 */
-    private Long userId;
+    private Long memberId;
     private String jwt;
 }

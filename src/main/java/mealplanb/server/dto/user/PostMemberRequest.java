@@ -8,14 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostUserRequest {
+public class PostMemberRequest {
 
     /** 회원 가입 */
-//    @NotNull(message = "provider: {NotNull}")
-//    private String provider; //'kakao', 'google', 'naver'
-//
-//    @NotNull
-//    private String socialToken;
+    @NotNull(message = "provider: {NotNull}")
+    private String provider; //'kakao', 'google', 'naver'
+
+    @NotNull
+    private String socialToken;
 
     @NotNull(message = "email: {NotNull}")
     private String email;

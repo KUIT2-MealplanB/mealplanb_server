@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.dto.user.PostUserRequest;
-import mealplanb.server.dto.user.PostUserResponse;
+import mealplanb.server.dto.user.PostMemberRequest;
+import mealplanb.server.dto.user.PostMemberResponse;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +14,8 @@ import org.springframework.stereotype.Service;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.DUPLICATE_EMAIL;
 
-import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.dto.user.GetAvatarResponse;
-import mealplanb.server.repository.MemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -31,17 +29,17 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    public PostUserResponse signUp(PostUserRequest postUserRequest){
+    public PostMemberResponse signUp(PostMemberRequest postUserRequest){
         log.info("[MemberService.signUp]");
 
         validateEmail(postUserRequest.getEmail()); // 이메일 유효성 검사
 
         Member member = createAndSaveMember(postUserRequest);
         String jwt = jwtProvider.createToken(postUserRequest.getEmail(), member.getMemberId());
-        return new PostUserResponse(member.getMemberId(), jwt);
+        return new PostMemberResponse(member.getMemberId(), jwt);
     }
 
-    private Member createAndSaveMember(PostUserRequest postUserRequest) {
+    private Member createAndSaveMember(PostMemberRequest postUserRequest) {
         String encodedPassword = passwordEncoder.encode(postUserRequest.getPassword());
         postUserRequest.setPassword(encodedPassword);
         Member member = new Member(
