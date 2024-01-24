@@ -10,7 +10,7 @@ public class GetFoodResponse {
     private String name;
     private int quantity;
     private double kcal;
-    private double carbohydrates;
+    private double carbohydrate;
     private double protein;
     private double fat;
     private boolean isFavorite;
