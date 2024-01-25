@@ -1,7 +1,6 @@
 package mealplanb.server.domain.Member;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -70,7 +69,7 @@ public class Member extends BaseTimeEntity {
 
     // Member 와 Food_Favorite : 일대다 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FoodFavorite> foodFavorites = new ArrayList<>();
+    private List<FavoriteFood> favoriteFoods = new ArrayList<>();
 
     public Member(String email, String password, String sex, int age, int height, double initialWeight, double targetWeight, double dietType, double avatarColor, String nickname) {
         super();
