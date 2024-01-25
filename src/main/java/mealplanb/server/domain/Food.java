@@ -36,6 +36,7 @@ public class Food extends BaseTimeEntity {
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFatAcid;
+    private boolean isMemberCreated;
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
@@ -64,6 +65,7 @@ public class Food extends BaseTimeEntity {
         this.saturatedFattyAcid = postNewFoodRequest.getSaturatedFattyAcid();
         this.transFatAcid = postNewFoodRequest.getTransFatAcid();
         this.status = BaseStatus.A;
+        this.isMemberCreated = true;
     }
 
     private String findKeyNutrient() {
