@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "food")
 public class Food extends BaseTimeEntity {
 
