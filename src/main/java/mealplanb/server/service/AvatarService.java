@@ -28,8 +28,8 @@ public class AvatarService {
         String appearance = null;
 
         if("M".equals(gender)){ // 남성인 경우
-            if((bodyWeight*0.45 <= skeletalMuscleMass) || bodyWeight*0.2 >= bodyFatMass){
-                // 골격근량 평균 이상 or 체지방량 표준이하 혹은 표준
+            if(((bodyWeight*0.45)*1.1 <= skeletalMuscleMass) && bodyWeight*0.2 >= bodyFatMass){
+                // 골격근량 표준 이상 and 체지방량 표준이하 혹은 표준
                 return appearance = "muscle";
 
             } else if (((bodyWeight*0.1 <= bodyFatMass) && (bodyWeight*0.2 >= bodyFatMass)) || bodyFatMass == 0 || skeletalMuscleMass == 0) {
@@ -41,8 +41,8 @@ public class AvatarService {
                 return appearance = "fat";
             }
         } else if ("F".equals(gender)) { // 여성인 경우
-            if((bodyWeight*0.45 <= skeletalMuscleMass) || bodyWeight*0.28 >= bodyFatMass){
-                // 골격근량 평균 이상 or 체지방량 표준이하 혹은 표준
+            if(((bodyWeight*0.45)*1.1<= skeletalMuscleMass) && bodyWeight*0.28 >= bodyFatMass){
+                // 골격근량 평균 이상 and 체지방량 표준이하 혹은 표준
                 return appearance = "muscle";
 
             } else if (((bodyWeight*0.18 <= bodyFatMass) && (bodyWeight*0.28 >= bodyFatMass)) || bodyFatMass == 0 || skeletalMuscleMass == 0) {
@@ -50,19 +50,6 @@ public class AvatarService {
                 return appearance = "normal";
 
             } else if(bodyWeight*0.28 < bodyFatMass){
-                // 체지방량 표준 이상
-                return appearance = "fat";
-            }
-        } else { // 비공개인 경우
-            if((bodyWeight*0.45 <= skeletalMuscleMass) || bodyWeight*0.2 >= bodyFatMass){
-                // 골격근량 평균 이상 or 체지방량 표준이하 혹은 표준
-                return appearance = "muscle";
-
-            } else if (((bodyWeight*0.1 <= bodyFatMass) && (bodyWeight*0.2 >= bodyFatMass)) || bodyFatMass == 0 || skeletalMuscleMass == 0) {
-                // 골격근량, 체지방량 입력 x or 체지방량 정상 범위
-                return appearance = "normal";
-
-            } else if(bodyWeight*0.2 < bodyFatMass){
                 // 체지방량 표준 이상
                 return appearance = "fat";
             }
