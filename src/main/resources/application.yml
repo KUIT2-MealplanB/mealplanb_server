@@ -5,6 +5,9 @@ spring:
       "dev": "devDB, devPort, secret, web-mvc"
       "prod": "prodDB, prodPort, secret, web-mvc"
 
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
 ---
 
 spring:
@@ -106,3 +109,24 @@ spring:
 
   messages:
     basename: errors
+---
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+        registration:
+          kakao:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET_KEY}
+            client-authentication-method: client_secret_post
+            redirect-uri: http://localhost:9000/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
+            client-name: kakao
+            scope:
+              - profile_nickname
