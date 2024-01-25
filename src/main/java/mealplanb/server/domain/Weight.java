@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Table(name = "Weight")
+@Table(name = "weight")
 public class Weight extends BaseTimeEntity {
 
     @Id
