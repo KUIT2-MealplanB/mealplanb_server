@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.food.GetFoodResponse;
+import mealplanb.server.dto.food.PostNewFoodRequest;
+import mealplanb.server.dto.food.PostNewFoodResponse;
 import mealplanb.server.dto.user.PostUserRequest;
 import mealplanb.server.dto.user.PostUserResponse;
 import mealplanb.server.service.FoodService;
@@ -31,5 +33,17 @@ public class FoodController {
         long memberId = 1; // TODO: 이 부분은 나중에 Header의 jwt에서 값을 얻어야할 것 같다.
         return new BaseResponse<>(foodService.getFoodDetail(memberId, foodId));
 
+    }
+
+    /**
+     * 식사 등록 by 사용자
+     */
+    @PostMapping("")
+    public BaseResponse<PostNewFoodResponse> postNewFood(@Validated @RequestBody PostNewFoodRequest postNewFoodRequest,  BindingResult bindingResult){
+        System.out.println("[FoodController.postNewFood]");
+        if (bindingResult.hasErrors()) {
+            throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
+        }
+        return new BaseResponse<>(foodService.postNewFood(postNewFoodRequest));
     }
 }

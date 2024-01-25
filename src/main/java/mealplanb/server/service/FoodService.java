@@ -7,6 +7,8 @@ import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Food;
 import mealplanb.server.dto.food.GetFoodResponse;
+import mealplanb.server.dto.food.PostNewFoodRequest;
+import mealplanb.server.dto.food.PostNewFoodResponse;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,31 @@ public class FoodService {
                 food.getProtein(),
                 food.getFat(),
                 foodFavoriteService.isFavorite(memberId, foodId)
+        );
+    }
+
+    public PostNewFoodResponse postNewFood(PostNewFoodRequest postNewFoodRequest) {
+        System.out.println("[FoodService.postNewFood]");
+        Food newFood = new Food(postNewFoodRequest);
+        foodRepository.save(newFood);
+
+        //todo: 코드 이렇게 길게 안하는 방법은 없을지...
+        //todo: 사실 PostNewFoodResponse랑 Food랑 status, updatedAt, createdAt 유무 차이라서 Food를 반환하는게 나을려나.
+        return new PostNewFoodResponse(
+                newFood.getFoodId(),
+                newFood.getName(),
+                newFood.getCategory(),
+                newFood.getKeyNutrient(),
+                newFood.getQuantity(),
+                newFood.getKcal(),
+                newFood.getCarbohydrate(),
+                newFood.getProtein(),
+                newFood.getFat(),
+                newFood.getSugar(),
+                newFood.getSodium(),
+                newFood.getCholesterol(),
+                newFood.getSaturatedFattyAcid(),
+                newFood.getTransFatAcid()
         );
     }
 }

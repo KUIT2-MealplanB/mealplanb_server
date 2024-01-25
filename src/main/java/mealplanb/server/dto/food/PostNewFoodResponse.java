@@ -18,7 +18,7 @@ public class PostNewFoodResponse {
     private double protein;
     private double fat;
     private double sugar;
-    private double natrium;
+    private double sodium;
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFatAcid;
