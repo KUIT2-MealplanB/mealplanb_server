@@ -8,7 +8,7 @@ import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
-@Table(name = "Food_Favorite")
+@Table(name = "food_favorite")
 public class FoodFavorite extends BaseTimeEntity {
 
     @Id

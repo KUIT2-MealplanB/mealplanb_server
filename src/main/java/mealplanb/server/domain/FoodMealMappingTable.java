@@ -8,7 +8,7 @@ import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
-@Table(name = "FoodMealMappingTable")
+@Table(name = "food_meal_mapping_table")
 public class FoodMealMappingTable extends BaseTimeEntity {
 
     @Id

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "Meal")
+@Table(name = "meal")
 public class Meal extends BaseTimeEntity {
 
     @Id
