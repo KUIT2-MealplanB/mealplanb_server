@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.user.GetAvatarResponse;
-import mealplanb.server.dto.user.PostUserRequest;
-import mealplanb.server.dto.user.PostUserResponse;
+import mealplanb.server.dto.user.PostMemberRequest;
+import mealplanb.server.dto.user.PostMemberResponse;
 import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -29,7 +29,7 @@ public class MemberController {
      * 회원 가입
      */
     @PostMapping("/signup")
-    public BaseResponse<PostUserResponse> signup(@Validated @RequestBody PostUserRequest postUserRequest, BindingResult bindingResult) {
+    public BaseResponse<PostMemberResponse> signup(@Validated @RequestBody PostMemberRequest postUserRequest, BindingResult bindingResult) {
         log.info("[MemberController.signup]");
         if (bindingResult.hasErrors()) {
             throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
