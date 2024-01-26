@@ -70,6 +70,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "target_updated_at")
     private LocalDate targetUpdatedAt;
 
+
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
@@ -85,9 +86,13 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodMealMappingTable> foodMealMappingTables = new ArrayList<>();
 
-    // Member 와 Food_Favorite : 일대다 관계
+    // Member 와 Favorite_Food : 일대다 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteFood> favoriteFoods = new ArrayList<>();
+
+    // Member와 Favorite_Meal : 일대다 관계
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteMeal> favoriteMeals = new ArrayList<>();
 
     public Member(String email, String password, MemberSex sex, int age, int height, double initialWeight, double targetWeight,
                   int recommendedKcal, int targetKcal, String dietType, int carbohydrateRate, int proteinRate, int fatRate,
