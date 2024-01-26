@@ -1,7 +1,9 @@
 package mealplanb.server.domain.Member;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import mealplanb.server.domain.*;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import org.springframework.data.annotation.CreatedBy;
@@ -85,7 +87,7 @@ public class Member extends BaseTimeEntity {
 
     // Member 와 Food_Favorite : 일대다 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FoodFavorite> foodFavorites = new ArrayList<>();
+    private List<FavoriteFood> favoriteFoods = new ArrayList<>();
 
     public Member(String email, String password, MemberSex sex, int age, int height, double initialWeight, double targetWeight,
                   int recommendedKcal, int targetKcal, String dietType, int carbohydrateRate, int proteinRate, int fatRate,

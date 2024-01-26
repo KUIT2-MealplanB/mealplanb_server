@@ -1,7 +1,6 @@
 package mealplanb.server.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
@@ -36,6 +35,7 @@ public class Food extends BaseTimeEntity {
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFatAcid;
+    private boolean isMemberCreated;
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
@@ -44,9 +44,9 @@ public class Food extends BaseTimeEntity {
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodMealMappingTable> foodMealMappingTables = new ArrayList<>();
 
-    // Food 와 FoodFavorite : 일대다 관계
+    // Food 와 FavoriteFood : 일대다 관계
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FoodFavorite> foodFavorites = new ArrayList<>();
+    private List<FavoriteFood> favoriteFoods = new ArrayList<>();
 
 
     public Food(PostNewFoodRequest postNewFoodRequest) {
@@ -64,6 +64,7 @@ public class Food extends BaseTimeEntity {
         this.saturatedFattyAcid = postNewFoodRequest.getSaturatedFattyAcid();
         this.transFatAcid = postNewFoodRequest.getTransFatAcid();
         this.status = BaseStatus.A;
+        this.isMemberCreated = true;
     }
 
     private String findKeyNutrient() {
