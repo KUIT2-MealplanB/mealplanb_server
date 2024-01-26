@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mealplanb.server.domain.*;
 import mealplanb.server.domain.Base.BaseTimeEntity;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @Table(name = "member")
 public class Member extends BaseTimeEntity {
@@ -38,18 +41,33 @@ public class Member extends BaseTimeEntity {
 
     private int age;
     private int height;
+
+    @Column(name = "initial_weight")
     private double initialWeight;
+    @Column(name = "target_weight")
     private double targetWeight;
+    @Column(name = "recommended_kcal")
     private int recommendedKcal;
+    @Column(name = "target_kcal")
     private int targetKcal;
+    @Column(name = "diet_type")
     private String dietType;
+    @Column(name = "carbohydrate_rate")
     private int carbohydrateRate;
+    @Column(name = "protein_rate")
     private int proteinRate;
+    @Column(name = "fat_rate")
     private int fatRate;
     private String nickname;
+    @Column(name = "avatar_color")
     private String avatarColor;
+    @Column(name = "skeletal_muscle_mass")
     private int skeletalMuscleMass;
+    @Column(name = "body_fat_mass")
     private int bodyFatMass;
+
+    @CreatedDate
+    @Column(name = "target_updated_at")
     private LocalDate targetUpdatedAt;
 
     @Enumerated(EnumType.STRING)
@@ -71,7 +89,28 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteFood> favoriteFoods = new ArrayList<>();
 
-    public Member(String email, String password, String sex, int age, int height, double initialWeight, double targetWeight, double dietType, double avatarColor, String nickname) {
-        super();
+    public Member(String email, String password, MemberSex sex, int age, int height, double initialWeight, double targetWeight,
+                  int recommendedKcal, int targetKcal, String dietType, int carbohydrateRate, int proteinRate, int fatRate,
+                  String avatarColor, String nickname, int skeletalMuscleMass, int bodyFatMass, MemberStatus status) {
+        this.email = email;
+        this.password = password;
+        this.sex = sex;
+        this.age = age;
+        this.height = height;
+        this.initialWeight = initialWeight;
+        this.targetWeight = targetWeight;
+        this.recommendedKcal = recommendedKcal;
+        this.targetKcal = targetKcal;
+        this.dietType = dietType;
+        this.carbohydrateRate = carbohydrateRate;
+        this.proteinRate = proteinRate;
+        this.fatRate = fatRate;
+        this.avatarColor = avatarColor;
+        this.nickname = nickname;
+        this.skeletalMuscleMass = skeletalMuscleMass;
+        this.bodyFatMass = bodyFatMass;
+        this.status = status;
+        this.targetUpdatedAt = LocalDate.now();
     }
+
 }
