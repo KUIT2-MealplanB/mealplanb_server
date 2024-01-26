@@ -70,7 +70,6 @@ public class Member extends BaseTimeEntity {
     @Column(name = "target_updated_at")
     private LocalDate targetUpdatedAt;
 
-
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 

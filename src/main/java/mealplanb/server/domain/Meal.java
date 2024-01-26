@@ -27,10 +27,8 @@ public class Meal extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String mealName;
     private int mealType;
     private LocalDate mealDate;
-    private boolean isFavorite;
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;

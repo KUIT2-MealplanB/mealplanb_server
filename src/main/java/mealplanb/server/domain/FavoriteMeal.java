@@ -7,6 +7,9 @@ import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -26,5 +29,9 @@ public class FavoriteMeal extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
+
+    // Favorite_Meal 과 Favorite_Meal_Component : 일대다 관계
+    @OneToMany(mappedBy = "favoriteMeal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteMealComponent> favoriteMealComponents = new ArrayList<>();
 
 }
