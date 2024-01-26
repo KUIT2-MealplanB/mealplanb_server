@@ -10,31 +10,23 @@ import mealplanb.server.domain.Member.Member;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "food_meal_mapping_table")
-public class FoodMealMappingTable extends BaseTimeEntity {
+@Table(name = "favorite_food")
+public class FavoriteFood extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "food_meal_id", updatable = false)
-    private Long foodMealId;
+    @Column(name = "favorite_food_id", updatable = false)
+    private Long favoriteFoodId;
 
-    //Member : member_id(FK)
+    // Member : member_id(FK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    //Meal : meal_id(FK)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meal_id")
-    private Meal meal;
-
-    //Food : food_id(FK)
+    // Food : food_id(FK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_id")
     private Food food;
-
-    private int quantity;
-    private boolean isRecommended;
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
