@@ -28,7 +28,7 @@ public class FoodMealMappingTable extends BaseTimeEntity {
     @JoinColumn(name = "meal_id")
     private Meal meal;
 
-    //Food : food_id(FK)
+    //Food : food_if(FK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_id")
     private Food food;

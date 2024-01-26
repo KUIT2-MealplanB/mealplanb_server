@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.domain.Member.MemberSex;
-import mealplanb.server.domain.Member.MemberStatus;
 import mealplanb.server.dto.user.PostMemberRequest;
 import mealplanb.server.dto.user.PostMemberResponse;
 import mealplanb.server.repository.MemberRepository;
@@ -41,112 +39,22 @@ public class MemberService {
         return new PostMemberResponse(member.getMemberId(), jwt);
     }
 
-    private Member createAndSaveMember(PostMemberRequest postMemberRequest) {
-        String email = postMemberRequest.getEmail();
-        String encodedPassword = passwordEncoder.encode(postMemberRequest.getPassword());
-        MemberSex memberSex = MemberSex.valueOf(postMemberRequest.getSex().toUpperCase());
-        int age = postMemberRequest.getAge();
-        int height = postMemberRequest.getHeight();
-        double initialWeight = postMemberRequest.getInitialWeight();
-        double targetWeight = postMemberRequest.getTargetWeight();
-        int recommendedKcal = calRecommendedKcal(memberSex,age,height, initialWeight, targetWeight);
-        int targetKcal = recommendedKcal;
-        String dietType = postMemberRequest.getDietType();
-
-        int[] ratio = calculateRate(dietType);
-        int carbohydrateRate = ratio[0];
-        int proteinRate = ratio[1];
-        int fatRate = ratio[2];
-
-        String avatarColor = postMemberRequest.getAvatarColor();
-        String nickname = postMemberRequest.getNickname();
-        int skeletalMuscleMass = 0;
-        int bodyFatMass = 0;
-        MemberStatus status = MemberStatus.A;
-
+    private Member createAndSaveMember(PostMemberRequest postUserRequest) {
+        String encodedPassword = passwordEncoder.encode(postUserRequest.getPassword());
+        postUserRequest.setPassword(encodedPassword);
         Member member = new Member(
-                email,
-                encodedPassword,
-                memberSex,
-                age,
-                height,
-                initialWeight,
-                targetWeight,
-                recommendedKcal,// 추천 칼로리
-                targetKcal,// 타켓 칼로리 -> default 추천칼로리
-                dietType,
-                carbohydrateRate,// 식단에 따른 탄수화물 비율
-                proteinRate,// 식단 종류에 따른 단백질 비율
-                fatRate,// 식단 종류에 따른 지방 비율
-                avatarColor,
-                nickname,
-                skeletalMuscleMass,//  골격근량 -> default 0
-                bodyFatMass,// 체지방량 -> default 0
-                status
+                postUserRequest.getEmail(),
+                postUserRequest.getPassword(),
+                postUserRequest.getSex(),
+                postUserRequest.getAge(),
+                postUserRequest.getHeight(),
+                postUserRequest.getInitialWeight(),
+                postUserRequest.getTargetWeight(),
+                postUserRequest.getDietType(),
+                postUserRequest.getAvatarColor(),
+                postUserRequest.getNickname()
         );
-        log.info("멤버 객체 생성 후: {}", member);
         return memberRepository.save(member);
-    }
-
-    private int[] calculateRate(String dietType) {
-        int[] ratio = new int[3];
-        switch (dietType) {
-            case "일반", "비건" -> {
-                ratio[0] = 5;
-                ratio[1] = 3;
-                ratio[2] = 2;
-            }
-            case "운동" -> {
-                ratio[0] = 4;
-                ratio[1] = 4;
-                ratio[2] = 2;
-            }
-            case "키토" -> {
-                ratio[0] = 8;
-                ratio[1] = 22;
-                ratio[2] = 70;
-            }
-            case "당뇨" -> {
-                ratio[0] = 65;
-                ratio[1] = 25;
-                ratio[2] = 10;
-            }
-        }
-        return ratio;
-    }
-
-    private int calRecommendedKcal(MemberSex sex, int age, int height, double initialWeight, double targetWeight) {
-        // 기초 대사량 계산
-        int BMR = calBMR(sex,age,height,initialWeight);
-        log.info("[BMR 계산 결과 :{}] ",BMR);
-        // 일일 칼로리 계산
-        int dailyKcal = (int)(BMR * 1.5);
-        log.info("[일일 칼로리 계산 결과 :{}] ",dailyKcal);
-        // 일일 목표 칼로리 섭취량 계산
-        int targetKcal = 0;
-        if(initialWeight > targetWeight){ // 감량 하는 경우
-            targetKcal = dailyKcal - 500;
-            log.info("[감량 타켓 칼로리 계산 결과 :{}] ",targetKcal);
-        } else if (initialWeight < targetWeight) { // 증량하는 경우
-            targetKcal = dailyKcal + 500;
-            log.info("[증량 타켓 칼로리 계산 결과 :{}] ",targetKcal);
-        } else { // 같은 경우
-            targetKcal = dailyKcal; // 현재 체중에 맞는 일일 칼로리 섭취량 추천
-            log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ",targetKcal);
-        }
-        return targetKcal;
-    }
-
-    private int calBMR(MemberSex sex, int age, int height, double initialWeight) {
-        int BMR = 0;
-        if(sex == MemberSex.M){ // 남성인 경우
-            BMR = (int)(88.362 + (13.397 * initialWeight) + (4.799 * height) - (5.677 * age));
-            log.info("[남성 BMR : {}]", BMR);
-        } else if (sex == MemberSex.F) { // 여성인 경우
-            BMR = (int)(447.593 + (9.247 * initialWeight) + (3.098 * height) - (4.330 * age));
-            log.info("[여성 BMR : {}]", BMR);
-        }
-        return BMR;
     }
 
     private void validateEmail(String email) {

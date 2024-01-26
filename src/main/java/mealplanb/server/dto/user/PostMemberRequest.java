@@ -4,21 +4,18 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import mealplanb.server.domain.Member.MemberSex;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 public class PostMemberRequest {
 
     /** 회원 가입 */
-//    @NotNull(message = "provider: {NotNull}")
-//    private String provider; //'kakao', 'google', 'naver'
-//
-//    @NotNull
-//    private String socialToken;
+    @NotNull(message = "provider: {NotNull}")
+    private String provider; //'kakao', 'google', 'naver'
+
+    @NotNull
+    private String socialToken;
 
     @NotNull(message = "email: {NotNull}")
     private String email;
@@ -42,10 +39,10 @@ public class PostMemberRequest {
     private double targetWeight;
 
     @NotNull(message = "diet_type: {NotNull}")
-    private String dietType;
+    private double dietType;
 
     @NotNull(message = "avatar_color: {NotNull}")
-    private String avatarColor;
+    private double avatarColor;
 
     @NotNull(message = "nickname: {NotNull}")
     private String nickname;

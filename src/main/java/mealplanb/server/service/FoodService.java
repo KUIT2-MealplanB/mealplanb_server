@@ -3,6 +3,7 @@ package mealplanb.server.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.FoodException;
+import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Food;
 import mealplanb.server.dto.food.GetFoodResponse;
@@ -11,12 +12,14 @@ import mealplanb.server.dto.food.PostNewFoodResponse;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FoodService {
     private final FoodRepository foodRepository;
-    private final FavoriteFoodService favoriteFoodService;
+    private final FoodFavoriteService foodFavoriteService;
 
     public GetFoodResponse getFoodDetail(long memberId, long foodId) {
         System.out.println("[FoodService.getFoodDetail]");
@@ -31,7 +34,7 @@ public class FoodService {
                 food.getCarbohydrate(),
                 food.getProtein(),
                 food.getFat(),
-                favoriteFoodService.isFavorite(memberId, foodId)
+                foodFavoriteService.isFavorite(memberId, foodId)
         );
     }
 
