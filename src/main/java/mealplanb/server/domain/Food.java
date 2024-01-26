@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "food")
 public class Food extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id", updatable = false)

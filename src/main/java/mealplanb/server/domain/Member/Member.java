@@ -23,7 +23,6 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "member")
 public class Member extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", updatable = false)

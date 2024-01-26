@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "meal")
 public class Meal extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meal_id", updatable = false)

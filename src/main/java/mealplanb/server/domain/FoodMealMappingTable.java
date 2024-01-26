@@ -10,6 +10,7 @@ import mealplanb.server.domain.Member.Member;
 @NoArgsConstructor
 @Table(name = "food_meal_mapping_table")
 public class FoodMealMappingTable extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_meal_id", updatable = false)

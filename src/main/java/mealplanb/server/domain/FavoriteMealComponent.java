@@ -13,6 +13,7 @@ import mealplanb.server.domain.Member.MemberStatus;
 @NoArgsConstructor
 @Table(name = "favorite_meal_component")
 public class FavoriteMealComponent extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "favorite_meal_component_id", updatable = false)
