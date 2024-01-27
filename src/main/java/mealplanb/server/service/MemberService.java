@@ -7,16 +7,19 @@ import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberSex;
 import mealplanb.server.domain.Member.MemberStatus;
-import mealplanb.server.dto.user.PostMemberRequest;
-import mealplanb.server.dto.user.PostMemberResponse;
+import mealplanb.server.dto.user.*;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.DUPLICATE_EMAIL;
+
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
-import mealplanb.server.dto.user.GetAvatarResponse;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,11 +28,15 @@ public class MemberService {
     private final AvatarService avatarService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+
+    /**
+     * 회원 가입
+     */
     public PostMemberResponse signUp(PostMemberRequest postUserRequest){
         log.info("[MemberService.signUp]");
         validateEmail(postUserRequest.getEmail()); // 이메일 유효성 검사
         Member member = createAndSaveMember(postUserRequest);
-        String jwt = jwtProvider.createToken(postUserRequest.getEmail(), member.getMemberId());
+        String jwt = generateJwtToken(postUserRequest.getEmail(), member.getMemberId());
         return new PostMemberResponse(member.getMemberId(), jwt);
     }
 
@@ -140,12 +147,51 @@ public class MemberService {
         }
         return BMR;
     }
+
     private void validateEmail(String email) {
         if(memberRepository.existsByEmail(email)){
             throw new MemberException(DUPLICATE_EMAIL);
         }
     }
-    
+
+    /**
+     * 로그인
+     */
+    public PostLoginResponse login(PostLoginRequest postLoginRequest){
+        log.info("[MemberService.login]");
+        Long memberId = findMemberByEmail(postLoginRequest.getEmail());
+        String encodedPassword = findEncodedPassword(memberId);
+
+        if(passwordEncoder.matches(postLoginRequest.getPassword(), encodedPassword)) {
+            String jwt = generateJwtToken(postLoginRequest.getEmail(), memberId);
+            return new PostLoginResponse(memberId, jwt);
+        }else {
+            throw new MemberException(PASSWORD_NO_MATCH);
+        }
+    }
+
+    private String findEncodedPassword(Long memberId) {
+        Optional<Member> passwordOptional = memberRepository.findById(memberId);
+        if(passwordOptional.isEmpty()){
+            throw new MemberException(MEMBER_NOT_FOUND);
+        }else {
+            return passwordOptional.get().getPassword(); // 패스워드 값 추출
+        }
+    }
+
+    private Long findMemberByEmail(String email) {
+        Optional<Member> memberIdOptional = memberRepository.findByEmail(email);
+        if(memberIdOptional.isEmpty()){
+            throw new MemberException(EMAIL_NOT_FOUND);
+        } else {
+            return memberIdOptional.get().getMemberId(); // Id 값 추출
+        }
+    }
+
+    private String generateJwtToken(String email, Long memberId){
+        String jwt = jwtProvider.createToken(email, memberId);
+        return jwt;
+    }
 
     /** 아바타 정보 조회 */
     @Transactional(readOnly = true)
