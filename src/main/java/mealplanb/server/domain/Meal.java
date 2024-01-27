@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "meal")
 public class Meal extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meal_id", updatable = false)
@@ -27,10 +26,8 @@ public class Meal extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String mealName;
     private int mealType;
     private LocalDate mealDate;
-    private boolean isFavorite;
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;

@@ -6,10 +6,8 @@ import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.dto.food.PostNewFoodRequest;
-
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -20,7 +18,6 @@ public class Food extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id", updatable = false)
     private Long foodId;
-
     private String name;
     private String category;
     private String keyNutrient;
@@ -48,6 +45,9 @@ public class Food extends BaseTimeEntity {
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteFood> favoriteFoods = new ArrayList<>();
 
+    // food 와 favorite_meal_component : 일대다 관계
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteMealComponent> favoriteMealComponents = new ArrayList<>();
 
     public Food(PostNewFoodRequest postNewFoodRequest) {
         super();

@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Table(name = "weight")
 @NoArgsConstructor
 public class Weight extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "weight_id", updatable = false)
