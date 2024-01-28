@@ -201,4 +201,22 @@ public class MemberService {
         String avatarAppearance = avatarService.calculateAvatarAppearance(member);
         return new GetAvatarResponse(avatarAppearance, member.getAvatarColor(), member.getNickname());
     }
+
+    /**
+     * 아바타 수정
+     */
+    public PatchAvatarResponse modifyAvatar(Long memberId, PatchAvatarRequest patchAvatarRequest){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        String nickname = patchAvatarRequest.getNickname();
+        String avatarColor = patchAvatarRequest.getAvatarColor();
+
+        member.setNickname(nickname);
+        member.setAvatarColor(avatarColor);
+
+        memberRepository.save(member);
+
+        return new PatchAvatarResponse(memberId, nickname, avatarColor);
+    }
 }
