@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class MealResponse {
-    /** 끼니 등록, 조회, 수정의 response */
+    /** 끼니에 식사 등록, 조회, 수정의 response */
     private long mealId;
     private LocalDate mealDate;
     private int mealType;
