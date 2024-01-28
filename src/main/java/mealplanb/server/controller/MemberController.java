@@ -24,6 +24,15 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
+    public Long extractTokenFromHeader(String authorization){
+        // Authorization 헤더에서 JWT 토큰 추출
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+
+        // JWT 토큰에서 사용자 정보 추출
+        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+        return memberId;
+    }
+
     /**
      * 회원 가입
      */
@@ -61,5 +70,16 @@ public class MemberController {
         Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
 
         return new BaseResponse<>(memberService.getAvatarResponse(memberId));
+    }
+
+    /**
+     * 아바타 외형 수정
+     */
+    @PatchMapping("/avatar/appearance")
+    public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
+                                                                              @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.modifyAvatarAppearance]");
+        Long memberId = extractTokenFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
     }
 }
