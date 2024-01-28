@@ -201,4 +201,23 @@ public class MemberService {
         String avatarAppearance = avatarService.calculateAvatarAppearance(member);
         return new GetAvatarResponse(avatarAppearance, member.getAvatarColor(), member.getNickname());
     }
+
+    /**
+     * 아바타 외형 수정
+     */
+    public PatchAvatarAppearanceResponse modifyAvatarAppearance(Long memberId, PatchAvatarAppearanceRequest patchAvatarAppearanceRequest){
+        log.info("[MemberService.modifyAvatarAppearance]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        int skeletalMuscleMass = patchAvatarAppearanceRequest.getSkeletalMuscleMass();
+        int bodyFatMass = patchAvatarAppearanceRequest.getFatMass();
+
+        member.setSkeletalMuscleMass(skeletalMuscleMass);
+        member.setBodyFatMass(bodyFatMass);
+
+        memberRepository.save(member);
+
+        return new PatchAvatarAppearanceResponse(avatarService.calculateAvatarAppearance(member));
+    }
 }
