@@ -1,4 +1,4 @@
-package mealplanb.server.dto.food;
+package mealplanb.server.dto.meal;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserMealRequest {
+public class MealRequest {
     /** 끼니 등록, 끼니 수정 */
     private int mealType;
     private LocalDate mealDate;
