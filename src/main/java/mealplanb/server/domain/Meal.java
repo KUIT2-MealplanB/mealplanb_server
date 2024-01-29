@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;

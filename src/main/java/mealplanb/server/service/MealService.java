@@ -6,12 +6,19 @@ import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Meal;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.meal.GetMealResponse;
+import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -20,7 +27,6 @@ import org.springframework.stereotype.Service;
 public class MealService {
     private final MealRepository mealRepository;
     private final MemberRepository memberRepository;
-    private final FoodRepository foodRepository;
 
     public PostMealResponse postMeal(Long memberId, PostMealRequest mealRequest) {
         Member member = memberRepository.findById(memberId)
@@ -33,4 +39,21 @@ public class MealService {
         return new PostMealResponse(createdMeal.getMealId());
     }
 
+    public GetMealResponse getMealList(Long memberId, LocalDate mealDate) {
+        log.info("[MealService.getMealList]");
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDate(memberId, mealDate);
+
+        if (mealsOptional.isPresent()) {
+            List<Meal> meals = mealsOptional.get();
+            // 결과를 처리하는 로직을 작성
+            List<GetMealItem> mealItems = new ArrayList<>();
+            for (Meal meal : meals){
+                new GetMealItem(meal.getMealId(), meal.getMealType(), 100.0);
+            }
+            return new GetMealResponse(mealDate, mealItems);
+        } else {
+            // 결과가 없는 경우에 대한 처리 로직을 작성
+            return new GetMealResponse(mealDate);
+        }
+    }
 }
