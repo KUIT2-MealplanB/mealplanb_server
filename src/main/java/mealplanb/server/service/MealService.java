@@ -2,6 +2,7 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Meal;
@@ -20,17 +21,26 @@ import org.springframework.stereotype.Service;
 public class MealService {
     private final MealRepository mealRepository;
     private final MemberRepository memberRepository;
-    private final FoodRepository foodRepository;
 
     public PostMealResponse postMeal(Long memberId, PostMealRequest mealRequest) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
+        // 이미 존재하는 Meal에 대한 요청이 들어왔을 때 예외처리
+        checkDuplicate(mealRequest, member);
+
         //Meal 테이블에 저장
         Meal meal = new Meal(member, mealRequest.getMealDate(), mealRequest.getMealType());
-        // todo: 해당 날짜, mealtype에 해당하는 meal이 이미 있는 경우에 대한 예외처리를 해야하나...?
         Meal createdMeal = mealRepository.save(meal);
         return new PostMealResponse(createdMeal.getMealId());
     }
 
+    private void checkDuplicate(PostMealRequest mealRequest, Member member) {
+        boolean exists = mealRepository.existsByMemberAndMealDateAndMealType(member, mealRequest.getMealDate(), mealRequest.getMealType());
+        if (exists){
+            throw new MealException(BaseExceptionResponseStatus.DUPLICATE_MEAL);
+        }
+    }
+
 }
+
