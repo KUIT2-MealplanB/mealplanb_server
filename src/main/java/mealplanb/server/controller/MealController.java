@@ -45,7 +45,8 @@ public class MealController {
      *  끼니 기록 조회
      */
     @GetMapping
-    public BaseResponse<GetMealResponse> getMealList(@RequestHeader("Authorization") String authorization, @RequestParam(name = "mealDate") LocalDate mealDate){
+    public BaseResponse<GetMealResponse> getMealList(@RequestHeader("Authorization") String authorization,
+                                                     @RequestParam(name = "mealDate") LocalDate mealDate){
         // Authorization 헤더에서 JWT 토큰 추출
         String jwtToken = jwtProvider.extractJwtToken(authorization);
         // JWT 토큰에서 사용자 정보 추출

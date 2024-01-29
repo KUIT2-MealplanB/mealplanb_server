@@ -10,7 +10,6 @@ import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
-import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,7 @@ import java.util.Optional;
 public class MealService {
     private final MealRepository mealRepository;
     private final MemberRepository memberRepository;
+    private final FoodMealMappingTableService foodMealMappingTableService;
 
     public PostMealResponse postMeal(Long memberId, PostMealRequest mealRequest) {
         Member member = memberRepository.findById(memberId)
@@ -44,6 +44,7 @@ public class MealService {
         Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDate(memberId, mealDate);
 
         if (!mealsOptional.isPresent()) { // 결과가 없는 경우
+            log.info("[MealService.getMealList] - 만들어진 끼니 없음");
             return new GetMealResponse(mealDate);
         }
 
@@ -52,9 +53,11 @@ public class MealService {
     }
 
     private List<GetMealItem> makeGetMealItems(List<Meal> meals) {
+        log.info("[MealService.makeGetMealItems]");
         List<GetMealItem> mealItems = new ArrayList<>();
         for (Meal meal : meals){
-            new GetMealItem(meal.getMealId(), meal.getMealType(), 100.0);
+            GetMealItem getMealItem = new GetMealItem(meal.getMealId(), meal.getMealType(), foodMealMappingTableService.getMealKcal(meal.getMealId()));
+            mealItems.add(getMealItem);
         }
         return mealItems;
     }
