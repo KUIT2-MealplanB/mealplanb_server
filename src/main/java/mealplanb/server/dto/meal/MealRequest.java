@@ -1,19 +1,17 @@
-package mealplanb.server.dto.food;
+package mealplanb.server.dto.meal;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserMealRequest {
-    /** 끼니 등록, 끼니 수정 */
-    private int mealType;
-    private LocalDate mealDate;
+public class MealRequest {
+    /** 끼니에 식사 리스트 등록 */
+    private Long mealId;
     private List<MealItem> meals;
 
     @Getter
