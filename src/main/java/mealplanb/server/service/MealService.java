@@ -43,17 +43,19 @@ public class MealService {
         log.info("[MealService.getMealList]");
         Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDate(memberId, mealDate);
 
-        if (mealsOptional.isPresent()) {
-            List<Meal> meals = mealsOptional.get();
-            // 결과를 처리하는 로직을 작성
-            List<GetMealItem> mealItems = new ArrayList<>();
-            for (Meal meal : meals){
-                new GetMealItem(meal.getMealId(), meal.getMealType(), 100.0);
-            }
-            return new GetMealResponse(mealDate, mealItems);
-        } else {
-            // 결과가 없는 경우에 대한 처리 로직을 작성
+        if (!mealsOptional.isPresent()) { // 결과가 없는 경우
             return new GetMealResponse(mealDate);
         }
+
+        List<GetMealItem> mealItems = makeGetMealItems(mealsOptional.get());
+        return new GetMealResponse(mealDate, mealItems);
+    }
+
+    private List<GetMealItem> makeGetMealItems(List<Meal> meals) {
+        List<GetMealItem> mealItems = new ArrayList<>();
+        for (Meal meal : meals){
+            new GetMealItem(meal.getMealId(), meal.getMealType(), 100.0);
+        }
+        return mealItems;
     }
 }
