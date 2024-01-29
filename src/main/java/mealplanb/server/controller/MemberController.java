@@ -62,4 +62,19 @@ public class MemberController {
 
         return new BaseResponse<>(memberService.getAvatarResponse(memberId));
     }
+
+    /**
+     * 아바타 수정
+     */
+    @PatchMapping("/avatar")
+    public BaseResponse<PatchAvatarResponse> modifyAvatar (@Validated @RequestBody PatchAvatarRequest patchAvatarRequest, @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.modifyAvatar]");
+        // Authorization 헤더에서 JWT 토큰 추출
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+
+        // JWT 토큰에서 사용자 정보 추출
+        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+
+        return new BaseResponse<>(memberService.modifyAvatar(memberId,patchAvatarRequest));
+    }
 }
