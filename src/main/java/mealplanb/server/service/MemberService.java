@@ -32,7 +32,7 @@ public class MemberService {
     /**
      * 회원 가입
      */
-    public PostMemberResponse signUp(PostMemberRequest postUserRequest){
+    public PostMemberResponse signUp(PostMemberRequest postUserRequest) {
         log.info("[MemberService.signUp]");
         validateEmail(postUserRequest.getEmail()); // 이메일 유효성 검사
         Member member = createAndSaveMember(postUserRequest);
@@ -48,7 +48,7 @@ public class MemberService {
         int height = postMemberRequest.getHeight();
         double initialWeight = postMemberRequest.getInitialWeight();
         double targetWeight = postMemberRequest.getTargetWeight();
-        int recommendedKcal = calRecommendedKcal(memberSex,age,height, initialWeight, targetWeight);
+        int recommendedKcal = calRecommendedKcal(memberSex, age, height, initialWeight, targetWeight);
         int targetKcal = recommendedKcal;
         String dietType = postMemberRequest.getDietType();
 
@@ -116,40 +116,40 @@ public class MemberService {
 
     private int calRecommendedKcal(MemberSex sex, int age, int height, double initialWeight, double targetWeight) {
         // 기초 대사량 계산
-        int BMR = calBMR(sex,age,height,initialWeight);
-        log.info("[BMR 계산 결과 :{}] ",BMR);
+        int BMR = calBMR(sex, age, height, initialWeight);
+        log.info("[BMR 계산 결과 :{}] ", BMR);
         // 일일 칼로리 계산
-        int dailyKcal = (int)(BMR * 1.5);
-        log.info("[일일 칼로리 계산 결과 :{}] ",dailyKcal);
+        int dailyKcal = (int) (BMR * 1.5);
+        log.info("[일일 칼로리 계산 결과 :{}] ", dailyKcal);
         // 일일 목표 칼로리 섭취량 계산
         int targetKcal = 0;
-        if(initialWeight > targetWeight){ // 감량 하는 경우
+        if (initialWeight > targetWeight) { // 감량 하는 경우
             targetKcal = dailyKcal - 500;
-            log.info("[감량 타켓 칼로리 계산 결과 :{}] ",targetKcal);
+            log.info("[감량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         } else if (initialWeight < targetWeight) { // 증량하는 경우
             targetKcal = dailyKcal + 500;
-            log.info("[증량 타켓 칼로리 계산 결과 :{}] ",targetKcal);
+            log.info("[증량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         } else { // 같은 경우
             targetKcal = dailyKcal; // 현재 체중에 맞는 일일 칼로리 섭취량 추천
-            log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ",targetKcal);
+            log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         }
         return targetKcal;
     }
 
     private int calBMR(MemberSex sex, int age, int height, double initialWeight) {
         int BMR = 0;
-        if(sex == MemberSex.M){ // 남성인 경우
-            BMR = (int)(88.362 + (13.397 * initialWeight) + (4.799 * height) - (5.677 * age));
+        if (sex == MemberSex.M) { // 남성인 경우
+            BMR = (int) (88.362 + (13.397 * initialWeight) + (4.799 * height) - (5.677 * age));
             log.info("[남성 BMR : {}]", BMR);
         } else if (sex == MemberSex.F) { // 여성인 경우
-            BMR = (int)(447.593 + (9.247 * initialWeight) + (3.098 * height) - (4.330 * age));
+            BMR = (int) (447.593 + (9.247 * initialWeight) + (3.098 * height) - (4.330 * age));
             log.info("[여성 BMR : {}]", BMR);
         }
         return BMR;
     }
 
     private void validateEmail(String email) {
-        if(memberRepository.existsByEmail(email)){
+        if (memberRepository.existsByEmail(email)) {
             throw new MemberException(DUPLICATE_EMAIL);
         }
     }
@@ -157,47 +157,49 @@ public class MemberService {
     /**
      * 로그인
      */
-    public PostLoginResponse login(PostLoginRequest postLoginRequest){
+    public PostLoginResponse login(PostLoginRequest postLoginRequest) {
         log.info("[MemberService.login]");
         Long memberId = findMemberByEmail(postLoginRequest.getEmail());
         String encodedPassword = findEncodedPassword(memberId);
 
-        if(passwordEncoder.matches(postLoginRequest.getPassword(), encodedPassword)) {
+        if (passwordEncoder.matches(postLoginRequest.getPassword(), encodedPassword)) {
             String jwt = generateJwtToken(postLoginRequest.getEmail(), memberId);
             return new PostLoginResponse(memberId, jwt);
-        }else {
+        } else {
             throw new MemberException(PASSWORD_NO_MATCH);
         }
     }
 
     private String findEncodedPassword(Long memberId) {
         Optional<Member> passwordOptional = memberRepository.findById(memberId);
-        if(passwordOptional.isEmpty()){
+        if (passwordOptional.isEmpty()) {
             throw new MemberException(MEMBER_NOT_FOUND);
-        }else {
+        } else {
             return passwordOptional.get().getPassword(); // 패스워드 값 추출
         }
     }
 
     private Long findMemberByEmail(String email) {
         Optional<Member> memberIdOptional = memberRepository.findByEmail(email);
-        if(memberIdOptional.isEmpty()){
+        if (memberIdOptional.isEmpty()) {
             throw new MemberException(EMAIL_NOT_FOUND);
         } else {
             return memberIdOptional.get().getMemberId(); // Id 값 추출
         }
     }
 
-    private String generateJwtToken(String email, Long memberId){
+    private String generateJwtToken(String email, Long memberId) {
         String jwt = jwtProvider.createToken(email, memberId);
         return jwt;
     }
 
-    /** 아바타 정보 조회 */
+    /**
+     * 아바타 정보 조회
+     */
     @Transactional(readOnly = true)
-    public GetAvatarResponse getAvatarResponse(Long memberId){
+    public GetAvatarResponse getAvatarResponse(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
         String avatarAppearance = avatarService.calculateAvatarAppearance(member);
         return new GetAvatarResponse(avatarAppearance, member.getAvatarColor(), member.getNickname());
     }
@@ -218,5 +220,25 @@ public class MemberService {
         memberRepository.save(member);
 
         return new PatchAvatarResponse(memberId, nickname, avatarColor);
+    }
+
+    /**
+     * 아바타 외형 수정
+     */
+    public PatchAvatarAppearanceResponse modifyAvatarAppearance(Long memberId, PatchAvatarAppearanceRequest patchAvatarAppearanceRequest) {
+        log.info("[MemberService.modifyAvatarAppearance]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        int skeletalMuscleMass = patchAvatarAppearanceRequest.getSkeletalMuscleMass();
+        int bodyFatMass = patchAvatarAppearanceRequest.getFatMass();
+
+        member.setSkeletalMuscleMass(skeletalMuscleMass);
+        member.setBodyFatMass(bodyFatMass);
+
+        memberRepository.save(member);
+
+        return new PatchAvatarAppearanceResponse(avatarService.calculateAvatarAppearance(member));
+
     }
 }
