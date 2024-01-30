@@ -68,11 +68,21 @@ public class MemberController {
     }
 
     /**
+     * 아바타 수정
+     */
+    @PatchMapping("/avatar")
+    public BaseResponse<PatchAvatarResponse> modifyAvatar (@Validated @RequestBody PatchAvatarRequest patchAvatarRequest, @RequestHeader("Authorization") String authorization) {
+        log.info("[MemberController.modifyAvatar]");
+        Long memberId = extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyAvatar(memberId, patchAvatarRequest));
+    }
+
+    /**
      * 아바타 외형 수정
      */
     @PatchMapping("/avatar/appearance")
     public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
-                                                                              @RequestHeader("Authorization") String authorization){
+            @RequestHeader("Authorization") String authorization){
         log.info("[MemberController.modifyAvatarAppearance]");
         Long memberId = extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
