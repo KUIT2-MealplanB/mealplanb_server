@@ -66,6 +66,14 @@ public class JwtProvider {
                 .getBody().getSubject();
     }
 
+    public Long extractIdFromHeader(String authorization){
+        // Authorization 헤더에서 JWT 토큰 추출
+        String jwtToken = extractJwtToken(authorization);
+
+        // JWT 토큰에서 사용자 정보 추출
+        Long memberId = extractMemberIdFromJwtToken(jwtToken);
+        return memberId;
+    }
 
     public String extractJwtToken(String authorizationHeader) {
         String[] parts = authorizationHeader.split(" ");
@@ -85,5 +93,7 @@ public class JwtProvider {
 
         return memberId;
     }
+
+
 }
 
