@@ -24,7 +24,7 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
-    public Long extractTokenFromHeader(String authorization){
+    public Long extractIdFromHeader(String authorization){
         // Authorization 헤더에서 JWT 토큰 추출
         String jwtToken = jwtProvider.extractJwtToken(authorization);
 
@@ -63,12 +63,7 @@ public class MemberController {
     @GetMapping("/avatar")
     public BaseResponse<GetAvatarResponse> getAvatarInfo (@RequestHeader("Authorization") String authorization){
         log.info("[MemberController.getAvatarInfo]");
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
-
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
-
+        Long memberId = extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getAvatarResponse(memberId));
     }
 
@@ -79,7 +74,7 @@ public class MemberController {
     public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
                                                                               @RequestHeader("Authorization") String authorization){
         log.info("[MemberController.modifyAvatarAppearance]");
-        Long memberId = extractTokenFromHeader(authorization);
+        Long memberId = extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
     }
 }
