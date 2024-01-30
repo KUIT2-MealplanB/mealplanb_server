@@ -239,6 +239,27 @@ public class MemberService {
         memberRepository.save(member);
 
         return new PatchAvatarAppearanceResponse(avatarService.calculateAvatarAppearance(member));
-
     }
+
+    /**
+     * 사용자 목표 조회
+     */
+    @Transactional(readOnly = true)
+    public GetPlanResponse getMemberPlan(Long memberId){
+        log.info("[MemberService.getMemberPlan]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        double initialWeight = member.getInitialWeight();
+        double targetWeight = member.getTargetWeight();
+        String dietType = member.getDietType();
+        int recommendedKcal = member.getRecommendedKcal();
+        int carbohydrateRate = member.getCarbohydrateRate();
+        int proteinRate = member.getProteinRate();
+        int fatRate = member.getFatRate();
+        int targetKcal = member.getTargetKcal();
+
+        return new GetPlanResponse(initialWeight, targetWeight, dietType, recommendedKcal, carbohydrateRate, proteinRate, fatRate, targetKcal);
+    }
+
 }
