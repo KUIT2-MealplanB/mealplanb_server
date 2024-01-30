@@ -26,6 +26,23 @@ spring:
     init:
       platform: mysql
 
+  # JPA SQL 로그 및 파라미터 값 출력 설정
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comment: true
+        show_sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+
 ---
 
 spring:
