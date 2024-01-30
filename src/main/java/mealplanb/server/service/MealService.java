@@ -2,13 +2,16 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
+import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
+import mealplanb.server.dto.meal.PatchMealResponse;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.repository.MealRepository;
@@ -69,6 +72,18 @@ public class MealService {
             mealItems.add(getMealItem);
         }
         return mealItems;
+    }
+
+    public PatchMealResponse deleteMeal(long mealId, Long memberId) {
+        //해당 mealId, memberId를 가지는 Meal 데이터가 있는지 확인
+        Meal meal = mealRepository.findByMealIdAndMember_MemberId(mealId, memberId)
+                .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
+
+        // Meal의 상태를 업데이트하여 삭제 상태로 변경
+        meal.setStatus(BaseStatus.D);
+        Meal deletedMeal = mealRepository.save(meal);
+
+        return new PatchMealResponse(deletedMeal.getMealId(), deletedMeal.getStatus());
     }
 }
 

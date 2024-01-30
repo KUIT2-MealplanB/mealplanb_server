@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.meal.GetMealResponse;
+import mealplanb.server.dto.meal.PatchMealResponse;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.service.MealService;
@@ -44,5 +45,15 @@ public class MealController {
                                                      @RequestParam(name = "mealDate") LocalDate mealDate){
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<GetMealResponse>(mealService.getMealList(memberId, mealDate));
+    }
+
+    /**
+     *  끼니 삭제
+     */
+    @PatchMapping("/{mealId}")
+    public BaseResponse<PatchMealResponse> deleteMeal(@RequestHeader("Authorization") String authorization,
+                                                              @PathVariable long mealId){
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(mealService.deleteMeal(mealId, memberId));
     }
 }
