@@ -56,7 +56,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      * 7000: Meal 오류
      */
     INVALID_MEAL_VALUE(7000, HttpStatus.BAD_REQUEST.value(), "식단 요청에서 잘못된 값이 존재합니다."),
-    MEAL_NOT_FOUND(7001, HttpStatus.NOT_FOUND.value(), "식단을 찾을 수 없습니다.");
+    MEAL_NOT_FOUND(7001, HttpStatus.NOT_FOUND.value(), "식단을 찾을 수 없습니다."),
+    DUPLICATE_MEAL(7003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 식단입니다.");
 
     private final int code;
     private final int status;

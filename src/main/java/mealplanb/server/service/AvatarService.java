@@ -18,14 +18,15 @@ public class AvatarService {
      */
     public String calculateAvatarAppearance(Member member){
 
+        // 체중이 입력되지 않았을 경우, member의 초기 체중을 사용
         double bodyWeight = weightRepository.findTopByMemberOrderByWeightDateDesc(member)
                 .map(Weight::getWeight)
-                .orElseThrow(() -> new RuntimeException("해당 유저의 체중을 찾을 수 없습니다."));
+                .orElse(member.getInitialWeight());
 
         String gender = member.getSex().toString();
         int skeletalMuscleMass = member.getSkeletalMuscleMass();
         int bodyFatMass = member.getBodyFatMass();
-        String appearance = null;
+        String appearance = "normal";
 
         if("M".equals(gender)){ // 남성인 경우
             if(((bodyWeight*0.45)*1.1 <= skeletalMuscleMass) && bodyWeight*0.2 >= bodyFatMass){

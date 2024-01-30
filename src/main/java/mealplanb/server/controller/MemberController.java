@@ -24,6 +24,15 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
+    public Long extractIdFromHeader(String authorization){
+        // Authorization 헤더에서 JWT 토큰 추출
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+
+        // JWT 토큰에서 사용자 정보 추출
+        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+        return memberId;
+    }
+
     /**
      * 회원 가입
      */
@@ -54,12 +63,7 @@ public class MemberController {
     @GetMapping("/avatar")
     public BaseResponse<GetAvatarResponse> getAvatarInfo (@RequestHeader("Authorization") String authorization){
         log.info("[MemberController.getAvatarInfo]");
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
-
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
-
+        Long memberId = extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getAvatarResponse(memberId));
     }
 
@@ -67,14 +71,20 @@ public class MemberController {
      * 아바타 수정
      */
     @PatchMapping("/avatar")
-    public BaseResponse<PatchAvatarResponse> modifyAvatar (@Validated @RequestBody PatchAvatarRequest patchAvatarRequest, @RequestHeader("Authorization") String authorization){
+    public BaseResponse<PatchAvatarResponse> modifyAvatar (@Validated @RequestBody PatchAvatarRequest patchAvatarRequest, @RequestHeader("Authorization") String authorization) {
         log.info("[MemberController.modifyAvatar]");
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
+        Long memberId = extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyAvatar(memberId, patchAvatarRequest));
+    }
 
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
-
-        return new BaseResponse<>(memberService.modifyAvatar(memberId,patchAvatarRequest));
+    /**
+     * 아바타 외형 수정
+     */
+    @PatchMapping("/avatar/appearance")
+    public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
+            @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.modifyAvatarAppearance]");
+        Long memberId = extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
     }
 }
