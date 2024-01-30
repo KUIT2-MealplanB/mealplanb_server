@@ -24,15 +24,6 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
-    public Long extractIdFromHeader(String authorization){
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
-
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
-        return memberId;
-    }
-
     /**
      * 회원 가입
      */
@@ -63,7 +54,7 @@ public class MemberController {
     @GetMapping("/avatar")
     public BaseResponse<GetAvatarResponse> getAvatarInfo (@RequestHeader("Authorization") String authorization){
         log.info("[MemberController.getAvatarInfo]");
-        Long memberId = extractIdFromHeader(authorization);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getAvatarResponse(memberId));
     }
 
@@ -73,7 +64,7 @@ public class MemberController {
     @PatchMapping("/avatar")
     public BaseResponse<PatchAvatarResponse> modifyAvatar (@Validated @RequestBody PatchAvatarRequest patchAvatarRequest, @RequestHeader("Authorization") String authorization) {
         log.info("[MemberController.modifyAvatar]");
-        Long memberId = extractIdFromHeader(authorization);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatar(memberId, patchAvatarRequest));
     }
 
@@ -84,7 +75,7 @@ public class MemberController {
     public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
             @RequestHeader("Authorization") String authorization){
         log.info("[MemberController.modifyAvatarAppearance]");
-        Long memberId = extractIdFromHeader(authorization);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
     }
 }

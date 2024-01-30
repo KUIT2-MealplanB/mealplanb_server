@@ -32,12 +32,7 @@ public class MealController {
         if (bindingResult.hasErrors()) {
             throw new MealException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
-
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<PostMealResponse>(mealService.postMeal(memberId, postMealRequest));
     }
 
@@ -47,10 +42,7 @@ public class MealController {
     @GetMapping
     public BaseResponse<GetMealResponse> getMealList(@RequestHeader("Authorization") String authorization,
                                                      @RequestParam(name = "mealDate") LocalDate mealDate){
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<GetMealResponse>(mealService.getMealList(memberId, mealDate));
     }
 }
