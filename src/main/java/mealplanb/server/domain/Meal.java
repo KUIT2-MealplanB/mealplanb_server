@@ -1,11 +1,13 @@
 package mealplanb.server.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.meal.MealRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,4 +37,12 @@ public class Meal extends BaseTimeEntity {
     // Meal과 FoodMealMappingTable : 일대다 관계
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodMealMappingTable> foodMealMappingTables = new ArrayList<>();
+
+
+    public Meal(Member member, LocalDate mealDate, int mealType) {
+        this.member = member;
+        this.mealDate = mealDate;
+        this.mealType = mealType;
+        this.status = BaseStatus.A;
+    }
 }
