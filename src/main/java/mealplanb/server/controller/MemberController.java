@@ -78,4 +78,14 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
     }
+
+    /**
+     * 사용자 목표 조회
+     */
+    @GetMapping("/plan")
+    public BaseResponse<GetPlanResponse> getMemberPlan(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getMemberPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getMemberPlan(memberId));
+    }
 }
