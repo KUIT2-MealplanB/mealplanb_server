@@ -88,4 +88,15 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getMemberPlan(memberId));
     }
+
+    /**
+     * 사용자 목표 수정
+     */
+    @PatchMapping("/plan")
+    public BaseResponse<PatchPlanResponse> modifyMemberPlan(@Validated @RequestBody PatchPlanRequest patchPlanRequest,
+                                                            @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.modifyMemberPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyMemberPlan(memberId, patchPlanRequest));
+    }
 }
