@@ -17,9 +17,6 @@ public class PatchPlanRequest {
     @NotNull(message = "targetWeight: {NotNull}")
     private double targetWeight;
 
-    @NotNull(message = "dietType: {NotNull}")
-    private String dietType;
-
     @NotNull(message = "carbohydrateRate: {NotNull}")
     private int carbohydrateRate;
 
