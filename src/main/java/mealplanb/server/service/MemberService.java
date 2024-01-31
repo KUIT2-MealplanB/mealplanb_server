@@ -262,4 +262,43 @@ public class MemberService {
         return new GetPlanResponse(initialWeight, targetWeight, dietType, recommendedKcal, carbohydrateRate, proteinRate, fatRate, targetKcal);
     }
 
+    /**
+     * 사용자 목표 수정(체중, 탄단지 비율, 칼로리)
+     */
+    public PatchPlanResponse modifyMemberPlan(Long memberId, PatchPlanRequest patchPlanRequest){
+        log.info("[MemberService.modifyMemberPlan]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        double initialWeight = patchPlanRequest.getInitialWeight();
+        double targetWeight = patchPlanRequest.getTargetWeight();
+        // 입력받은 초기체중, 목표체중으로 다시 추천 칼로리 계산
+        int recommendedKcal = calRecommendedKcal(member.getSex(), member.getAge(), member.getHeight(), initialWeight, targetWeight);
+        int carbohydrateRate = patchPlanRequest.getCarbohydrateRate();
+        int proteinRate = patchPlanRequest.getProteinRate();
+        int fatRate = patchPlanRequest.getFatRate();
+        int targetKcal = patchPlanRequest.getTargetKcal();
+
+
+        checkNutrientRatio(carbohydrateRate, proteinRate, fatRate);
+
+        member.setInitialWeight(initialWeight);
+        member.setTargetWeight(targetWeight);
+        member.setRecommendedKcal(recommendedKcal);
+        member.setCarbohydrateRate(carbohydrateRate);
+        member.setProteinRate(proteinRate);
+        member.setFatRate(fatRate);
+        member.setTargetKcal(targetKcal);
+
+        memberRepository.save(member);
+        return new PatchPlanResponse(initialWeight, targetWeight, recommendedKcal, member.getDietType(),carbohydrateRate,proteinRate,fatRate,targetKcal);
+    }
+
+    public void checkNutrientRatio(int carbohydrateRate, int proteinRate, int fatRate){
+        int total = carbohydrateRate + proteinRate + fatRate;
+        if(total != 100){
+            throw new MemberException(RATIO_NOT_CORRECT);
+        }
+    }
+
 }
