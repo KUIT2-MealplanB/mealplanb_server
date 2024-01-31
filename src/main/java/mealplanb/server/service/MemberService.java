@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
@@ -280,7 +281,6 @@ public class MemberService {
         int fatRate = patchPlanRequest.getFatRate();
         int targetKcal = patchPlanRequest.getTargetKcal();
 
-
         checkNutrientRatio(carbohydrateRate, proteinRate, fatRate);
 
         member.setInitialWeight(initialWeight);
@@ -291,6 +291,8 @@ public class MemberService {
         member.setProteinRate(proteinRate);
         member.setFatRate(fatRate);
         member.setTargetKcal(targetKcal);
+        // 목표 수정되면 데이터베이스에서 target_updated_at 도 갱신
+        member.setTargetUpdatedAt(LocalDate.now());
 
         memberRepository.save(member);
         return new PatchPlanResponse(initialWeight, targetWeight, recommendedKcal, dietType ,carbohydrateRate,proteinRate,fatRate,targetKcal);
