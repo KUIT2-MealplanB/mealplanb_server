@@ -92,14 +92,14 @@ public class MemberService {
         int[] ratio = new int[3];
         switch (dietType) {
             case "일반", "비건" -> {
-                ratio[0] = 5;
-                ratio[1] = 3;
-                ratio[2] = 2;
+                ratio[0] = 50;
+                ratio[1] = 30;
+                ratio[2] = 20;
             }
             case "운동" -> {
-                ratio[0] = 4;
-                ratio[1] = 4;
-                ratio[2] = 2;
+                ratio[0] = 40;
+                ratio[1] = 40;
+                ratio[2] = 20;
             }
             case "키토" -> {
                 ratio[0] = 8;
