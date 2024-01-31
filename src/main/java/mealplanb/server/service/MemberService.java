@@ -272,6 +272,7 @@ public class MemberService {
 
         double initialWeight = patchPlanRequest.getInitialWeight();
         double targetWeight = patchPlanRequest.getTargetWeight();
+        String dietType = patchPlanRequest.getDietType();
         // 입력받은 초기체중, 목표체중으로 다시 추천 칼로리 계산
         int recommendedKcal = calRecommendedKcal(member.getSex(), member.getAge(), member.getHeight(), initialWeight, targetWeight);
         int carbohydrateRate = patchPlanRequest.getCarbohydrateRate();
@@ -284,6 +285,7 @@ public class MemberService {
 
         member.setInitialWeight(initialWeight);
         member.setTargetWeight(targetWeight);
+        member.setDietType(dietType);
         member.setRecommendedKcal(recommendedKcal);
         member.setCarbohydrateRate(carbohydrateRate);
         member.setProteinRate(proteinRate);
@@ -291,7 +293,7 @@ public class MemberService {
         member.setTargetKcal(targetKcal);
 
         memberRepository.save(member);
-        return new PatchPlanResponse(initialWeight, targetWeight, recommendedKcal, member.getDietType(),carbohydrateRate,proteinRate,fatRate,targetKcal);
+        return new PatchPlanResponse(initialWeight, targetWeight, recommendedKcal, dietType ,carbohydrateRate,proteinRate,fatRate,targetKcal);
     }
 
     public void checkNutrientRatio(int carbohydrateRate, int proteinRate, int fatRate){
