@@ -262,4 +262,22 @@ public class MemberService {
         return new GetPlanResponse(initialWeight, targetWeight, dietType, recommendedKcal, carbohydrateRate, proteinRate, fatRate, targetKcal);
     }
 
+    /**
+     * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
+     */
+    public GetDietTypeResponse getDietType(Long memberId, GetDietTypeRequest getDietTypeRequest){
+        log.info("[MemberService.getDietType]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        String dietType = getDietTypeRequest.getDietType();
+
+        int[] ratio = calculateRate(dietType);
+        int carbohydrateRate = ratio[0];
+        int proteinRate = ratio[1];
+        int fatRate = ratio[2];
+
+        return new GetDietTypeResponse(dietType, carbohydrateRate, proteinRate,fatRate);
+    }
+
 }
