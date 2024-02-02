@@ -80,8 +80,8 @@ public class MealService {
         Meal meal = mealRepository.findByMealIdAndMember_MemberId(mealId, memberId)
                 .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
 
-        // Meal의 상태를 업데이트하여 삭제 상태로 변경
-        meal.setStatus(BaseStatus.D);
+        meal.setStatus(BaseStatus.D); // Meal의 상태를 업데이트하여 삭제 상태로 변경
+        foodMealMappingTableService.deleteFoodMealMapping(mealId); // 해당 mealId를 갖는 FoodMealMappingTable의 상태를 업데이트하여 삭제 상태로 변경
         return new PatchMealResponse(meal.getMealId(), meal.getStatus());
     }
 }
