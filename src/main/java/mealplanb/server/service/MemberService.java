@@ -72,7 +72,6 @@ public class MemberService {
                 height,
                 initialWeight,
                 targetWeight,
-                recommendedKcal,// 추천 칼로리
                 targetKcal,// 타켓 칼로리 -> default 추천칼로리
                 dietType,
                 carbohydrateRate,// 식단에 따른 탄수화물 비율
@@ -254,7 +253,7 @@ public class MemberService {
         double initialWeight = member.getInitialWeight();
         double targetWeight = member.getTargetWeight();
         String dietType = member.getDietType();
-        int recommendedKcal = member.getRecommendedKcal();
+        int recommendedKcal = calRecommendedKcal(member.getSex(), member.getAge(), member.getHeight(), initialWeight, targetWeight);
         int carbohydrateRate = member.getCarbohydrateRate();
         int proteinRate = member.getProteinRate();
         int fatRate = member.getFatRate();
@@ -286,7 +285,6 @@ public class MemberService {
         member.setInitialWeight(initialWeight);
         member.setTargetWeight(targetWeight);
         member.setDietType(dietType);
-        member.setRecommendedKcal(recommendedKcal);
         member.setCarbohydrateRate(carbohydrateRate);
         member.setProteinRate(proteinRate);
         member.setFatRate(fatRate);
