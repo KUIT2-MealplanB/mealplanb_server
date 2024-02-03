@@ -99,4 +99,15 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyMemberPlan(memberId, patchPlanRequest));
     }
+
+    /**
+     * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
+     */
+    @GetMapping("/plan/diet-type")
+    public BaseResponse<GetDietTypeResponse> getDietType(@Validated @RequestBody GetDietTypeRequest getDietTypeRequest,
+                                                         @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getDietType]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getDietType(memberId, getDietTypeRequest));
+    }
 }
