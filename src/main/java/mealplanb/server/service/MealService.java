@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
+import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.GetMealResponse;
@@ -51,7 +52,7 @@ public class MealService {
     }
     public GetMealResponse getMealList(Long memberId, LocalDate mealDate) {
         log.info("[MealService.getMealList]");
-        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDate(memberId, mealDate);
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, mealDate, BaseStatus.A);
 
         if (mealsOptional.isEmpty()) { // 결과가 없는 경우
             log.info("[MealService.getMealList] - 만들어진 끼니 없음");
