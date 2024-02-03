@@ -19,7 +19,7 @@ public class MealTypeConverter {
         MEAL_TYPE_MAP.put(10, "열 끼");
     }
 
-    public static String convertMealType(int mealType) {
+    public static String convertMealTypeLabel(int mealType) {
         return MEAL_TYPE_MAP.getOrDefault(mealType, "값 없음");
     }
 }

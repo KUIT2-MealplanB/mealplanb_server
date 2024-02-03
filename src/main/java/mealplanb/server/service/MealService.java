@@ -67,7 +67,7 @@ public class MealService {
         log.info("[MealService.makeGetMealItems]");
         List<GetMealItem> mealItems = new ArrayList<>();
         for (Meal meal : meals){
-            GetMealItem getMealItem = new GetMealItem(meal.getMealId(), MealTypeConverter.convertMealType(meal.getMealType()), foodMealMappingTableService.getMealKcal(meal.getMealId()));
+            GetMealItem getMealItem = new GetMealItem(meal.getMealId(), meal.getMealType() ,MealTypeConverter.convertMealTypeLabel(meal.getMealType()), foodMealMappingTableService.getMealKcal(meal.getMealId()));
             mealItems.add(getMealItem);
         }
         return mealItems;
