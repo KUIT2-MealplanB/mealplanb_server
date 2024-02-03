@@ -45,8 +45,6 @@ public class Member extends BaseTimeEntity {
     private double initialWeight;
     @Column(name = "target_weight")
     private double targetWeight;
-    @Column(name = "recommended_kcal")
-    private int recommendedKcal;
     @Column(name = "target_kcal")
     private int targetKcal;
     @Column(name = "diet_type")
@@ -93,7 +91,7 @@ public class Member extends BaseTimeEntity {
     private List<FavoriteMeal> favoriteMeals = new ArrayList<>();
 
     public Member(String email, String password, MemberSex sex, int age, int height, double initialWeight, double targetWeight,
-                  int recommendedKcal, int targetKcal, String dietType, int carbohydrateRate, int proteinRate, int fatRate,
+                  int targetKcal, String dietType, int carbohydrateRate, int proteinRate, int fatRate,
                   String avatarColor, String nickname, int skeletalMuscleMass, int bodyFatMass, MemberStatus status) {
         this.email = email;
         this.password = password;
@@ -102,7 +100,6 @@ public class Member extends BaseTimeEntity {
         this.height = height;
         this.initialWeight = initialWeight;
         this.targetWeight = targetWeight;
-        this.recommendedKcal = recommendedKcal;
         this.targetKcal = targetKcal;
         this.dietType = dietType;
         this.carbohydrateRate = carbohydrateRate;
