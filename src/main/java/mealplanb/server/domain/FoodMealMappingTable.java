@@ -36,4 +36,13 @@ public class FoodMealMappingTable extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
+
+    public FoodMealMappingTable(Member member, Meal meal, Food food, int quantity, boolean isRecommended) {
+        this.member = member;
+        this.meal = meal;
+        this.food = food;
+        this.quantity = quantity;
+        this.isRecommended = isRecommended;
+        this.status = BaseStatus.A;
+    }
 }

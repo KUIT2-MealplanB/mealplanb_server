@@ -3,9 +3,7 @@ package mealplanb.server.controller;
 import lombok.RequiredArgsConstructor;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.response.BaseResponse;
-import mealplanb.server.dto.meal.GetMealResponse;
-import mealplanb.server.dto.meal.PostMealRequest;
-import mealplanb.server.dto.meal.PostMealResponse;
+import mealplanb.server.dto.meal.*;
 import mealplanb.server.service.MealService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -44,5 +42,16 @@ public class MealController {
                                                      @RequestParam(name = "mealDate") LocalDate mealDate){
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<GetMealResponse>(mealService.getMealList(memberId, mealDate));
+    }
+
+    /**
+     *  끼니의 식사 리스트 등록
+     */
+    @PostMapping("/food")
+    public BaseResponse<Void> postMealFood(@RequestHeader("Authorization") String authorization,
+                                                   @RequestBody PostMealFoodRequest postMealFoodRequest){
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        mealService.postMealFood(memberId, postMealFoodRequest);
+        return new BaseResponse<>(null);
     }
 }
