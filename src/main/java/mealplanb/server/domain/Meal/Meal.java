@@ -1,4 +1,4 @@
-package mealplanb.server.domain;
+package mealplanb.server.domain.Meal;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
+import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.MealRequest;
 

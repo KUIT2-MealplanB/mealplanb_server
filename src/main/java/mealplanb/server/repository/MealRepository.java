@@ -1,6 +1,6 @@
 package mealplanb.server.repository;
 
-import mealplanb.server.domain.Meal;
+import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 

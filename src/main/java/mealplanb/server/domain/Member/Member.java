@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import mealplanb.server.domain.*;
 import mealplanb.server.domain.Base.BaseTimeEntity;
+import mealplanb.server.domain.Meal.Meal;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
