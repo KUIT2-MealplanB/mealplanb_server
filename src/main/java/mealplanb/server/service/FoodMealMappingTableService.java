@@ -21,10 +21,11 @@ public class FoodMealMappingTableService {
      */
     public double getMealKcal(Long mealId) {
         log.info("[FoodMealMappingTableService.getMealKcal]");
-        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllById(Collections.singletonList(mealId));
+        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealId(mealId);
 
         double mealKcal = 0.0;
         for (FoodMealMappingTable item: foodsInMeal){
+            log.info("[FoodMealMappingTableService.getMealKcal] : mealId = {}, foodId = {}, foodKcalPer100 = {}, foodQauntity = {}", mealId, item.getFood().getFoodId(), item.getFood().getKcal(), item.getQuantity());
             double kcalPerGram = item.getFood().getKcal()/100;
             double foodKcal = item.getQuantity() * kcalPerGram;
             mealKcal += foodKcal;
