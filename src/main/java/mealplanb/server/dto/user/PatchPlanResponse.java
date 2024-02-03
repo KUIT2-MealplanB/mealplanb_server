@@ -12,6 +12,7 @@ public class PatchPlanResponse {
 
     private double initialWeight;
     private double targetWeight;
+    private int recommendedKcal;
     private String dietType;
     private int carbohydrateRate;
     private int proteinRate;
