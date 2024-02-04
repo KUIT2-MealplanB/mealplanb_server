@@ -21,8 +21,7 @@ public class GetMealResponse {
     @AllArgsConstructor
     public static class GetMealItem {
         private long mealId;
-        private int mealType;
-        private String mealTypeLabel;
+        private String mealType;
         private double mealKcal;
     }
 
