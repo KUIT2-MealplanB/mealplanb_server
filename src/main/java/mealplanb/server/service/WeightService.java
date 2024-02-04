@@ -56,7 +56,7 @@ public class WeightService {
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
         Optional<List<Weight>> dailyWeightsOptional = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A);
         List<WeightResponse> dailyWeights = makeDailyWeights(dailyWeightsOptional);
-        return new DailyWeightResponse(member.getDietType(), member.getInitialWeight()-member.getTargetWeight(), dailyWeights);
+        return new DailyWeightResponse(dailyWeights);
     }
 
     private List<WeightResponse> makeDailyWeights(Optional<List<Weight>> dailyWeightsOptional) {

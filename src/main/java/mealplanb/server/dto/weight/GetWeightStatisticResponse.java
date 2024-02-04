@@ -13,8 +13,6 @@ public class GetWeightStatisticResponse {
     @Getter
     @AllArgsConstructor
     public static class DailyWeightResponse{
-        private String dietType;
-        private double weightToLoss;
         private List<WeightResponse> dailyWeights;
     }
 
