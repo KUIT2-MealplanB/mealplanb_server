@@ -38,4 +38,10 @@ public class Weight extends BaseTimeEntity {
         this.weightDate = weightDate;
         this.status = status;
     }
+
+    public void updateFrom(Weight source) {
+        this.weight = source.weight;
+        this.weightDate = source.weightDate;
+        this.status = source.status;
+    }
 }
