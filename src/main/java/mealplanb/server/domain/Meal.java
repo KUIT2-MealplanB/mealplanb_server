@@ -44,4 +44,8 @@ public class Meal extends BaseTimeEntity {
         this.mealType = mealType;
         this.status = BaseStatus.A;
     }
+
+    public void reduceMealType() {
+        this.mealType = this.mealType - 1;
+    }
 }

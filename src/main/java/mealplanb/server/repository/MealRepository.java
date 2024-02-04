@@ -12,4 +12,5 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     boolean existsByMemberAndMealDateAndMealType(Member member, LocalDate mealDate, int mealType);
     Optional<List<Meal>> findByMember_MemberIdAndMealDate(Long memberId, LocalDate mealDate);
     Optional<Meal> findByMealIdAndMember_MemberId(long mealId, Long memberId);
+    Optional<List<Meal>> findAllByMealDateAndMemberAndMealTypeGreaterThan(LocalDate mealDate, Member member, int mealType);
 }

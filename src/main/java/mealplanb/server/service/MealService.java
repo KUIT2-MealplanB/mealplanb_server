@@ -82,7 +82,20 @@ public class MealService {
 
         meal.setStatus(BaseStatus.D); // Meal의 상태를 업데이트하여 삭제 상태로 변경
         foodMealMappingTableService.deleteFoodMealMapping(mealId); // 해당 mealId를 갖는 FoodMealMappingTable의 상태를 업데이트하여 삭제 상태로 변경
+
+        //삭제한 끼니 뒷 끼니들의 mealType =- 1
+        reduceLaterMealsMealType(meal);
+
         return new PatchMealResponse(meal.getMealId(), meal.getStatus());
+    }
+
+    private void reduceLaterMealsMealType(Meal deletedMeal) {
+        Optional<List<Meal>> laterMealsOptional = mealRepository.findAllByMealDateAndMemberAndMealTypeGreaterThan(
+                deletedMeal.getMealDate(),
+                deletedMeal.getMember(),
+                deletedMeal.getMealType()
+        );
+        laterMealsOptional.ifPresent(laterMeals -> laterMeals.forEach(Meal::reduceMealType));
     }
 }
 
