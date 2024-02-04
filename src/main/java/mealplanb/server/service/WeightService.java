@@ -96,7 +96,7 @@ public class WeightService {
                 .weightDate(date)
                 .build();
 
-        weightRepository.save(updatedWeight);
+        weight.updateFrom(updatedWeight);
 
         return new WeightResponse(weight.getWeight(), weight.getWeightDate());
     }
