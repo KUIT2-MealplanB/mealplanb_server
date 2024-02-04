@@ -31,7 +31,7 @@ public class Weight extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
 
-    @Builder
+    @Builder(toBuilder = true)
     public Weight(Member member, double weight, LocalDate weightDate, BaseStatus status) {
         this.member = member;
         this.weight = weight;
