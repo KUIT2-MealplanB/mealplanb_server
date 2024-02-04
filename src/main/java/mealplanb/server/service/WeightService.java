@@ -60,11 +60,12 @@ public class WeightService {
         double todayWeight = weightRequest.getWeight();
         LocalDate date = weightRequest.getDate();
 
-        Weight weight = new Weight();
-        weight.setMember(member);
-        weight.setWeight(todayWeight);
-        weight.setWeightDate(date);
-        weight.setStatus(BaseStatus.A);
+        Weight weight = Weight.builder()
+                .member(member)
+                .weight(todayWeight)
+                .weightDate(date)
+                .status(BaseStatus.A)
+                .build();
 
         weightRepository.save(weight);
 
