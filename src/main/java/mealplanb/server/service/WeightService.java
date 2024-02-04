@@ -2,14 +2,21 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.MemberException;
+import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
+import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Weight;
+import mealplanb.server.dto.weight.GetWeightStatisticResponse.DailyWeightResponse;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.repository.WeightRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -39,5 +46,29 @@ public class WeightService {
         });
 
         return new WeightResponse(recentWeight, date);
+    }
+
+    /**
+     * 체중 일간 조회
+     */
+    public DailyWeightResponse getDailyWeight(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+        Optional<List<Weight>> dailyWeightsOptional = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A);
+        List<WeightResponse> dailyWeights = makeDailyWeights(dailyWeightsOptional);
+        return new DailyWeightResponse(member.getDietType(), member.getInitialWeight()-member.getTargetWeight(), dailyWeights);
+    }
+
+    private List<WeightResponse> makeDailyWeights(Optional<List<Weight>> dailyWeightsOptional) {
+        /** Optional<List<Weight>> => List<WeightResponse> */
+        log.info("[WeightService.makeDailyWeight]");
+        List<Weight> dailyWeights = dailyWeightsOptional.orElse(Collections.emptyList());
+        List<WeightResponse> weightResponseList = new ArrayList<>(); // 반환값
+
+        for (Weight weight : dailyWeights){
+            WeightResponse weightResponse = new WeightResponse(weight.getWeight(), weight.getWeightDate());
+            weightResponseList.add(weightResponse);
+        }
+        return weightResponseList;
     }
 }

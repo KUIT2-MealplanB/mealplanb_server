@@ -13,9 +13,9 @@ public class GetWeightStatisticResponse {
     @Getter
     @AllArgsConstructor
     public static class DailyWeightResponse{
-        private List<WeightResponse> dailyWeights;
         private String dietType;
-        private double goalWeight;
+        private double weightToLoss;
+        private List<WeightResponse> dailyWeights;
     }
 
     /** 체중 주간 조회 */
