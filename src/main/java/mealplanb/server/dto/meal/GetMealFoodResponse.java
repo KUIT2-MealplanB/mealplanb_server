@@ -10,18 +10,17 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class MealResponse {
-    /** 끼니에 식사 등록, 조회, 수정의 response */
+public class GetMealFoodResponse {
+    /** 끼니의 식사 리스트 조회 response */
     private long mealId;
     private LocalDate mealDate;
     private int mealType;
-    private List<MealItemDetail> meals;
-    private double totalKcal;
+    private List<FoodInfo> foodList;
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class MealItemDetail {
+    public static class FoodInfo {
         private long foodId;
         private int quantity;
         private String name;

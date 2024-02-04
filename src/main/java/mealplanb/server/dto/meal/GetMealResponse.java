@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class GetMealResponse {
+    /** 홈화면 (끼니 기록 조회) response */
     private LocalDate mealDate;
     private List<GetMealItem> meals;
 
