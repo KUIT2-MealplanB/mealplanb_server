@@ -39,4 +39,15 @@ public class WeightController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(weightService.postWeight(memberId, weightRequest));
     }
+
+    /**
+     * 체중 수정
+     */
+    @PatchMapping("")
+    public BaseResponse<WeightResponse> modifyWeight(@Validated @RequestBody WeightRequest weightRequest,
+                                                     @RequestHeader("Authorization") String authorization){
+        log.info("[WeightController.modifyWeight]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(weightService.modifyWeight(memberId, weightRequest));
+    }
 }
