@@ -38,7 +38,7 @@ public class MealController {
     }
 
     /**
-     *  끼니 기록 조회 (홈화면)ㅎ
+     *  끼니 기록 조회 (홈화면)
      */
     @GetMapping
     public BaseResponse<GetMealResponse> getMealList(@RequestHeader("Authorization") String authorization,

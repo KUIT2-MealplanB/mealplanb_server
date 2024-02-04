@@ -17,13 +17,11 @@ public class GetMealFoodResponse {
     private int mealType;
     private List<FoodInfo> foodList;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
+    @AllArgsConstructor
     public static class FoodInfo {
         private long foodId;
         private int quantity;
         private String name;
-        private int kcal;
+        private double kcal;
     }
 }
