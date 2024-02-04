@@ -78,4 +78,36 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
     }
+
+    /**
+     * 사용자 목표 조회
+     */
+    @GetMapping("/plan")
+    public BaseResponse<GetPlanResponse> getMemberPlan(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getMemberPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getMemberPlan(memberId));
+    }
+
+    /**
+     * 사용자 목표 수정
+     */
+    @PatchMapping("/plan")
+    public BaseResponse<PatchPlanResponse> modifyMemberPlan(@Validated @RequestBody PatchPlanRequest patchPlanRequest,
+                                                            @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.modifyMemberPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyMemberPlan(memberId, patchPlanRequest));
+    }
+
+    /**
+     * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
+     */
+    @GetMapping("/plan/diet-type")
+    public BaseResponse<GetDietTypeResponse> getDietType(@Validated @RequestBody GetDietTypeRequest getDietTypeRequest,
+                                                         @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getDietType]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getDietType(memberId, getDietTypeRequest));
+    }
 }

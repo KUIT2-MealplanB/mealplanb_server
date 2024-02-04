@@ -2,10 +2,11 @@ package mealplanb.server.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.dto.meal.MealRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
 package mealplanb.server.repository;
 
+import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal;
 import mealplanb.server.domain.Member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,5 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     Optional<List<Meal>> findByMember_MemberIdAndMealDate(Long memberId, LocalDate mealDate);
     Optional<Meal> findByMealIdAndMember_MemberId(long mealId, Long memberId);
     Optional<List<Meal>> findAllByMealDateAndMemberAndMealTypeGreaterThan(LocalDate mealDate, Member member, int mealType);
+    Optional<Meal> findByMealIdAndStatus(Long mealId, BaseStatus status);
 }

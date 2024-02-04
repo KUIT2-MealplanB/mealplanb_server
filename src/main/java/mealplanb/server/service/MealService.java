@@ -8,7 +8,7 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.dto.meal.GetMealResponse;
+import mealplanb.server.dto.meal.*;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.PatchMealResponse;
 import mealplanb.server.dto.meal.PostMealRequest;
@@ -96,6 +96,23 @@ public class MealService {
                 deletedMeal.getMealType()
         );
         laterMealsOptional.ifPresent(laterMeals -> laterMeals.forEach(Meal::reduceMealType));
+    }
+
+    public void postMealFood(Long memberId, PostMealFoodRequest postMealFoodRequest) {
+        log.info("[MealService.postMealFood]");
+
+        //해당 mealId를 갖는 status가 A인 Meal이 존재하는 지
+        Meal meal = mealRepository.findByMealIdAndStatus(postMealFoodRequest.getMealId(), BaseStatus.A)
+                .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
+
+        //해당 Meal의 memberId가 요청을 보낸 멤버의 아이디와 동일한지
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+        if (!meal.getMember().equals(member)) {
+            throw new MealException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
+        }
+
+        foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods());
     }
 }
 
