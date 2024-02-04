@@ -3,6 +3,7 @@ package mealplanb.server.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
+import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberStatus;
@@ -12,11 +13,13 @@ import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.repository.WeightRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
+import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.WEIGHT_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -68,6 +71,32 @@ public class WeightService {
                 .build();
 
         weightRepository.save(weight);
+
+        return new WeightResponse(weight.getWeight(), weight.getWeightDate());
+    }
+
+    /**
+     * 체중 수정
+     */
+    @Transactional
+    public WeightResponse modifyWeight(Long memberId, WeightRequest weightRequest){
+        log.info("[WeightService.modifyWeight]");
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        double todayWeight = weightRequest.getWeight();
+        LocalDate date = weightRequest.getDate();
+
+        Weight weight = weightRepository.findByMemberAndWeightDate(member,date)
+                .orElseThrow(()-> new WeightException(WEIGHT_NOT_FOUND));
+
+        Weight updatedWeight = weight.toBuilder()
+                .weight(todayWeight)
+                .weightDate(date)
+                .build();
+
+        weightRepository.save(updatedWeight);
 
         return new WeightResponse(weight.getWeight(), weight.getWeightDate());
     }
