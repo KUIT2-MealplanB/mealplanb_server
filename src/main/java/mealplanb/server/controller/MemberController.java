@@ -24,15 +24,6 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
-    public Long extractIdFromHeader(String authorization){
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtProvider.extractJwtToken(authorization);
-
-        // JWT 토큰에서 사용자 정보 추출
-        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
-        return memberId;
-    }
-
     /**
      * 회원 가입
      */
@@ -63,7 +54,7 @@ public class MemberController {
     @GetMapping("/avatar")
     public BaseResponse<GetAvatarResponse> getAvatarInfo (@RequestHeader("Authorization") String authorization){
         log.info("[MemberController.getAvatarInfo]");
-        Long memberId = extractIdFromHeader(authorization);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getAvatarResponse(memberId));
     }
 
@@ -73,7 +64,7 @@ public class MemberController {
     @PatchMapping("/avatar")
     public BaseResponse<PatchAvatarResponse> modifyAvatar (@Validated @RequestBody PatchAvatarRequest patchAvatarRequest, @RequestHeader("Authorization") String authorization) {
         log.info("[MemberController.modifyAvatar]");
-        Long memberId = extractIdFromHeader(authorization);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatar(memberId, patchAvatarRequest));
     }
 
@@ -84,7 +75,39 @@ public class MemberController {
     public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
             @RequestHeader("Authorization") String authorization){
         log.info("[MemberController.modifyAvatarAppearance]");
-        Long memberId = extractIdFromHeader(authorization);
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
+    }
+
+    /**
+     * 사용자 목표 조회
+     */
+    @GetMapping("/plan")
+    public BaseResponse<GetPlanResponse> getMemberPlan(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getMemberPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getMemberPlan(memberId));
+    }
+
+    /**
+     * 사용자 목표 수정
+     */
+    @PatchMapping("/plan")
+    public BaseResponse<PatchPlanResponse> modifyMemberPlan(@Validated @RequestBody PatchPlanRequest patchPlanRequest,
+                                                            @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.modifyMemberPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.modifyMemberPlan(memberId, patchPlanRequest));
+    }
+
+    /**
+     * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
+     */
+    @GetMapping("/plan/diet-type")
+    public BaseResponse<GetDietTypeResponse> getDietType(@Validated @RequestBody GetDietTypeRequest getDietTypeRequest,
+                                                         @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getDietType]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getDietType(memberId, getDietTypeRequest));
     }
 }
