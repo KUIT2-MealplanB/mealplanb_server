@@ -6,10 +6,13 @@ import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.domain.Meal;
+import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.*;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
+import mealplanb.server.dto.meal.MealTypeConverter;
+import mealplanb.server.dto.meal.PostMealRequest;
+import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -47,11 +50,12 @@ public class MealService {
             throw new MealException(BaseExceptionResponseStatus.DUPLICATE_MEAL);
         }
     }
+
     public GetMealResponse getMealList(Long memberId, LocalDate mealDate) {
         log.info("[MealService.getMealList]");
-        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDate(memberId, mealDate);
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, mealDate, BaseStatus.A);
 
-        if (!mealsOptional.isPresent()) { // 결과가 없는 경우
+        if (mealsOptional.isEmpty()) { // 결과가 없는 경우
             log.info("[MealService.getMealList] - 만들어진 끼니 없음");
             return new GetMealResponse(mealDate);
         }
@@ -64,7 +68,7 @@ public class MealService {
         log.info("[MealService.makeGetMealItems]");
         List<GetMealItem> mealItems = new ArrayList<>();
         for (Meal meal : meals){
-            GetMealItem getMealItem = new GetMealItem(meal.getMealId(), meal.getMealType(), foodMealMappingTableService.getMealKcal(meal.getMealId()));
+            GetMealItem getMealItem = new GetMealItem(meal.getMealId() ,MealTypeConverter.convertMealTypeLabel(meal.getMealType()), foodMealMappingTableService.getMealKcal(meal.getMealId()));
             mealItems.add(getMealItem);
         }
         return mealItems;

@@ -6,18 +6,14 @@ import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Food;
 import mealplanb.server.domain.FoodMealMappingTable;
-import mealplanb.server.domain.Meal;
+import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.dto.meal.MealResponse;
-import mealplanb.server.dto.meal.PostMealFoodRequest;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 
@@ -33,10 +29,11 @@ public class FoodMealMappingTableService {
      */
     public double getMealKcal(Long mealId) {
         log.info("[FoodMealMappingTableService.getMealKcal]");
-        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllById(Collections.singletonList(mealId));
+        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealId(mealId);
 
         double mealKcal = 0.0;
         for (FoodMealMappingTable item: foodsInMeal){
+            log.info("[FoodMealMappingTableService.getMealKcal] : mealId = {}, foodId = {}, foodKcalPer100 = {}, foodQauntity = {}", mealId, item.getFood().getFoodId(), item.getFood().getKcal(), item.getQuantity());
             double kcalPerGram = item.getFood().getKcal()/100;
             double foodKcal = item.getQuantity() * kcalPerGram;
             mealKcal += foodKcal;
