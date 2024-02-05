@@ -1,7 +1,9 @@
 package mealplanb.server.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Food;
@@ -11,7 +13,6 @@ import mealplanb.server.domain.Member.Member;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,18 @@ public class FoodMealMappingTableService {
     }
 
     /**
+     * 끼니 삭제 시, 해당 끼니에 연결되어있는 식품 정보의 status -> D로 변경
+     */
+    @Transactional
+    public void deleteFoodMealMapping(Long mealId){
+        log.info("[FoodMealMappingTableService.deleteFoodMealMapping]");
+        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealId(mealId);
+        for (FoodMealMappingTable item: foodsInMeal){
+            item.setStatus(BaseStatus.D);
+        }
+    }
+
+    /**
      * 해당 끼니에 식사 리스트 등록
      */
     @Transactional
@@ -54,4 +67,5 @@ public class FoodMealMappingTableService {
             foodMealMappingTableRepository.save(foodMealMappingTable);
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package mealplanb.server.domain.Meal;
 
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
@@ -30,6 +31,7 @@ public class Meal extends BaseTimeEntity {
     private int mealType;
     private LocalDate mealDate;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
 
@@ -43,5 +45,9 @@ public class Meal extends BaseTimeEntity {
         this.mealDate = mealDate;
         this.mealType = mealType;
         this.status = BaseStatus.A;
+    }
+
+    public void reduceMealType() {
+        this.mealType = this.mealType - 1;
     }
 }

@@ -13,9 +13,13 @@ import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.MealTypeConverter;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
+import mealplanb.server.dto.meal.PatchMealResponse;
+import mealplanb.server.dto.meal.PostMealRequest;
+import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +35,9 @@ public class MealService {
     private final MemberRepository memberRepository;
     private final FoodMealMappingTableService foodMealMappingTableService;
 
+    /**
+     *  끼니 등록
+     */
     public PostMealResponse postMeal(Long memberId, PostMealRequest mealRequest) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
@@ -51,6 +58,9 @@ public class MealService {
         }
     }
 
+    /**
+     *  끼니 기록 조회(홈화면)
+     */
     public GetMealResponse getMealList(Long memberId, LocalDate mealDate) {
         log.info("[MealService.getMealList]");
         Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, mealDate, BaseStatus.A);
@@ -74,6 +84,37 @@ public class MealService {
         return mealItems;
     }
 
+    /**
+     *  끼니 삭제
+     */
+    @Transactional
+    public PatchMealResponse deleteMeal(long mealId, Long memberId) {
+        //해당 mealId, memberId를 가지는 Meal 데이터가 있는지 확인
+        Meal meal = mealRepository.findByMealIdAndMember_MemberId(mealId, memberId)
+                .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
+
+        meal.setStatus(BaseStatus.D); // Meal의 상태를 업데이트하여 삭제 상태로 변경
+        foodMealMappingTableService.deleteFoodMealMapping(mealId); // 해당 mealId를 갖는 FoodMealMappingTable의 상태를 업데이트하여 삭제 상태로 변경
+        reduceLaterMealsMealType(meal); //삭제한 끼니 뒷 끼니들의 mealType =- 1
+
+        return new PatchMealResponse(meal.getMealId(), meal.getStatus());
+    }
+
+    /**
+     *  삭제한 끼니 뒷 끼니들의 mealType =- 1
+     */
+    private void reduceLaterMealsMealType(Meal deletedMeal) {
+        Optional<List<Meal>> laterMealsOptional = mealRepository.findAllByMealDateAndMemberAndMealTypeGreaterThan(
+                deletedMeal.getMealDate(),
+                deletedMeal.getMember(),
+                deletedMeal.getMealType()
+        );
+        laterMealsOptional.ifPresent(laterMeals -> laterMeals.forEach(Meal::reduceMealType));
+    }
+
+    /**
+     *  끼니의 식사리스트 등록
+     */
     public void postMealFood(Long memberId, PostMealFoodRequest postMealFoodRequest) {
         log.info("[MealService.postMealFood]");
 
