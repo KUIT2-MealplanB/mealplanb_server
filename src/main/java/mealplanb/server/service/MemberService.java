@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 
+import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberSex;
 import mealplanb.server.domain.Member.MemberStatus;
-import mealplanb.server.dto.user.*;
+import mealplanb.server.dto.member.*;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -117,21 +118,23 @@ public class MemberService {
     private int calRecommendedKcal(MemberSex sex, int age, int height, double initialWeight, double targetWeight) {
         // 기초 대사량 계산
         int BMR = calBMR(sex, age, height, initialWeight);
-        log.info("[BMR 계산 결과 :{}] ", BMR);
+        //log.info("[BMR 계산 결과 :{}] ", BMR);
+
         // 일일 칼로리 계산
         int dailyKcal = (int) (BMR * 1.5);
-        log.info("[일일 칼로리 계산 결과 :{}] ", dailyKcal);
+        //log.info("[일일 칼로리 계산 결과 :{}] ", dailyKcal);
+
         // 일일 목표 칼로리 섭취량 계산
         int targetKcal = 0;
         if (initialWeight > targetWeight) { // 감량 하는 경우
             targetKcal = dailyKcal - 500;
-            log.info("[감량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
+            //log.info("[감량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         } else if (initialWeight < targetWeight) { // 증량하는 경우
             targetKcal = dailyKcal + 500;
-            log.info("[증량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
+            //log.info("[증량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         } else { // 같은 경우
             targetKcal = dailyKcal; // 현재 체중에 맞는 일일 칼로리 섭취량 추천
-            log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ", targetKcal);
+            //log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         }
         return targetKcal;
     }
@@ -319,6 +322,25 @@ public class MemberService {
         int fatRate = ratio[2];
 
         return new GetDietTypeResponse(dietType, carbohydrateRate, proteinRate,fatRate);
+    }
+
+    /**
+     * 사용자 목표 조회 (권장 칼로리 반환)
+     */
+    public GetRecommendedKcalResponse getRecommendedKcal(Long memberId, GetRecommendedKcalRequest getRecommendedKcalRequest){
+        log.info("[MemberService.getRecommendedKcal]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        MemberSex sex = member.getSex();
+        int age = member.getAge();
+        int height = member.getHeight();
+        double initialWeight = getRecommendedKcalRequest.getInitialWeight();
+        double targetWeight = getRecommendedKcalRequest.getTargetWeight();
+
+        int recommendedKcal = calRecommendedKcal(sex, age, height, initialWeight, targetWeight);
+
+        return new GetRecommendedKcalResponse(recommendedKcal);
     }
 
 }
