@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
-import mealplanb.server.dto.user.*;
+import mealplanb.server.dto.member.*;
 import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -109,5 +109,16 @@ public class MemberController {
         log.info("[MemberController.getDietType]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getDietType(memberId, getDietTypeRequest));
+    }
+
+    /**
+     * 사용자 목표 조회 (권장 칼로리 반환)
+     */
+    @GetMapping("/plan/recommended-kcal")
+    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@Validated @RequestBody GetRecommendedKcalRequest getRecommendedKcalRequest,
+                                                                       @RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.getRecommendedKcal]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getRecommendedKcal(memberId,getRecommendedKcalRequest));
     }
 }
