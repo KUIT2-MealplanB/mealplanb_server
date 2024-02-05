@@ -10,9 +10,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostWeightRequest {
+public class WeightRequest {
 
-    /** 체중 등록 */
+    /**
+     * 체중 등록, 체중 수정
+     */
     @NotNull(message = "weight: {NotNull}")
     private double weight;
 

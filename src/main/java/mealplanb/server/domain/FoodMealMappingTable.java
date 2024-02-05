@@ -2,9 +2,12 @@ package mealplanb.server.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
+import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -34,6 +37,16 @@ public class FoodMealMappingTable extends BaseTimeEntity {
     private int quantity;
     private boolean isRecommended;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
+
+    public FoodMealMappingTable(Member member, Meal meal, Food food, int quantity, boolean isRecommended) {
+        this.member = member;
+        this.meal = meal;
+        this.food = food;
+        this.quantity = quantity;
+        this.isRecommended = isRecommended;
+        this.status = BaseStatus.A;
+    }
 }
