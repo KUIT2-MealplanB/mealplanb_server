@@ -9,14 +9,16 @@ import java.util.List;
 
 public class GetWeightStatisticResponse {
 
-    /** 체중 일간 조회 */
+    /** 체중 일간, 월간, 주간 조회 */
     @Getter
     @AllArgsConstructor
-    public static class DailyWeightResponse{
-        private List<WeightResponse> dailyWeights;
+    public static class WeightsStatisticResponse{
+        private String statisticType;
+        private String startDate;
+        private List<WeightResponse> weights;
     }
 
-    /** 체중 주간 조회 */
+/*    *//** 체중 주간 조회 *//*
     @Getter
     @AllArgsConstructor
     public static class WeeklyWeight{
@@ -34,7 +36,7 @@ public class GetWeightStatisticResponse {
         private double goalWeight;
     }
 
-    /** 체중 월간 조회 */
+    *//** 체중 월간 조회 *//*
     @Getter
     @AllArgsConstructor
     public static class MonthlyWeight{
@@ -49,6 +51,6 @@ public class GetWeightStatisticResponse {
         private List<MonthlyWeight> monthlyWeights;
         private String dietType;
         private double goalWeight;
-    }
+    }*/
 
 }
