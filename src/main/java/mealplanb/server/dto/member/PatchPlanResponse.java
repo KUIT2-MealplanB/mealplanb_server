@@ -1,17 +1,18 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GetDietTypeResponse {
+public class PatchPlanResponse {
 
-    /**
-     * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
-     */
+    private double initialWeight;
+    private double targetWeight;
+    private int recommendedKcal;
     private String dietType;
     private int carbohydrateRate;
     private int proteinRate;
     private int fatRate;
+    private int targetKcal;
 }

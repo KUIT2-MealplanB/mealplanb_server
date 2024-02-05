@@ -1,10 +1,9 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.member;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import mealplanb.server.domain.Member.MemberSex;
 
 @Getter
 @Setter

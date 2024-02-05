@@ -1,4 +1,4 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.member;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

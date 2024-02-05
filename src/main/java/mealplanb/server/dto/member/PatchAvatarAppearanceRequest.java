@@ -1,6 +1,5 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.member;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
