@@ -2,14 +2,11 @@ package mealplanb.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mealplanb.server.common.exception.BadRequestException;
 import mealplanb.server.common.exception.WeightException;
-import mealplanb.server.common.response.BaseErrorResponse;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
+import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeightsStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse.DailyWeightResponse;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.service.WeightService;
 import mealplanb.server.util.jwt.JwtProvider;
@@ -65,8 +62,8 @@ public class WeightController {
      * 체중 일간, 주간, 월간 조회
      */
     @GetMapping("/{statisticType}")
-    public BaseResponse<DailyWeightResponse> getDailyWeight(@RequestHeader("Authorization") String authorization,
-                                                            @RequestParam(name = "statisticType") String statisticType) {
+    public BaseResponse<WeightsStatisticResponse> getDailyWeight(@RequestHeader("Authorization") String authorization,
+                                                                 @PathVariable String statisticType) {
         log.info("[WeightController.getDailyWeight]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
 
@@ -74,9 +71,9 @@ public class WeightController {
             case "daily":
                 return new BaseResponse<>(weightService.getDailyWeight(memberId));
             case "weekly":
-                return new BaseResponse<>(weightService.getWeeklyWeight(memberId));
+                return new BaseResponse<>(weightService.getDailyWeight(memberId));
             case "monthly":
-                return new BaseResponse<>(weightService.getMonthlyWeight(memberId));
+                return new BaseResponse<>(weightService.getDailyWeight(memberId));
             default:
                 // 지원하지 않는 통계 타입인 경우 예외처리
                 throw new WeightException(BaseExceptionResponseStatus.UNSUPPORTED_STATISTIC_TYPE);

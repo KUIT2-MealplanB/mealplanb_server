@@ -14,7 +14,7 @@ public class GetWeightStatisticResponse {
     @AllArgsConstructor
     public static class WeightsStatisticResponse{
         private String statisticType;
-        private String startDate;
+        private LocalDate startDate;
         private List<WeightResponse> weights;
     }
 

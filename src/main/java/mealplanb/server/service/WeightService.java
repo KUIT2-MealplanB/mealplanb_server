@@ -5,13 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.exception.WeightException;
-import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.domain.Member.MemberStatus;
 import mealplanb.server.domain.Weight;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse.DailyWeightResponse;
+import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeightsStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.repository.MemberRepository;
@@ -111,12 +108,12 @@ public class WeightService {
     /**
      * 체중 일간 조회
      */
-    public DailyWeightResponse getDailyWeight(Long memberId) {
+    public WeightsStatisticResponse getDailyWeight(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
         Optional<List<Weight>> dailyWeightsOptional = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A);
         List<WeightResponse> dailyWeights = makeDailyWeights(dailyWeightsOptional);
-        return new DailyWeightResponse(dailyWeights);
+        return new WeightsStatisticResponse("daily", member.getCreatedAt().toLocalDate(), dailyWeights);
     }
 
     private List<WeightResponse> makeDailyWeights(Optional<List<Weight>> dailyWeightsOptional) {
