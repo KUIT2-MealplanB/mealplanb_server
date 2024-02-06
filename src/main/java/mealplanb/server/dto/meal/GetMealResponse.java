@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mealplanb.server.domain.Meal;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class GetMealResponse {
     @AllArgsConstructor
     public static class GetMealItem {
         private long mealId;
-        private int mealType;
+        private String mealType;
         private double mealKcal;
     }
 

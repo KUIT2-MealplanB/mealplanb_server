@@ -7,8 +7,6 @@ import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.food.GetFoodResponse;
 import mealplanb.server.dto.food.PostNewFoodRequest;
 import mealplanb.server.dto.food.PostNewFoodResponse;
-import mealplanb.server.dto.user.PostMemberRequest;
-import mealplanb.server.dto.user.PostMemberResponse;
 import mealplanb.server.service.FoodService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;

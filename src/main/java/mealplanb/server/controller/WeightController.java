@@ -3,13 +3,12 @@ package mealplanb.server.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.service.WeightService;
 import mealplanb.server.util.jwt.JwtProvider;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -28,5 +27,27 @@ public class WeightController {
         log.info("[WeightController.getTodayWeight]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(weightService.getTodayWeight(memberId));
+    }
+
+    /**
+     * 체중 등록
+     */
+    @PostMapping("")
+    public BaseResponse<WeightResponse> postWeight(@Validated @RequestBody WeightRequest weightRequest,
+                                                   @RequestHeader("Authorization") String authorization){
+        log.info("[WeightController.postWeight]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(weightService.postWeight(memberId, weightRequest));
+    }
+
+    /**
+     * 체중 수정
+     */
+    @PatchMapping("")
+    public BaseResponse<WeightResponse> modifyWeight(@Validated @RequestBody WeightRequest weightRequest,
+                                                     @RequestHeader("Authorization") String authorization){
+        log.info("[WeightController.modifyWeight]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(weightService.modifyWeight(memberId, weightRequest));
     }
 }

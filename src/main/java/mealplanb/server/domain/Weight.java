@@ -1,6 +1,7 @@
 package mealplanb.server.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
@@ -29,4 +30,18 @@ public class Weight extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
+
+    @Builder(toBuilder = true)
+    public Weight(Member member, double weight, LocalDate weightDate, BaseStatus status) {
+        this.member = member;
+        this.weight = weight;
+        this.weightDate = weightDate;
+        this.status = status;
+    }
+
+    public void updateFrom(Weight source) {
+        this.weight = source.weight;
+        this.weightDate = source.weightDate;
+        this.status = source.status;
+    }
 }
