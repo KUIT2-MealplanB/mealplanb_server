@@ -8,7 +8,7 @@ import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Weight;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeightsStatisticResponse;
+import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeightStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.repository.MemberRepository;
@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.WEIGHT_NOT_FOUND;
@@ -108,24 +110,33 @@ public class WeightService {
     /**
      * 체중 일간 조회
      */
-    public WeightsStatisticResponse getDailyWeight(Long memberId) {
+    public WeightStatisticResponse getDailyWeight(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
-        Optional<List<Weight>> dailyWeightsOptional = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A);
-        List<WeightResponse> dailyWeights = makeDailyWeights(dailyWeightsOptional);
-        return new WeightsStatisticResponse("daily", member.getCreatedAt().toLocalDate(), dailyWeights);
+
+        LocalDate startDate = member.getCreatedAt().toLocalDate();
+        LocalDate endDate = LocalDate.now();
+
+        List<WeightResponse> result = createEmptyWeightResponses(startDate, endDate);
+        weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A)
+                .ifPresent(weights -> updateWeightResponses(result, weights));
+
+        return new WeightStatisticResponse("daily", result);
     }
 
-    private List<WeightResponse> makeDailyWeights(Optional<List<Weight>> dailyWeightsOptional) {
-        /** Optional<List<Weight>> => List<WeightResponse> */
-        log.info("[WeightService.makeDailyWeight]");
-        List<Weight> dailyWeights = dailyWeightsOptional.orElse(Collections.emptyList());
-        List<WeightResponse> weightResponseList = new ArrayList<>(); // 반환값
-
-        for (Weight weight : dailyWeights){
-            WeightResponse weightResponse = new WeightResponse(weight.getWeight(), weight.getWeightDate());
-            weightResponseList.add(weightResponse);
-        }
-        return weightResponseList;
+    private List<WeightResponse> createEmptyWeightResponses(LocalDate startDate, LocalDate endDate) {
+        return startDate.datesUntil(endDate.plusDays(1))
+                .map(date -> new WeightResponse(0.0, date))
+                .collect(Collectors.toList());
     }
+
+    private void updateWeightResponses(List<WeightResponse> result, List<Weight> weights) {
+        weights.forEach(weight -> {
+            int index = (int) ChronoUnit.DAYS.between(result.get(0).getDate(), weight.getWeightDate());
+            if (index >= 0 && index < result.size()) {
+                result.set(index, new WeightResponse(weight.getWeight(), weight.getWeightDate()));
+            }
+        });
+    }
+
 }
