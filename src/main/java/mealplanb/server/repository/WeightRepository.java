@@ -36,9 +36,21 @@ public interface WeightRepository extends JpaRepository<Weight, Long> {
             "weekStartDate ASC", nativeQuery = true)
     Optional<List<WeeklyWeightNativeVo>> findWeeklyWeights(@Param("memberId") Long memberId, @Param("status") BaseStatus status);
 
+    @Query(value = "SELECT AVG(w.weight) AS monthAverageWeight, " +
+            "DATE_FORMAT(w.weight_date, '%Y-%m') AS month " +
+            "FROM weight w " +
+            "WHERE w.member_id = :memberId AND w.status = :#{#status.name()} " +
+            "GROUP BY month",  nativeQuery = true)
+    Optional<List<MonthlyWeightNativeVo>> findMonthlyWeights(@Param("memberId")Long memberId, @Param("status") BaseStatus a);
+
     interface WeeklyWeightNativeVo {
         Double getWeekAverageWeight();
         String getWeekStartDate();
         String getWeekEndDate();
+    }
+
+    interface MonthlyWeightNativeVo{
+        Double getMonthAverageWeight();
+        String getMonth();
     }
 }

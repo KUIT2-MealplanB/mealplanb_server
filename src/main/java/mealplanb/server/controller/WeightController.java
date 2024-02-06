@@ -78,6 +78,9 @@ public class WeightController {
             case "weekly":
                 statisticResponse = weightService.getWeeklyWeight(memberId);
                 break;
+            case "monthly":
+                statisticResponse = weightService.getMonthlyWeight(memberId);
+                break;
             default:
                 throw new WeightException(BaseExceptionResponseStatus.UNSUPPORTED_STATISTIC_TYPE);
         }

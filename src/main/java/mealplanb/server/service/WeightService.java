@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.WEIGHT_NOT_FOUND;
+import static mealplanb.server.dto.weight.GetWeightStatisticResponse.*;
+import static mealplanb.server.repository.WeightRepository.*;
 
 @Slf4j
 @Service
@@ -156,8 +159,7 @@ public class WeightService {
 
         List<WeeklyWeight> result = createWeeklyEmptyWeightResponses(startDate, endDate);
         weightRepository.findWeeklyWeights(member.getMemberId(), BaseStatus.A)
-                .ifPresent(weights -> updateWeeklyWeightResponses(result, weights)
-                         );
+                .ifPresent(weights -> updateWeeklyWeightResponses(result, weights));
 
         return new WeightStatisticResponse("weekly", result);
     }
@@ -189,6 +191,51 @@ public class WeightService {
             int index = (int) ChronoUnit.WEEKS.between(result.get(0).getWeekStartDate(), LocalDate.parse(weight.getWeekStartDate()));
             if (index >= 0 && index < result.size()) {
                 result.set(index, new WeeklyWeight(weight.getWeekAverageWeight(), LocalDate.parse(weight.getWeekStartDate()), LocalDate.parse(weight.getWeekEndDate())));
+            }
+        });
+    }
+
+    /**
+     * 체중 월간 조회
+     */
+    public WeightStatisticResponse getMonthlyWeight(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        LocalDate startDate = member.getCreatedAt().toLocalDate();
+        LocalDate endDate = LocalDate.now();
+
+        List<MonthlyWeight> result = createMonthlyEmptyWeightResponses(startDate, endDate);
+        weightRepository.findMonthlyWeights(member.getMemberId(), BaseStatus.A)
+                .ifPresent(weights -> updateMonthlyWeightResponses(result, weights));
+
+        return new WeightStatisticResponse("monthly", result);
+    }
+
+    private List<MonthlyWeight> createMonthlyEmptyWeightResponses(LocalDate startDate, LocalDate endDate) {
+        List<MonthlyWeight> monthlyWeights = new ArrayList<>();
+
+        // startDate의 년도와 월 정보 가져오기
+        YearMonth currentMonth = YearMonth.from(startDate);
+
+        while (!currentMonth.isAfter(YearMonth.from(endDate))) {
+
+            MonthlyWeight monthlyWeight = new MonthlyWeight(0.0, currentMonth);
+            monthlyWeights.add(monthlyWeight);
+
+            // 다음 달로 이동
+            currentMonth = currentMonth.plusMonths(1);
+        }
+
+        return monthlyWeights;
+    }
+
+    private void updateMonthlyWeightResponses(List<MonthlyWeight> result, List<MonthlyWeightNativeVo> weights) {
+        weights.forEach(weight -> {
+            log.info("month_average_weight = {}, month = {}, week_end_date = {}", weight.getMonthAverageWeight(), weight.getMonth());
+            int index = (int) ChronoUnit.MONTHS.between(result.get(0).getMonth(), YearMonth.parse(weight.getMonth()));
+            if (index >= 0 && index < result.size()) {
+                result.set(index, new MonthlyWeight(weight.getMonthAverageWeight(), YearMonth.parse(weight.getMonth())));
             }
         });
     }

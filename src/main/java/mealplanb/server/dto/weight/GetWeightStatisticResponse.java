@@ -29,7 +29,7 @@ public class GetWeightStatisticResponse {
         private LocalDate weekEndDate;
     }
 
-    /** 체중 주간 조회의 weights */
+    /** 체중 월간 조회의 weights */
     @Getter
     @AllArgsConstructor
     public static class MonthlyWeight{
