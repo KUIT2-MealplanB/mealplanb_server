@@ -3,14 +3,10 @@ package mealplanb.server.repository;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Weight;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeeklyWeight;
-import mealplanb.server.dto.weight.WeightResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Optional;
