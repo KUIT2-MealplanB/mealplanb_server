@@ -17,6 +17,7 @@ public class GetMealFoodResponse {
     private int mealType;
     private List<FoodInfo> foodList;
 
+    @Getter
     @AllArgsConstructor
     public static class FoodInfo {
         private long foodId;
