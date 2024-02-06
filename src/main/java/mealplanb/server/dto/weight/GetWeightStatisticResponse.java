@@ -23,8 +23,8 @@ public class GetWeightStatisticResponse {
     /** 체중 주간 조회의 weights */
     @Getter
     @AllArgsConstructor
-    public class WeeklyWeight {
-        private double averageWeight;
+    public static class WeeklyWeight {
+        private double weekAverageWeight;
         private LocalDate weekStartDate;
         private LocalDate weekEndDate;
     }
@@ -33,7 +33,7 @@ public class GetWeightStatisticResponse {
     @Getter
     @AllArgsConstructor
     public static class MonthlyWeight{
-        private double averageWeight;
+        private double monthAverageWeight;
         private YearMonth month;
     }
 

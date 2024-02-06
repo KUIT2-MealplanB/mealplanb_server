@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.dto.weight.GetWeightStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
@@ -68,6 +69,19 @@ public class WeightController {
         log.info("[WeightController.getWeightStatistic]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
 
-        return new BaseResponse<>(weightService.getDailyWeight(memberId));
+        WeightStatisticResponse statisticResponse;
+
+        switch (statisticType) {
+            case "daily":
+                statisticResponse = weightService.getDailyWeight(memberId);
+                break;
+            case "weekly":
+                statisticResponse = weightService.getWeeklyWeight(memberId);
+                break;
+            default:
+                throw new WeightException(BaseExceptionResponseStatus.UNSUPPORTED_STATISTIC_TYPE);
+        }
+
+        return new BaseResponse<>(statisticResponse);
     }
 }
