@@ -16,6 +16,7 @@ public class GetProfileResponse {
     private LocalDate date;
     private int elapsedDays;
     private int remainingKcal;
+    private String nickname;
     private String avatarColor;
     private String avatarAppearance;
     private Goal goal;
@@ -24,6 +25,7 @@ public class GetProfileResponse {
     @Getter
     @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class Goal{
 
         private int targetKcal;
@@ -35,6 +37,7 @@ public class GetProfileResponse {
     @Getter
     @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class Intake{
 
         private int kcal;

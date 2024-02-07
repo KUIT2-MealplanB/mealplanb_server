@@ -11,6 +11,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
 import static mealplanb.server.util.BindingResultUtils.getErrorMessages;
@@ -120,5 +122,14 @@ public class MemberController {
         log.info("[MemberController.getRecommendedKcal]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getRecommendedKcal(memberId,getRecommendedKcalRequest));
+     * 홈화면 현재 날짜, 목표 경과일, 남은 칼로리 조회, 아바타, 목표 칼로리 및 잔여 칼로리, 탄단지 기타 영양소 조회
+     */
+    
+    @GetMapping("/profile")
+    public BaseResponse<GetProfileResponse> getMemberProfile(@RequestHeader("Authorization") String authorization,
+                                                             @RequestParam(name = "mealDate") LocalDate mealDate){
+        log.info("[MemberController.getMemberProfile]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(memberService.getMemberProfile(memberId, mealDate));
     }
 }
