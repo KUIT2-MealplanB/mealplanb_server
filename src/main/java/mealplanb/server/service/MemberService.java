@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 
-import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberSex;
 import mealplanb.server.domain.Member.MemberStatus;
@@ -12,7 +11,7 @@ import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food;
 import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.domain.Meal.Meal;
-import mealplanb.server.dto.user.*;
+import mealplanb.server.dto.member.*;
 import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
