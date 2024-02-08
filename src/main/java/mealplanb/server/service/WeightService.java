@@ -24,6 +24,7 @@ import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -120,29 +121,40 @@ public class WeightService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
-        LocalDate startDate = member.getCreatedAt().toLocalDate();
-        LocalDate endDate = LocalDate.now();
+        List<Weight> weights = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A)
+                .orElse(Collections.emptyList());
 
-        List<WeightResponse> result = createDailyEmptyWeightResponses(startDate, endDate);
-        weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A)
-                .ifPresent(weights -> updateDailyWeightResponses(result, weights));
+        List<WeightResponse> result = new ArrayList<>(); // 리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); // 시작일자
+        LocalDate endDate = LocalDate.now(); // 종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeDailyWeightList(result, weights, startDate, endDate, initialWeight);
 
         return new WeightStatisticResponse("daily", result);
     }
 
-    private List<WeightResponse> createDailyEmptyWeightResponses(LocalDate startDate, LocalDate endDate) {
-        return startDate.datesUntil(endDate.plusDays(1))
-                .map(date -> new WeightResponse(0.0, date))
-                .collect(Collectors.toList());
-    }
+    private void makeDailyWeightList(List<WeightResponse> result, List<Weight> weights, LocalDate date, LocalDate endDate, double weightValue) {
+        int index = 0;
+        LocalDate dataWeightDate = weights.get(index).getWeightDate();
 
-    private void updateDailyWeightResponses(List<WeightResponse> result, List<Weight> weights) {
-        weights.forEach(weight -> {
-            int index = (int) ChronoUnit.DAYS.between(result.get(0).getDate(), weight.getWeightDate());
-            if (index >= 0 && index < result.size()) {
-                result.set(index, new WeightResponse(weight.getWeight(), weight.getWeightDate()));
+        // startDate부터 endDate까지 각 날짜에 대해 처리
+        while (!date.isAfter(endDate)) {
+
+            if (date.equals(dataWeightDate)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightDate = weights.get(index).getWeightDate();
+                }
             }
-        });
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new WeightResponse(weightValue, date));
+
+            // 다음 날짜로 이동.
+            date = date.plusDays(1);
+        }
     }
 
     /**
