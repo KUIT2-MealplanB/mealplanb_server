@@ -243,7 +243,7 @@ public class WeightService {
             // 해당 날짜의 체중을 DailyWeightEntry로 추가.
             result.add(new MonthlyWeight(weightValue, currentMonth));
 
-            // 다음 달로 이동.
+            // 다음 달로 이동
             currentMonth = currentMonth.plusMonths(1);
         }
     }
