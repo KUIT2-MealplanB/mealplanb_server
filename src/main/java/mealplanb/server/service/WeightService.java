@@ -8,7 +8,6 @@ import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Weight;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse;
 import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeeklyWeight;
 import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeightStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
@@ -122,29 +121,40 @@ public class WeightService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
-        LocalDate startDate = member.getCreatedAt().toLocalDate();
-        LocalDate endDate = LocalDate.now();
+        List<Weight> weights = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A)
+                .orElse(Collections.emptyList());
 
-        List<WeightResponse> result = createDailyEmptyWeightResponses(startDate, endDate);
-        weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A)
-                .ifPresent(weights -> updateDailyWeightResponses(result, weights));
+        List<WeightResponse> result = new ArrayList<>(); // 리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); // 시작일자
+        LocalDate endDate = LocalDate.now(); // 종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeDailyWeightList(result, weights, startDate, endDate, initialWeight);
 
         return new WeightStatisticResponse("daily", result);
     }
 
-    private List<WeightResponse> createDailyEmptyWeightResponses(LocalDate startDate, LocalDate endDate) {
-        return startDate.datesUntil(endDate.plusDays(1))
-                .map(date -> new WeightResponse(0.0, date))
-                .collect(Collectors.toList());
-    }
+    private void makeDailyWeightList(List<WeightResponse> result, List<Weight> weights, LocalDate date, LocalDate endDate, double weightValue) {
+        int index = 0;
+        LocalDate dataWeightDate = weights.get(index).getWeightDate();
 
-    private void updateDailyWeightResponses(List<WeightResponse> result, List<Weight> weights) {
-        weights.forEach(weight -> {
-            int index = (int) ChronoUnit.DAYS.between(result.get(0).getDate(), weight.getWeightDate());
-            if (index >= 0 && index < result.size()) {
-                result.set(index, new WeightResponse(weight.getWeight(), weight.getWeightDate()));
+        // startDate부터 endDate까지 각 날짜에 대해 처리
+        while (!date.isAfter(endDate)) {
+
+            if (date.equals(dataWeightDate)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightDate = weights.get(index).getWeightDate();
+                }
             }
-        });
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new WeightResponse(weightValue, date));
+
+            // 다음 날짜로 이동.
+            date = date.plusDays(1);
+        }
     }
 
     /**
@@ -154,45 +164,40 @@ public class WeightService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
-        LocalDate startDate = member.getCreatedAt().toLocalDate();
-        LocalDate endDate = LocalDate.now();
+        List<WeeklyWeightNativeVo> weights = weightRepository.findWeeklyWeights(member.getMemberId(), BaseStatus.A)
+                .orElse(Collections.emptyList());
 
-        List<WeeklyWeight> result = createWeeklyEmptyWeightResponses(startDate, endDate);
-        weightRepository.findWeeklyWeights(member.getMemberId(), BaseStatus.A)
-                .ifPresent(weights -> updateWeeklyWeightResponses(result, weights));
+        List<WeeklyWeight> result = new ArrayList<>(); //리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); //시작일자
+        LocalDate endDate = LocalDate.now(); //종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeWeeklyWeightList(result, weights, startDate, endDate, initialWeight);
 
         return new WeightStatisticResponse("weekly", result);
     }
 
-    private List<WeeklyWeight> createWeeklyEmptyWeightResponses(LocalDate startDay, LocalDate endDay) {
-        List<WeeklyWeight> weeklyWeights = new ArrayList<>();
+    private void makeWeeklyWeightList(List<WeeklyWeight> result, List<WeeklyWeightNativeVo> weights, LocalDate date, LocalDate endDate, double weightValue) {
+        int index = 0;
+        LocalDate dataWeightWeekStartDate = LocalDate.parse(weights.get(index).getWeekStartDate());
 
-        // 주의 시작을 월요일로 설정
-        LocalDate monday = startDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        // startDate부터 endDate까지 각 날짜에 대해 처리
+        while (!date.isAfter(endDate)) {
 
-        while (monday.isBefore(endDay) || monday.isEqual(endDay)) {
-            // 주의 첫 날과 마지막 날 계산
-            LocalDate weekStartDate = monday;
-            LocalDate weekEndDate = monday.plusDays(6);
-
-            WeeklyWeight weeklyWeight = new WeeklyWeight(0.0, weekStartDate, weekEndDate);
-            weeklyWeights.add(weeklyWeight);
-
-            // 다음 주의 월요일로 이동
-            monday = monday.plusWeeks(1);
-        }
-
-        return weeklyWeights;
-    }
-
-    private void updateWeeklyWeightResponses(List<WeeklyWeight> result, List<WeeklyWeightNativeVo> weights) {
-        weights.forEach(weight -> {
-            log.info("week_average_weight = {}, week_start_date = {}, week_end_date = {}", weight.getWeekAverageWeight(), weight.getWeekStartDate(), weight.getWeekEndDate());
-            int index = (int) ChronoUnit.WEEKS.between(result.get(0).getWeekStartDate(), LocalDate.parse(weight.getWeekStartDate()));
-            if (index >= 0 && index < result.size()) {
-                result.set(index, new WeeklyWeight(weight.getWeekAverageWeight(), LocalDate.parse(weight.getWeekStartDate()), LocalDate.parse(weight.getWeekEndDate())));
+            if (date.equals(dataWeightWeekStartDate)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getWeekAverageWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightWeekStartDate = LocalDate.parse(weights.get(index).getWeekStartDate());
+                }
             }
-        });
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new WeeklyWeight(weightValue, date, date.plusDays(6)));
+
+            // 다음 주로 이동.
+            date = date.plusWeeks(1);
+        }
     }
 
     /**
@@ -202,41 +207,44 @@ public class WeightService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
-        LocalDate startDate = member.getCreatedAt().toLocalDate();
-        LocalDate endDate = LocalDate.now();
+        List<MonthlyWeightNativeVo> weights = weightRepository.findMonthlyWeights(member.getMemberId(), BaseStatus.A)
+                .orElse(Collections.emptyList());
 
-        List<MonthlyWeight> result = createMonthlyEmptyWeightResponses(startDate, endDate);
-        weightRepository.findMonthlyWeights(member.getMemberId(), BaseStatus.A)
-                .ifPresent(weights -> updateMonthlyWeightResponses(result, weights));
+        List<MonthlyWeight> result = new ArrayList<>(); //리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); //시작일자
+        LocalDate endDate = LocalDate.now(); //종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeMonthlyWeightList(result, weights, startDate, endDate, initialWeight);
 
         return new WeightStatisticResponse("monthly", result);
     }
 
-    private List<MonthlyWeight> createMonthlyEmptyWeightResponses(LocalDate startDate, LocalDate endDate) {
-        List<MonthlyWeight> monthlyWeights = new ArrayList<>();
+    private void makeMonthlyWeightList(List<MonthlyWeight> result, List<MonthlyWeightNativeVo> weights, LocalDate startDate, LocalDate endDate, double weightValue) {
+        int index = 0;
 
         // startDate의 년도와 월 정보 가져오기
         YearMonth currentMonth = YearMonth.from(startDate);
+        YearMonth endMonth = YearMonth.from(endDate);
+        YearMonth dataWeightMonth = YearMonth.parse(weights.get(index).getMonth());
 
-        while (!currentMonth.isAfter(YearMonth.from(endDate))) {
+        // startDate부터 endDate까지 각 월에 대해 처리
+        while (!currentMonth.isAfter(endMonth)) {
 
-            MonthlyWeight monthlyWeight = new MonthlyWeight(0.0, currentMonth);
-            monthlyWeights.add(monthlyWeight);
+            //log.info("currentMonth = {} , endMonth = {}", currentMonth, endMonth);
+            if (currentMonth.equals(dataWeightMonth)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getMonthAverageWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightMonth = YearMonth.parse(weights.get(index).getMonth());
+                }
+            }
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new MonthlyWeight(weightValue, currentMonth));
 
             // 다음 달로 이동
             currentMonth = currentMonth.plusMonths(1);
         }
-
-        return monthlyWeights;
-    }
-
-    private void updateMonthlyWeightResponses(List<MonthlyWeight> result, List<MonthlyWeightNativeVo> weights) {
-        weights.forEach(weight -> {
-            log.info("month_average_weight = {}, month = {}, week_end_date = {}", weight.getMonthAverageWeight(), weight.getMonth());
-            int index = (int) ChronoUnit.MONTHS.between(result.get(0).getMonth(), YearMonth.parse(weight.getMonth()));
-            if (index >= 0 && index < result.size()) {
-                result.set(index, new MonthlyWeight(weight.getMonthAverageWeight(), YearMonth.parse(weight.getMonth())));
-            }
-        });
     }
 }
