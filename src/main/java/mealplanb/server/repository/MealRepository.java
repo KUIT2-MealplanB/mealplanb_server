@@ -33,16 +33,30 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
             "COUNT(DISTINCT meal_date) AS daysInWeek, " +
             "GROUP_CONCAT(meal_id) AS mealIds " +
             "FROM meal " +
-            "WHERE member_id = ?1 AND status = 'A' " +
+            "WHERE member_id = :memberId AND status = 'A' " +
             "GROUP BY WEEK(meal_date)", nativeQuery = true)
     Optional<List<WeeklyKcalNativeVo>> findWeeklyKcal(@Param("memberId")Long memberId);
 
     interface WeeklyKcalNativeVo {
         String getWeekStartDate();
         String getWeekEndDate();
-        Long getDaysInWeek();
+        Integer getDaysInWeek();
         String getMealIds();
     }
 
+    @Query(value = "SELECT " +
+            "DATE_FORMAT(meal_date, '%Y-%m') as month, " +
+            "COUNT(DISTINCT meal_date) AS daysInMonth, " +
+            "GROUP_CONCAT(meal_id) AS mealIds " +
+            "FROM meal " +
+            "WHERE member_id = :memberId AND status = 'A' " +
+            "GROUP BY month", nativeQuery = true)
+    Optional<List<MonthlyKcalNativeVo>> findMonthlyKcal(@Param("memberId")Long memberId);
+
+    interface MonthlyKcalNativeVo {
+        String getMonth();
+        Integer getDaysInMonth();
+        String getMealIds();
+    }
 
 }

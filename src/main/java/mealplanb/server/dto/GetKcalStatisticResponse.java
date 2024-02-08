@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Getter
@@ -30,6 +31,16 @@ public class GetKcalStatisticResponse {
     public static class WeeklyKcal{
         private LocalDate weekStartDate;
         private LocalDate weekEndDate;
+        private int kcal;
+        private int carbohydrate;
+        private int protein;
+        private int fat;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class MonthlyKcal{
+        private YearMonth month;
         private int kcal;
         private int carbohydrate;
         private int protein;

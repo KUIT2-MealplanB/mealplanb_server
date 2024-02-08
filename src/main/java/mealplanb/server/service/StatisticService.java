@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -133,10 +134,67 @@ public class StatisticService {
                             .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
                     meals.add(meal);
                 }
-                int kcal = (int) (memberService.calculateIntakeKcal(meals) / week.getDaysInWeek());
+                int kcal = memberService.calculateIntakeKcal(meals) / week.getDaysInWeek();
                 int[] nutrient = memberService.calculateNutrient(meals);
                 result.set(index, new WeeklyKcal(LocalDate.parse(week.getWeekStartDate()), LocalDate.parse(week.getWeekEndDate()), kcal,
-                        (int) (nutrient[0]/week.getDaysInWeek()), (int) (nutrient[1]/week.getDaysInWeek()), (int) (nutrient[2]/week.getDaysInWeek())));
+                        nutrient[0]/week.getDaysInWeek(), nutrient[1]/week.getDaysInWeek(), nutrient[2]/week.getDaysInWeek()));
+            }
+        });
+    }
+
+    /**
+     *  칼로리 월간 조회
+     */
+    public GetKcalStatisticResponse getMonthlyKcals(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        LocalDate startDate = member.getCreatedAt().toLocalDate();
+        LocalDate endDate = LocalDate.now();
+
+        List<MonthlyKcal> result = createMonthlyEmptyKcalResponses(startDate, endDate);
+        mealRepository.findMonthlyKcal(memberId)
+                .ifPresent(kcals -> updateMonthlyKcalResponses(result, kcals));
+
+        return new GetKcalStatisticResponse("monthly", result);
+    }
+
+    private List<MonthlyKcal> createMonthlyEmptyKcalResponses(LocalDate startDate, LocalDate endDate) {
+        List<MonthlyKcal> monthlyKcals = new ArrayList<>();
+
+        // startDate의 년도와 월 정보 가져오기
+        YearMonth currentMonth = YearMonth.from(startDate);
+
+        while (!currentMonth.isAfter(YearMonth.from(endDate))) {
+
+            MonthlyKcal monthlyKcal = new MonthlyKcal(currentMonth, 0, 0, 0, 0);
+            monthlyKcals.add(monthlyKcal);
+
+            // 다음 달로 이동
+            currentMonth = currentMonth.plusMonths(1);
+        }
+
+        return monthlyKcals;
+    }
+
+    private void updateMonthlyKcalResponses(List<MonthlyKcal> result, List<MonthlyKcalNativeVo> kcals) {
+        kcals.forEach(month -> {
+            int index = (int) ChronoUnit.MONTHS.between(result.get(0).getMonth(), YearMonth.parse(month.getMonth()));
+            if (index >= 0 && index < result.size()) {
+                String mealIds = month.getMealIds();
+                String[] mealIdsArray = mealIds.split(","); // 쉼표로 구분된 문자열을 배열로 분할
+
+                List<Meal> meals = new ArrayList<>();
+                for (String mealIdStr : mealIdsArray) {
+                    Long mealId = Long.parseLong(mealIdStr.trim()); // 문자열을 Long으로 변환
+                    Meal meal = mealRepository.findByMealIdAndStatus(mealId, BaseStatus.A)
+                            .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
+                    meals.add(meal);
+                }
+                int kcal = memberService.calculateIntakeKcal(meals) / month.getDaysInMonth();
+                int[] nutrient = memberService.calculateNutrient(meals);
+                result.set(index, new MonthlyKcal(YearMonth.parse(month.getMonth()), kcal,
+                        nutrient[0]/month.getDaysInMonth(), nutrient[1]/month.getDaysInMonth(), nutrient[2]/month.getDaysInMonth()));
             }
         });
     }
