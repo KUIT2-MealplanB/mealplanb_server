@@ -164,45 +164,40 @@ public class WeightService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
-        LocalDate startDate = member.getCreatedAt().toLocalDate();
-        LocalDate endDate = LocalDate.now();
+        List<WeeklyWeightNativeVo> weights = weightRepository.findWeeklyWeights(member.getMemberId(), BaseStatus.A)
+                .orElse(Collections.emptyList());
 
-        List<WeeklyWeight> result = createWeeklyEmptyWeightResponses(startDate, endDate);
-        weightRepository.findWeeklyWeights(member.getMemberId(), BaseStatus.A)
-                .ifPresent(weights -> updateWeeklyWeightResponses(result, weights));
+        List<WeeklyWeight> result = new ArrayList<>(); //리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); //시작일자
+        LocalDate endDate = LocalDate.now(); //종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeWeeklyWeightList(result, weights, startDate, endDate, initialWeight);
 
         return new WeightStatisticResponse("weekly", result);
     }
 
-    private List<WeeklyWeight> createWeeklyEmptyWeightResponses(LocalDate startDay, LocalDate endDay) {
-        List<WeeklyWeight> weeklyWeights = new ArrayList<>();
+    private void makeWeeklyWeightList(List<WeeklyWeight> result, List<WeeklyWeightNativeVo> weights, LocalDate date, LocalDate endDate, double weightValue) {
+        int index = 0;
+        LocalDate dataWeightWeekStartDate = LocalDate.parse(weights.get(index).getWeekStartDate());
 
-        // 주의 시작을 월요일로 설정
-        LocalDate monday = startDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        // startDate부터 endDate까지 각 날짜에 대해 처리
+        while (!date.isAfter(endDate)) {
 
-        while (monday.isBefore(endDay) || monday.isEqual(endDay)) {
-            // 주의 첫 날과 마지막 날 계산
-            LocalDate weekStartDate = monday;
-            LocalDate weekEndDate = monday.plusDays(6);
-
-            WeeklyWeight weeklyWeight = new WeeklyWeight(0.0, weekStartDate, weekEndDate);
-            weeklyWeights.add(weeklyWeight);
-
-            // 다음 주의 월요일로 이동
-            monday = monday.plusWeeks(1);
-        }
-
-        return weeklyWeights;
-    }
-
-    private void updateWeeklyWeightResponses(List<WeeklyWeight> result, List<WeeklyWeightNativeVo> weights) {
-        weights.forEach(weight -> {
-            log.info("week_average_weight = {}, week_start_date = {}, week_end_date = {}", weight.getWeekAverageWeight(), weight.getWeekStartDate(), weight.getWeekEndDate());
-            int index = (int) ChronoUnit.WEEKS.between(result.get(0).getWeekStartDate(), LocalDate.parse(weight.getWeekStartDate()));
-            if (index >= 0 && index < result.size()) {
-                result.set(index, new WeeklyWeight(weight.getWeekAverageWeight(), LocalDate.parse(weight.getWeekStartDate()), LocalDate.parse(weight.getWeekEndDate())));
+            if (date.equals(dataWeightWeekStartDate)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getWeekAverageWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightWeekStartDate = LocalDate.parse(weights.get(index).getWeekStartDate());
+                }
             }
-        });
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new WeeklyWeight(weightValue, date, date.plusDays(6)));
+
+            // 다음 주로 이동.
+            date = date.plusWeeks(1);
+        }
     }
 
     /**
