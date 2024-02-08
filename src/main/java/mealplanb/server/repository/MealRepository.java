@@ -27,4 +27,22 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
         String getMealIds();
     }
 
+    @Query(value = "SELECT " +
+            "DATE_FORMAT(DATE_ADD(meal_date, INTERVAL -WEEKDAY(meal_date) DAY), '%Y-%m-%d') as weekStartDate, " +
+            "DATE_FORMAT(DATE_ADD(meal_date, INTERVAL (6 - WEEKDAY(meal_date)) DAY), '%Y-%m-%d') as weekEndDate, " +
+            "COUNT(DISTINCT meal_date) AS daysInWeek, " +
+            "GROUP_CONCAT(meal_id) AS mealIds " +
+            "FROM meal " +
+            "WHERE member_id = ?1 AND status = 'A' " +
+            "GROUP BY WEEK(meal_date)", nativeQuery = true)
+    Optional<List<WeeklyKcalNativeVo>> findWeeklyKcal(@Param("memberId")Long memberId);
+
+    interface WeeklyKcalNativeVo {
+        String getWeekStartDate();
+        String getWeekEndDate();
+        Long getDaysInWeek();
+        String getMealIds();
+    }
+
+
 }

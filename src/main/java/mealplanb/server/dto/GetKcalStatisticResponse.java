@@ -24,4 +24,15 @@ public class GetKcalStatisticResponse {
         private int protein;
         private int fat;
     }
+
+    @Getter
+    @AllArgsConstructor
+    public static class WeeklyKcal{
+        private LocalDate weekStartDate;
+        private LocalDate weekEndDate;
+        private int kcal;
+        private int carbohydrate;
+        private int protein;
+        private int fat;
+    }
 }
