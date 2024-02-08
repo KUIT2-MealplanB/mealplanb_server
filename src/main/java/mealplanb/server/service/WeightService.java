@@ -207,41 +207,44 @@ public class WeightService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
-        LocalDate startDate = member.getCreatedAt().toLocalDate();
-        LocalDate endDate = LocalDate.now();
+        List<MonthlyWeightNativeVo> weights = weightRepository.findMonthlyWeights(member.getMemberId(), BaseStatus.A)
+                .orElse(Collections.emptyList());
 
-        List<MonthlyWeight> result = createMonthlyEmptyWeightResponses(startDate, endDate);
-        weightRepository.findMonthlyWeights(member.getMemberId(), BaseStatus.A)
-                .ifPresent(weights -> updateMonthlyWeightResponses(result, weights));
+        List<MonthlyWeight> result = new ArrayList<>(); //리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); //시작일자
+        LocalDate endDate = LocalDate.now(); //종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeMonthlyWeightList(result, weights, startDate, endDate, initialWeight);
 
         return new WeightStatisticResponse("monthly", result);
     }
 
-    private List<MonthlyWeight> createMonthlyEmptyWeightResponses(LocalDate startDate, LocalDate endDate) {
-        List<MonthlyWeight> monthlyWeights = new ArrayList<>();
+    private void makeMonthlyWeightList(List<MonthlyWeight> result, List<MonthlyWeightNativeVo> weights, LocalDate startDate, LocalDate endDate, double weightValue) {
+        int index = 0;
 
         // startDate의 년도와 월 정보 가져오기
         YearMonth currentMonth = YearMonth.from(startDate);
+        YearMonth endMonth = YearMonth.from(endDate);
+        YearMonth dataWeightMonth = YearMonth.parse(weights.get(index).getMonth());
 
-        while (!currentMonth.isAfter(YearMonth.from(endDate))) {
+        // startDate부터 endDate까지 각 월에 대해 처리
+        while (!currentMonth.isAfter(endMonth)) {
 
-            MonthlyWeight monthlyWeight = new MonthlyWeight(0.0, currentMonth);
-            monthlyWeights.add(monthlyWeight);
+            //log.info("currentMonth = {} , endMonth = {}", currentMonth, endMonth);
+            if (currentMonth.equals(dataWeightMonth)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getMonthAverageWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightMonth = YearMonth.parse(weights.get(index).getMonth());
+                }
+            }
 
-            // 다음 달로 이동
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new MonthlyWeight(weightValue, currentMonth));
+
+            // 다음 달로 이동.
             currentMonth = currentMonth.plusMonths(1);
         }
-
-        return monthlyWeights;
-    }
-
-    private void updateMonthlyWeightResponses(List<MonthlyWeight> result, List<MonthlyWeightNativeVo> weights) {
-        weights.forEach(weight -> {
-            log.info("month_average_weight = {}, month = {}, week_end_date = {}", weight.getMonthAverageWeight(), weight.getMonth());
-            int index = (int) ChronoUnit.MONTHS.between(result.get(0).getMonth(), YearMonth.parse(weight.getMonth()));
-            if (index >= 0 && index < result.size()) {
-                result.set(index, new MonthlyWeight(weight.getMonthAverageWeight(), YearMonth.parse(weight.getMonth())));
-            }
-        });
     }
 }
