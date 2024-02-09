@@ -19,7 +19,8 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     Optional<Meal> findByMealIdAndStatus(Long mealId, BaseStatus status);
     @Query(value = "SELECT meal_date as date, GROUP_CONCAT(meal_id) AS mealIds " +
             "FROM meal " +
-            "WHERE member_id = :memberId AND status = 'A'", nativeQuery = true)
+            "WHERE member_id = :memberId AND status = 'A'" +
+            "GROUP BY date", nativeQuery = true)
     Optional<List<DailyKcalNativeVo>> findDailyKcal(@Param("memberId") Long memberId);
 
     interface DailyKcalNativeVo {

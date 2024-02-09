@@ -63,6 +63,7 @@ public class StatisticService {
 
     private void updateDailyKcalResponses(List<DailyKcal> result, List<DailyKcalNativeVo> kcals) {
         kcals.forEach(day -> {
+            log.info("[StatisticService.updateDailyKcalResponses] date : {} , mealIds = {}", day.getDate(), day.getMealIds() );
             int index = (int) ChronoUnit.DAYS.between(result.get(0).getDate(), day.getDate());
             if (index >= 0 && index < result.size()) {
                 String mealIds = day.getMealIds();
