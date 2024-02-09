@@ -2,7 +2,7 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-성import mealplanb.server.common.exception.FoodException;
+import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteFood;
