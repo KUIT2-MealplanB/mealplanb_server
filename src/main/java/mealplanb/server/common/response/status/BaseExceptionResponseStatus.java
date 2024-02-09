@@ -52,6 +52,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      * 6000: Food 오류
      */
     FOOD_NOT_FOUND(6001, HttpStatus.NOT_FOUND.value(), "식품을 찾을 수 없습니다."),
+    FAVORITE_FOOD_NOT_EXIST(6002, HttpStatus.NOT_FOUND.value(), "해당 유저의 즐겨찾기 식품을 찾을 수 없습니다."),
 
     /**
      * 7000: Meal 오류
