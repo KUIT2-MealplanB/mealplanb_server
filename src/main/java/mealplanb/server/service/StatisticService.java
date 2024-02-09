@@ -8,11 +8,8 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.domain.Weight;
-import mealplanb.server.dto.GetKcalStatisticResponse;
-import mealplanb.server.dto.GetKcalStatisticResponse.DailyKcal;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse;
-import mealplanb.server.dto.weight.WeightResponse;
+import mealplanb.server.dto.statistic.GetKcalStatisticResponse;
+import mealplanb.server.dto.statistic.GetKcalStatisticResponse.DailyKcal;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MealRepository.DailyKcalNativeVo;
 import mealplanb.server.repository.MemberRepository;
@@ -27,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static mealplanb.server.dto.GetKcalStatisticResponse.*;
+import static mealplanb.server.dto.statistic.GetKcalStatisticResponse.*;
 import static mealplanb.server.repository.MealRepository.*;
 
 @Slf4j
