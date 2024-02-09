@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.FOOD_NOT_FOUND;
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
+import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -90,6 +89,27 @@ public class FavoriteFoodService {
         }).collect(Collectors.toList());
 
         return new GetFavoriteFoodResponse(foodList);
+    }
+
+    /**
+     * 즐겨찾기 해제
+     */
+    @Transactional
+    public void deleteFavoriteFood(Long memberId, Long foodId){
+        log.info("[FavoriteFoodService.deleteFavoriteFood]");
+
+        if(memberRepository.findById(memberId).isEmpty()){
+            throw new MemberException(MEMBER_NOT_FOUND);
+        }
+
+        FavoriteFood favoriteFood = favoriteFoodRepository.findByMember_MemberIdAndFood_FoodIdAndStatus(memberId,foodId,BaseStatus.A)
+                .orElseThrow(()-> new FoodException(FAVORITE_FOOD_NOT_EXIST));
+
+        FavoriteFood updatedFavoriteFood = favoriteFood.toBuilder()
+                .status(BaseStatus.D)
+                .build();
+
+        favoriteFood.updateStatus(updatedFavoriteFood);
     }
 
 }

@@ -157,4 +157,16 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(favoriteFoodService.getFavoriteFoodList(memberId));
     }
+
+    /**
+     * 즐겨찾기 해제
+     */
+    @PatchMapping("/favorite-food/{foodId}")
+    public BaseResponse<Void> deleteFavoriteFood(@RequestHeader("Authorization") String authorization,
+                                                 @PathVariable Long foodId){
+        log.info("[MemberController.deleteFavoriteFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        favoriteFoodService.deleteFavoriteFood(memberId, foodId);
+        return new BaseResponse<>(null);
+    }
 }
