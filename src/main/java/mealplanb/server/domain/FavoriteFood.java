@@ -11,7 +11,7 @@ import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "favorite_food")
@@ -32,5 +32,10 @@ public class FavoriteFood extends BaseTimeEntity {
     private Food food;
 
     @Enumerated(EnumType.STRING)
-    private BaseStatus status;
+    @Builder.Default
+    private BaseStatus status = BaseStatus.A;
+
+    public void updateStatus(FavoriteFood favoriteFood) {
+        this.status = favoriteFood.status;
+    }
 }
