@@ -2,13 +2,18 @@ package mealplanb.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.service.WeightService;
 import mealplanb.server.util.jwt.JwtProvider;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.validation.annotation.Validated;
+
+import static mealplanb.server.dto.weight.GetWeightStatisticResponse.*;
 
 @Slf4j
 @RestController
@@ -49,5 +54,33 @@ public class WeightController {
         log.info("[WeightController.modifyWeight]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(weightService.modifyWeight(memberId, weightRequest));
+    }
+
+    /**
+     * 체중 일간, 주간, 월간 조회
+     */
+    @GetMapping("/{statisticType}")
+    public BaseResponse<WeightStatisticResponse> getWeightStatistic(@RequestHeader("Authorization") String authorization,
+                                                                    @PathVariable String statisticType) {
+        log.info("[WeightController.getWeightStatistic]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+
+        WeightStatisticResponse statisticResponse;
+
+        switch (statisticType) {
+            case "daily":
+                statisticResponse = weightService.getDailyWeight(memberId);
+                break;
+            case "weekly":
+                statisticResponse = weightService.getWeeklyWeight(memberId);
+                break;
+            case "monthly":
+                statisticResponse = weightService.getMonthlyWeight(memberId);
+                break;
+            default:
+                throw new WeightException(BaseExceptionResponseStatus.UNSUPPORTED_STATISTIC_TYPE);
+        }
+
+        return new BaseResponse<>(statisticResponse);
     }
 }

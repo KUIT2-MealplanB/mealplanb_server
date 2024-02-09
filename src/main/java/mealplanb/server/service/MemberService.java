@@ -7,7 +7,13 @@ import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberSex;
 import mealplanb.server.domain.Member.MemberStatus;
-import mealplanb.server.dto.user.*;
+import mealplanb.server.domain.Base.BaseStatus;
+import mealplanb.server.domain.Food;
+import mealplanb.server.domain.FoodMealMappingTable;
+import mealplanb.server.domain.Meal.Meal;
+import mealplanb.server.dto.member.*;
+import mealplanb.server.repository.FoodRepository;
+import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +23,8 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
@@ -26,7 +34,10 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MealRepository mealRepository;
+    private final FoodRepository foodRepository;
     private final AvatarService avatarService;
+    private final FoodMealMappingTableService foodMealMappingTableService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -117,21 +128,23 @@ public class MemberService {
     private int calRecommendedKcal(MemberSex sex, int age, int height, double initialWeight, double targetWeight) {
         // 기초 대사량 계산
         int BMR = calBMR(sex, age, height, initialWeight);
-        log.info("[BMR 계산 결과 :{}] ", BMR);
+        //log.info("[BMR 계산 결과 :{}] ", BMR);
+
         // 일일 칼로리 계산
         int dailyKcal = (int) (BMR * 1.5);
-        log.info("[일일 칼로리 계산 결과 :{}] ", dailyKcal);
+        //log.info("[일일 칼로리 계산 결과 :{}] ", dailyKcal);
+
         // 일일 목표 칼로리 섭취량 계산
         int targetKcal = 0;
         if (initialWeight > targetWeight) { // 감량 하는 경우
             targetKcal = dailyKcal - 500;
-            log.info("[감량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
+            //log.info("[감량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         } else if (initialWeight < targetWeight) { // 증량하는 경우
             targetKcal = dailyKcal + 500;
-            log.info("[증량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
+            //log.info("[증량 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         } else { // 같은 경우
             targetKcal = dailyKcal; // 현재 체중에 맞는 일일 칼로리 섭취량 추천
-            log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ", targetKcal);
+            //log.info("[동일한경우 타켓 칼로리 계산 결과 :{}] ", targetKcal);
         }
         return targetKcal;
     }
@@ -321,4 +334,134 @@ public class MemberService {
         return new GetDietTypeResponse(dietType, carbohydrateRate, proteinRate,fatRate);
     }
 
+    /**
+     * 사용자 목표 조회 (권장 칼로리 반환)
+     */
+    public GetRecommendedKcalResponse getRecommendedKcal(Long memberId, GetRecommendedKcalRequest getRecommendedKcalRequest){
+        log.info("[MemberService.getRecommendedKcal]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        MemberSex sex = member.getSex();
+        int age = member.getAge();
+        int height = member.getHeight();
+        double initialWeight = getRecommendedKcalRequest.getInitialWeight();
+        double targetWeight = getRecommendedKcalRequest.getTargetWeight();
+
+        int recommendedKcal = calRecommendedKcal(sex, age, height, initialWeight, targetWeight);
+
+        return new GetRecommendedKcalResponse(recommendedKcal);
+    }
+
+    /**
+     * 홈화면 현재 날짜, 목표 경과일, 남은 칼로리 조회, 아바타, 목표 칼로리 및 잔여 칼로리, 탄단지 기타 영양소 조회
+     */
+    public GetProfileResponse getMemberProfile(Long memberId, LocalDate mealDate){
+        log.info("[MemberService.getMemberProfile]");
+        // 유저 정보 불러오기
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        // mealDate 에 해당하는 끼니 리스트 모아오기
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, mealDate, BaseStatus.A);
+
+        LocalDate date = mealDate; // 입력받은 mealDate 반환
+        int elapsedDays = calculateElapsedDays(mealDate, member.getTargetUpdatedAt()); // 몇일차인지 target_updated_at 이랑 mealDate 랑 비교해서 계산
+        String nickname = member.getNickname(); // 닉네임
+        int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
+        String avatarColor = member.getAvatarColor(); // 아바타 색상
+        String avatarAppearance = avatarService.calculateAvatarAppearance(member);// 아바타 외형
+
+        // 타겟 칼로리 반환
+        int targetKcal = member.getTargetKcal();
+        // 원래 섭취해야하는 탄,단,지
+        int[] targetRatio = calculateNutrientGram(member);
+        int targetCarbohydrate = targetRatio[0];
+        int targetProtein = targetRatio[1];
+        int targetFat = targetRatio[2];
+
+        GetProfileResponse.Goal goal = new GetProfileResponse.Goal(targetKcal,targetCarbohydrate, targetProtein, targetFat);
+
+        // 섭취한 총 칼로리 반환
+        int kcal = calculateIntakeKcal(mealsOptional.get());
+        // 섭취한 탄,단,지
+        int[] intakeGram = calculateNutrient(mealsOptional.get());
+        int carbohydrate = intakeGram[0];
+        int protein = intakeGram[1];
+        int fat = intakeGram[2];
+        // 나트륨, 당, 포화지방, 트랜스지방, 콜레스테롤 반환
+        int sodium = intakeGram[3];
+        int sugar = intakeGram[4];
+        int saturatedFat = intakeGram[5];
+        int transFat = intakeGram[6];
+        int cholesterol = intakeGram[7];
+
+        GetProfileResponse.Intake intake = new GetProfileResponse.Intake(kcal,carbohydrate,protein,fat,sodium,sugar,saturatedFat,transFat,cholesterol);
+
+        return new GetProfileResponse(date, elapsedDays, remainingKcal, nickname, avatarColor, avatarAppearance, goal, intake);
+    }
+
+    /**
+     * 섭취한 영양소 계산
+     */
+    public int[] calculateNutrient(List<Meal> meals){
+        int[] intakeGram = new int[8];
+        for(Meal meal : meals){
+            List<FoodMealMappingTable> foodItems = meal.getFoodMealMappingTables();
+            // 각 FoodMealMappingTable 객체에서 음식 정보와 수량 추출
+            for (FoodMealMappingTable foodItem : foodItems) {
+                // 음식 항목의 ID
+                Long foodId = foodItem.getFood().getFoodId();
+                // 음식의 수량
+                int quantity = foodItem.getQuantity();
+                Optional<Food> food = foodRepository.findByFoodId(foodId);
+
+                intakeGram[0] += (int)(food.get().getCarbohydrate() * quantity) / 100; // 탄수화물
+                intakeGram[1] += (int)(food.get().getProtein() * quantity) / 100; // 단백질
+                intakeGram[2] += (int)(food.get().getFat() * quantity) / 100; // 지방
+                intakeGram[3] += (int)(food.get().getSodium() * quantity) / 100; // 나트륨
+                intakeGram[4] += (int)(food.get().getSugar() * quantity) / 100; // 당류
+                intakeGram[5] += (int)(food.get().getSaturatedFattyAcid() * quantity) / 100; // 포화지방
+                intakeGram[6] += (int)(food.get().getTransFatAcid() * quantity) / 100; // 트랜스지방
+                intakeGram[7] += (int)(food.get().getCholesterol() * quantity) / 100; // 콜레스테롤
+            }
+        }
+        return intakeGram;
+    }
+
+    /**
+     * 경과 일수 계산
+     */
+    public int calculateElapsedDays(LocalDate targetUpdatedAt,LocalDate mealDate){
+        Period period = Period.between(mealDate,targetUpdatedAt);
+        return period.getDays();
+    }
+
+    /**
+     * 섭취한 총 칼로리 계산
+     */
+    public int calculateIntakeKcal(List<Meal> meals){
+        int totalIntakeKcal = 0;
+        for(Meal meal : meals){
+            totalIntakeKcal += (int)foodMealMappingTableService.getMealKcal(meal.getMealId());
+        }
+        return totalIntakeKcal;
+    }
+
+    /**
+     * 탄단지 그램수 계산
+     */
+    public int[] calculateNutrientGram(Member member){
+        int[] gram = new int[3];
+        int targetKcal = member.getTargetKcal();
+        int carbohydrateRate = member.getCarbohydrateRate();
+        int proteinRate = member.getProteinRate();
+        int fatRate = member.getFatRate();
+
+        gram[0] = targetKcal * carbohydrateRate / 100 / 4;      // 탄수화물
+        gram[1] = targetKcal * proteinRate / 100 / 4;           // 단백질
+        gram[2] = targetKcal * fatRate / 100 / 9;               // 지방
+
+        return gram;
+    }
 }

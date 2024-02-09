@@ -1,13 +1,12 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PostMemberResponse {
-
-    /** 회원 가입 */
+public class PostLoginResponse {
+    /** 로그인 */
     private Long memberId;
     private String jwt;
 }

@@ -63,21 +63,22 @@ public class MealService {
      */
     public GetMealResponse getMealList(Long memberId, LocalDate mealDate) {
         log.info("[MealService.getMealList]");
-        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDate(memberId, mealDate);
-        List<GetMealItem> mealItems = makeGetMealItems(mealsOptional);
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, mealDate, BaseStatus.A);
+
+        if (mealsOptional.isEmpty()) { // 결과가 없는 경우
+            log.info("[MealService.getMealList] - 만들어진 끼니 없음");
+            return new GetMealResponse(mealDate);
+        }
+
+        List<GetMealItem> mealItems = makeGetMealItems(mealsOptional.get());
         return new GetMealResponse(mealDate, mealItems);
     }
 
-    private List<GetMealItem> makeGetMealItems(Optional<List<Meal>> mealsOptional) {
+    private List<GetMealItem> makeGetMealItems(List<Meal> meals) {
         log.info("[MealService.makeGetMealItems]");
         List<GetMealItem> mealItems = new ArrayList<>();
-
-        if (!mealsOptional.isPresent()) { // 결과가 없는 경우
-            log.info("[MealService.getMealList] - 만들어진 끼니 없음");
-            return mealItems;
-        }
-        for (Meal meal : mealsOptional.get()){
-            GetMealItem getMealItem = new GetMealItem(meal.getMealId(), MealTypeConverter.convertMealTypeLabel(meal.getMealType()), foodMealMappingTableService.getMealKcal(meal.getMealId()));
+        for (Meal meal : meals){
+            GetMealItem getMealItem = new GetMealItem(meal.getMealId() ,MealTypeConverter.convertMealTypeLabel(meal.getMealType()), (int) foodMealMappingTableService.getMealKcal(meal.getMealId()));
             mealItems.add(getMealItem);
         }
         return mealItems;

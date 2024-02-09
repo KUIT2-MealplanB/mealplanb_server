@@ -23,7 +23,7 @@ public class GetMealResponse {
     public static class GetMealItem {
         private long mealId;
         private String mealType;
-        private double mealKcal;
+        private int mealKcal;
     }
 
     public GetMealResponse(LocalDate mealDate) {

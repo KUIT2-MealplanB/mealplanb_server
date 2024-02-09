@@ -3,23 +3,36 @@ package mealplanb.server.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
-import mealplanb.server.common.exception.WeightException;
+import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
+import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.domain.Member.MemberStatus;
 import mealplanb.server.domain.Weight;
+import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeeklyWeight;
+import mealplanb.server.dto.weight.GetWeightStatisticResponse.WeightStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.repository.MemberRepository;
 import mealplanb.server.repository.WeightRepository;
+import mealplanb.server.repository.WeightRepository.WeeklyWeightNativeVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.WEIGHT_NOT_FOUND;
+import static mealplanb.server.dto.weight.GetWeightStatisticResponse.*;
+import static mealplanb.server.repository.WeightRepository.*;
 
 @Slf4j
 @Service
@@ -99,5 +112,139 @@ public class WeightService {
         weight.updateFrom(updatedWeight);
 
         return new WeightResponse(weight.getWeight(), weight.getWeightDate());
+    }
+
+    /**
+     * 체중 일간 조회
+     */
+    public WeightStatisticResponse getDailyWeight(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        List<Weight> weights = weightRepository.findAllByMemberAndStatusOrderByWeightDate(member, BaseStatus.A)
+                .orElse(Collections.emptyList());
+
+        List<WeightResponse> result = new ArrayList<>(); // 리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); // 시작일자
+        LocalDate endDate = LocalDate.now(); // 종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeDailyWeightList(result, weights, startDate, endDate, initialWeight);
+
+        return new WeightStatisticResponse("daily", result);
+    }
+
+    private void makeDailyWeightList(List<WeightResponse> result, List<Weight> weights, LocalDate date, LocalDate endDate, double weightValue) {
+        int index = 0;
+        LocalDate dataWeightDate = weights.get(index).getWeightDate();
+
+        // startDate부터 endDate까지 각 날짜에 대해 처리
+        while (!date.isAfter(endDate)) {
+
+            if (date.equals(dataWeightDate)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightDate = weights.get(index).getWeightDate();
+                }
+            }
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new WeightResponse(weightValue, date));
+
+            // 다음 날짜로 이동.
+            date = date.plusDays(1);
+        }
+    }
+
+    /**
+     * 체중 주간 조회
+     */
+    public WeightStatisticResponse getWeeklyWeight(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        List<WeeklyWeightNativeVo> weights = weightRepository.findWeeklyWeights(member.getMemberId(), BaseStatus.A)
+                .orElse(Collections.emptyList());
+
+        List<WeeklyWeight> result = new ArrayList<>(); //리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); //시작일자
+        LocalDate endDate = LocalDate.now(); //종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeWeeklyWeightList(result, weights, startDate, endDate, initialWeight);
+
+        return new WeightStatisticResponse("weekly", result);
+    }
+
+    private void makeWeeklyWeightList(List<WeeklyWeight> result, List<WeeklyWeightNativeVo> weights, LocalDate date, LocalDate endDate, double weightValue) {
+        int index = 0;
+        LocalDate dataWeightWeekStartDate = LocalDate.parse(weights.get(index).getWeekStartDate());
+
+        // startDate부터 endDate까지 각 날짜에 대해 처리
+        while (!date.isAfter(endDate)) {
+
+            if (date.equals(dataWeightWeekStartDate)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getWeekAverageWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightWeekStartDate = LocalDate.parse(weights.get(index).getWeekStartDate());
+                }
+            }
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new WeeklyWeight(weightValue, date, date.plusDays(6)));
+
+            // 다음 주로 이동.
+            date = date.plusWeeks(1);
+        }
+    }
+
+    /**
+     * 체중 월간 조회
+     */
+    public WeightStatisticResponse getMonthlyWeight(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        List<MonthlyWeightNativeVo> weights = weightRepository.findMonthlyWeights(member.getMemberId(), BaseStatus.A)
+                .orElse(Collections.emptyList());
+
+        List<MonthlyWeight> result = new ArrayList<>(); //리턴할 결과
+        LocalDate startDate = member.getCreatedAt().toLocalDate(); //시작일자
+        LocalDate endDate = LocalDate.now(); //종료일자
+        double initialWeight = member.getInitialWeight(); // 초기값: 초기체중
+
+        makeMonthlyWeightList(result, weights, startDate, endDate, initialWeight);
+
+        return new WeightStatisticResponse("monthly", result);
+    }
+
+    private void makeMonthlyWeightList(List<MonthlyWeight> result, List<MonthlyWeightNativeVo> weights, LocalDate startDate, LocalDate endDate, double weightValue) {
+        int index = 0;
+
+        // startDate의 년도와 월 정보 가져오기
+        YearMonth currentMonth = YearMonth.from(startDate);
+        YearMonth endMonth = YearMonth.from(endDate);
+        YearMonth dataWeightMonth = YearMonth.parse(weights.get(index).getMonth());
+
+        // startDate부터 endDate까지 각 월에 대해 처리
+        while (!currentMonth.isAfter(endMonth)) {
+
+            //log.info("currentMonth = {} , endMonth = {}", currentMonth, endMonth);
+            if (currentMonth.equals(dataWeightMonth)) { // 데이터에 도달하면, 다음 데이터로 대체
+                weightValue = weights.get(index).getMonthAverageWeight();
+                if(index + 1 < weights.size()){
+                    index += 1;
+                    dataWeightMonth = YearMonth.parse(weights.get(index).getMonth());
+                }
+            }
+
+            // 해당 날짜의 체중을 DailyWeightEntry로 추가.
+            result.add(new MonthlyWeight(weightValue, currentMonth));
+
+            // 다음 달로 이동
+            currentMonth = currentMonth.plusMonths(1);
+        }
     }
 }

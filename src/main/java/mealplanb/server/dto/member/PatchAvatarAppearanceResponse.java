@@ -1,10 +1,7 @@
-package mealplanb.server.dto.user;
+package mealplanb.server.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-
-import javax.swing.*;
 
 @Getter
 @AllArgsConstructor
