@@ -1,4 +1,4 @@
-package mealplanb.server.dto;
+package mealplanb.server.dto.statistic;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

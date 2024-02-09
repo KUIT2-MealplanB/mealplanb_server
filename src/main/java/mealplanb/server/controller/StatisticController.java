@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
-import mealplanb.server.dto.GetKcalStatisticResponse;
+import mealplanb.server.dto.statistic.GetKcalStatisticResponse;
+import mealplanb.server.dto.statistic.GetStatisticPlanResponse;
 import mealplanb.server.service.StatisticService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,16 @@ public class StatisticController {
         }
 
         return new BaseResponse<>(statisticResponse);
+    }
+
+    /**
+     * 통계페이지 상단 목표 조회
+     */
+    @GetMapping("statistic/plan")
+    public BaseResponse<GetStatisticPlanResponse> getStatisticPlan(@RequestHeader("Authorization") String authorization) {
+        log.info("[StatisticController.getStatisticPlan]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(statisticService.getStatisticPlan(memberId));
+
     }
 }
