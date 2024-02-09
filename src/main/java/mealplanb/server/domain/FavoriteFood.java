@@ -1,6 +1,8 @@
 package mealplanb.server.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
@@ -9,7 +11,9 @@ import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "favorite_food")
 public class FavoriteFood extends BaseTimeEntity {
     @Id
