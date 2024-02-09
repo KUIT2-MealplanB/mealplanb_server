@@ -8,8 +8,10 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.member.GetPlanResponse;
 import mealplanb.server.dto.statistic.GetKcalStatisticResponse;
 import mealplanb.server.dto.statistic.GetKcalStatisticResponse.DailyKcal;
+import mealplanb.server.dto.statistic.GetStatisticPlanResponse;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MealRepository.DailyKcalNativeVo;
 import mealplanb.server.repository.MemberRepository;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
 import static mealplanb.server.dto.statistic.GetKcalStatisticResponse.*;
 import static mealplanb.server.repository.MealRepository.*;
 
@@ -195,5 +198,20 @@ public class StatisticService {
                         nutrient[0]/month.getDaysInMonth(), nutrient[1]/month.getDaysInMonth(), nutrient[2]/month.getDaysInMonth()));
             }
         });
+    }
+
+    /**
+     *  통계페이지 상단 목표 조회
+     */
+    public GetStatisticPlanResponse getStatisticPlan(Long memberId) {
+        log.info("[StatisticService.getStatisticPlan]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        double initialWeight = member.getInitialWeight();
+        double targetWeight = member.getTargetWeight();
+        String dietType = member.getDietType();
+
+        return new GetStatisticPlanResponse(initialWeight, targetWeight, dietType);
     }
 }
