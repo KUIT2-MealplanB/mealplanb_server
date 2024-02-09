@@ -1,14 +1,13 @@
-package mealplanb.server.domain;
+package mealplanb.server.domain.Meal;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
+import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.dto.meal.MealRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class Meal extends BaseTimeEntity {
     private int mealType;
     private LocalDate mealDate;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
 
@@ -45,5 +45,9 @@ public class Meal extends BaseTimeEntity {
         this.mealDate = mealDate;
         this.mealType = mealType;
         this.status = BaseStatus.A;
+    }
+
+    public void reduceMealType() {
+        this.mealType = this.mealType - 1;
     }
 }

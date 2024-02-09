@@ -9,15 +9,15 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MealRequest {
+public class PostMealFoodRequest {
     /** 끼니에 식사 리스트 등록 */
     private Long mealId;
-    private List<MealItem> meals;
+    private List<FoodItem> foods;
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class MealItem {
+    public static class FoodItem {
         private long foodId;
         private int quantity;
     }
