@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.dto.food.PostFavoriteFoodRequest;
 import mealplanb.server.dto.member.*;
+import mealplanb.server.service.FavoriteFoodService;
 import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -21,6 +23,7 @@ import static mealplanb.server.util.BindingResultUtils.getErrorMessages;
 @RequestMapping("/user")
 public class MemberController {
 
+    private final FavoriteFoodService favoriteFoodService;
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
@@ -130,5 +133,17 @@ public class MemberController {
         log.info("[MemberController.getMemberProfile]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getMemberProfile(memberId, mealDate));
+    }
+
+    /**
+     * 즐겨찾기 식사 등록
+     */
+    @PostMapping("/favorite-food")
+    public BaseResponse<Void> postFavoriteFood(@RequestHeader("Authorization") String authorization,
+                                               @RequestBody PostFavoriteFoodRequest postFavoriteFoodRequest){
+        log.info("[MemberController.postFavoriteFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        favoriteFoodService.postFavoriteFood(memberId, postFavoriteFoodRequest);
+        return new BaseResponse<>(null);
     }
 }
