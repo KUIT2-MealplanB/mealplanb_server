@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MealFoodRequest {
+public class PostMealFoodRequest {
     /** 끼니에 식사 리스트 등록, 수정 */
     private Long mealId;
     private List<FoodItem> foods;
