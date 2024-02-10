@@ -41,12 +41,15 @@ public class FoodController {
      * 식사 등록 by 사용자
      */
     @PostMapping("")
-    public BaseResponse<PostNewFoodResponse> postNewFood(@Validated @RequestBody PostNewFoodRequest postNewFoodRequest,  BindingResult bindingResult){
+    public BaseResponse<PostNewFoodResponse> postNewFood(@RequestHeader("Authorization") String authorization,
+                                                         @Validated @RequestBody PostNewFoodRequest postNewFoodRequest,
+                                                         BindingResult bindingResult){
         System.out.println("[FoodController.postNewFood]");
         if (bindingResult.hasErrors()) {
             throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-        return new BaseResponse<>(foodService.postNewFood(postNewFoodRequest));
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(foodService.postNewFood(memberId, postNewFoodRequest));
     }
 
     /**
