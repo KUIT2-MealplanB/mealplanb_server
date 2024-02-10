@@ -5,17 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food;
-import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
-import mealplanb.server.domain.Food;
 import mealplanb.server.domain.FoodMealMappingTable;
-import mealplanb.server.dto.meal.GetMealFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
-import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
-import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
@@ -108,9 +103,9 @@ public class FoodMealMappingTableService {
         return foodInfoList;
     }
 
-    private double calculateFoodKcal(int quantity, double kcalPer100){
+    private int calculateFoodKcal(int quantity, double kcalPer100){
         double kcalPerGram = kcalPer100/100;
-        return quantity * kcalPerGram;
+        return (int) (quantity * kcalPerGram);
     }
 
 }

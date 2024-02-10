@@ -23,6 +23,6 @@ public class GetMealFoodResponse {
         private long foodId;
         private int quantity;
         private String name;
-        private double kcal;
+        private int kcal;
     }
 }
