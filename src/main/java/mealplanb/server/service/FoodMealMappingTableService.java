@@ -30,7 +30,7 @@ public class FoodMealMappingTableService {
      */
     public double getMealKcal(Long mealId) {
         log.info("[FoodMealMappingTableService.getMealKcal]");
-        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealId(mealId);
+        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealIdAndStatus(mealId, BaseStatus.A);
 
         double mealKcal = 0.0;
         for (FoodMealMappingTable item: foodsInMeal){
@@ -49,7 +49,7 @@ public class FoodMealMappingTableService {
     @Transactional
     public void deleteFoodMealMapping(Long mealId){
         log.info("[FoodMealMappingTableService.deleteFoodMealMapping]");
-        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealId(mealId);
+        List<FoodMealMappingTable> foodsInMeal = foodMealMappingTableRepository.findAllByMeal_MealIdAndStatus(mealId, BaseStatus.A);
         for (FoodMealMappingTable item: foodsInMeal){
             item.setStatus(BaseStatus.D);
         }

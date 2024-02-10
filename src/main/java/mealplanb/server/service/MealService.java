@@ -50,7 +50,7 @@ public class MealService {
     }
 
     private void checkDuplicate(PostMealRequest mealRequest, Member member) {
-        boolean exists = mealRepository.existsByMemberAndMealDateAndMealType(member, mealRequest.getMealDate(), mealRequest.getMealType());
+        boolean exists = mealRepository.existsByMemberAndMealDateAndMealTypeAndStatus(member, mealRequest.getMealDate(), mealRequest.getMealType(), BaseStatus.A);
         if (exists){
             throw new MealException(BaseExceptionResponseStatus.DUPLICATE_MEAL);
         }
