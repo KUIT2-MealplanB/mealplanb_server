@@ -55,6 +55,10 @@ public class FavoriteFoodService {
         Food food = foodRepository.findByFoodId(foodId)
                 .orElseThrow(()-> new FoodException(FOOD_NOT_FOUND));
 
+        if(favoriteFoodRepository.existsByMemberAndFoodAndStatus(member,food,BaseStatus.A)){
+            throw new FoodException(FAVORITE_FOOD_ALREADY_EXIST);
+        }
+
         FavoriteFood favoriteFood = FavoriteFood.builder()
                 .member(member)
                 .food(food)
