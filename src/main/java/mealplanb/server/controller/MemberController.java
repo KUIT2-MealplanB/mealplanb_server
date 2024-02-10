@@ -24,7 +24,6 @@ import static mealplanb.server.util.BindingResultUtils.getErrorMessages;
 @RequestMapping("/user")
 public class MemberController {
 
-    private final FavoriteFoodService favoriteFoodService;
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
@@ -125,6 +124,7 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getRecommendedKcal(memberId, getRecommendedKcalRequest));
     }
+
     /**
      * 홈화면 현재 날짜, 목표 경과일, 남은 칼로리 조회, 아바타, 목표 칼로리 및 잔여 칼로리, 탄단지 기타 영양소 조회
      */
@@ -136,37 +136,4 @@ public class MemberController {
         return new BaseResponse<>(memberService.getMemberProfile(memberId, mealDate));
     }
 
-    /**
-     * 즐겨찾기 식사 등록 & 삭제
-     */
-    @PostMapping("/favorite-food")
-    public BaseResponse<Void> postFavoriteFood(@RequestHeader("Authorization") String authorization,
-                                               @RequestBody PostFavoriteFoodRequest postFavoriteFoodRequest){
-        log.info("[MemberController.postFavoriteFood]");
-        Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        favoriteFoodService.postFavoriteFood(memberId, postFavoriteFoodRequest);
-        return new BaseResponse<>(null);
-    }
-
-    /**
-     * 즐겨찾기 식사 조회
-     */
-    @GetMapping("/favorite-food")
-    public BaseResponse<GetFavoriteFoodResponse> getFavoriteFoodList(@RequestHeader("Authorization") String authorization){
-        log.info("[MemberController.getFavoriteFoodList]");
-        Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        return new BaseResponse<>(favoriteFoodService.getFavoriteFoodList(memberId));
-    }
-
-    /**
-     * 즐겨찾기 해제
-     */
-    @PatchMapping("/favorite-food/{foodId}")
-    public BaseResponse<Void> deleteFavoriteFood(@RequestHeader("Authorization") String authorization,
-                                                 @PathVariable Long foodId){
-        log.info("[MemberController.deleteFavoriteFood]");
-        Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        favoriteFoodService.deleteFavoriteFood(memberId, foodId);
-        return new BaseResponse<>(null);
-    }
 }
