@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.dto.food.GetFavoriteFoodResponse;
+import mealplanb.server.dto.food.PostFavoriteFoodRequest;
 import mealplanb.server.dto.member.*;
+import mealplanb.server.service.FavoriteFoodService;
 import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -121,6 +124,7 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getRecommendedKcal(memberId, getRecommendedKcalRequest));
     }
+
     /**
      * 홈화면 현재 날짜, 목표 경과일, 남은 칼로리 조회, 아바타, 목표 칼로리 및 잔여 칼로리, 탄단지 기타 영양소 조회
      */
@@ -131,4 +135,5 @@ public class MemberController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.getMemberProfile(memberId, mealDate));
     }
+
 }
