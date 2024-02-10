@@ -8,6 +8,8 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
+import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.dto.meal.*;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.MealTypeConverter;
@@ -34,7 +36,7 @@ public class MealService {
     private final FoodMealMappingTableService foodMealMappingTableService;
 
     /**
-     *  끼니 등록
+     * 끼니 등록
      */
     public PostMealResponse postMeal(Long memberId, PostMealRequest mealRequest) {
         Member member = memberRepository.findById(memberId)
@@ -88,7 +90,7 @@ public class MealService {
     @Transactional
     public PatchMealResponse deleteMeal(long mealId, Long memberId) {
         //해당 mealId, memberId를 가지는 Meal 데이터가 있는지 확인
-        Meal meal = mealRepository.findByMealIdAndMember_MemberId(mealId, memberId)
+        Meal meal = mealRepository.findByMealIdAndMember_MemberIdAndStatus(mealId, memberId, BaseStatus.A)
                 .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
 
         meal.setStatus(BaseStatus.D); // Meal의 상태를 업데이트하여 삭제 상태로 변경
@@ -128,6 +130,21 @@ public class MealService {
         }
 
         foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods());
+    }
+
+    /**
+     * 끼니의 식사 리스트 조회
+     */
+    public GetMealFoodResponse getMealFoodList(Long memberId, long mealId) {
+        // 삭제 처리된 끼니일 경우,
+        // FoodMealMappingTable에서 주어진 memberId, mealId에 해당하는 status가 A인 음식을 다 찾아보고 없다고 빈 값을 반환하는 것보다
+        // Meal에서 삭제된 끼니면 아예 FoodMealMappingTable을 탐색하지 않도록 했다.
+        log.info("[MealService.getMealFoodList]");
+        Meal meal = mealRepository.findByMealIdAndMember_MemberIdAndStatus(mealId, memberId, BaseStatus.A)
+                .orElseThrow(()->new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
+
+        List<FoodInfo> foodList = foodMealMappingTableService.getMealFoodList(mealId);
+        return new GetMealFoodResponse(meal.getMealId(), meal.getMealDate(), meal.getMealType(), foodList);
     }
 }
 
