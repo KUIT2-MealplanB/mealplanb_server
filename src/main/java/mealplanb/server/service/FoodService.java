@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -73,6 +72,7 @@ public class FoodService {
         List<FoodItem> foods = autoComplete.getContent().stream()
                 .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
                 .collect(Collectors.toList());
-        return new GetFoodAutoCompleteResponse(page, foods);
+        log.info("FoodService.getAutoComplete - autoComplete 페이지수 : {}", autoComplete.getTotalPages());
+        return new GetFoodAutoCompleteResponse(page, autoComplete.getTotalPages(), foods);
     }
 }

@@ -11,6 +11,7 @@ import static mealplanb.server.dto.food.GetFavoriteFoodResponse.*;
 @AllArgsConstructor
 public class GetFoodAutoCompleteResponse {
     /** 자동완성 검색 */
-    private int page;
+    private int currentPage;
+    private int lastPage;
     private List<FoodItem> foods;
 }
