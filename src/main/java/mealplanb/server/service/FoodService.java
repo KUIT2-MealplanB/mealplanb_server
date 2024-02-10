@@ -26,7 +26,7 @@ public class FoodService {
 
     public GetFoodResponse getFoodDetail(long memberId, long foodId) {
         System.out.println("[FoodService.getFoodDetail]");
-        Food food = foodRepository.findById(foodId)
+        Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                 .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return new GetFoodResponse(
                 food.getFoodId(),
