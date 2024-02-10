@@ -14,8 +14,6 @@ import mealplanb.server.dto.meal.MealTypeConverter;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.dto.meal.PatchMealResponse;
-import mealplanb.server.dto.meal.PostMealRequest;
-import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.repository.MealRepository;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -52,7 +50,7 @@ public class MealService {
     }
 
     private void checkDuplicate(PostMealRequest mealRequest, Member member) {
-        boolean exists = mealRepository.existsByMemberAndMealDateAndMealType(member, mealRequest.getMealDate(), mealRequest.getMealType());
+        boolean exists = mealRepository.existsByMemberAndMealDateAndMealTypeAndStatus(member, mealRequest.getMealDate(), mealRequest.getMealType(), BaseStatus.A);
         if (exists){
             throw new MealException(BaseExceptionResponseStatus.DUPLICATE_MEAL);
         }

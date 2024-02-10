@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MealRepository extends JpaRepository<Meal, Long> {
-    boolean existsByMemberAndMealDateAndMealType(Member member, LocalDate mealDate, int mealType);
+    boolean existsByMemberAndMealDateAndMealTypeAndStatus(Member member, LocalDate mealDate, int mealType, BaseStatus a);
     Optional<List<Meal>> findByMember_MemberIdAndMealDateAndStatus(Long memberId, LocalDate mealDate, BaseStatus status);
     Optional<Meal> findByMealIdAndMember_MemberId(long mealId, Long memberId);
     Optional<List<Meal>> findAllByMealDateAndMemberAndMealTypeGreaterThan(LocalDate mealDate, Member member, int mealType);
