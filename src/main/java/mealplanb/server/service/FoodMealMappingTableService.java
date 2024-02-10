@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
+import static mealplanb.server.dto.meal.MealFoodRequest.*;
 
 @Slf4j
 @Service

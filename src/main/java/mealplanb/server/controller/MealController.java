@@ -63,9 +63,9 @@ public class MealController {
      */
     @PostMapping("/food")
     public BaseResponse<Void> postMealFood(@RequestHeader("Authorization") String authorization,
-                                                   @RequestBody PostMealFoodRequest postMealFoodRequest){
+                                                   @RequestBody MealFoodRequest mealFoodRequest){
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        mealService.postMealFood(memberId, postMealFoodRequest);
+        mealService.postMealFood(memberId, mealFoodRequest);
         return new BaseResponse<>(null);
     }
 }
