@@ -5,11 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Food;
-import mealplanb.server.dto.food.GetFoodResponse;
-import mealplanb.server.dto.food.PostNewFoodRequest;
-import mealplanb.server.dto.food.PostNewFoodResponse;
+import mealplanb.server.dto.food.*;
+import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
 import mealplanb.server.repository.FoodRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,5 +62,17 @@ public class FoodService {
                 newFood.getSaturatedFattyAcid(),
                 newFood.getTransFatAcid()
         );
+    }
+
+    /**
+     * 자동완성 검색
+     */
+    public GetFoodAutoCompleteResponse getAutoComplete(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Food> autoComplete = foodRepository.getAutoComplete(query.strip(), pageable);
+        List<FoodItem> foods = autoComplete.getContent().stream()
+                .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
+                .collect(Collectors.toList());
+        return new GetFoodAutoCompleteResponse(page, foods);
     }
 }

@@ -3,6 +3,7 @@ package mealplanb.server.dto.food;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import mealplanb.server.domain.Food;
 
 import java.util.List;
 
@@ -25,6 +26,12 @@ public class GetFavoriteFoodResponse {
             this.foodId = foodId;
             this.foodName = name;
             this.kcal = kcal;
+        }
+
+        public FoodItem(Food food) {
+            this.foodId = food.getFoodId();
+            this.foodName = food.getName();
+            this.kcal = (int) food.getKcal();
         }
     }
 
