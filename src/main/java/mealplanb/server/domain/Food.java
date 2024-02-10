@@ -32,7 +32,8 @@ public class Food extends BaseTimeEntity {
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFatAcid;
-    private boolean isMemberCreated;
+    private Long createMemberId;
+    private boolean adminApproval;
 
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
@@ -49,7 +50,10 @@ public class Food extends BaseTimeEntity {
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteMealComponent> favoriteMealComponents = new ArrayList<>();
 
-    public Food(PostNewFoodRequest postNewFoodRequest) {
+    /**
+     * 식사 등록 by 사용자
+     */
+    public Food(Long memberId, PostNewFoodRequest postNewFoodRequest) {
         super();
         this.name = postNewFoodRequest.getName();
         this.category = "unknown"; // 일단은 사용자가 카테고리를 등록하지 못하게 구현
@@ -64,7 +68,8 @@ public class Food extends BaseTimeEntity {
         this.saturatedFattyAcid = postNewFoodRequest.getSaturatedFattyAcid();
         this.transFatAcid = postNewFoodRequest.getTransFatAcid();
         this.status = BaseStatus.A;
-        this.isMemberCreated = true;
+        this.createMemberId = memberId;
+        this.adminApproval = false;
     }
 
     private String findKeyNutrient() {
