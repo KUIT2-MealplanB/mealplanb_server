@@ -18,7 +18,6 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
 
     @Query(value = "SELECT * " +
             "FROM food " +
-            "WHERE name LIKE %:query% " +
-            "ORDER BY (SELECT COUNT(food_id) FROM food_meal_mapping_table WHERE food_id = food.food_id) DESC", nativeQuery = true)
+            "WHERE name LIKE %:query%" , nativeQuery = true)
     Page<Food> getAutoComplete(@Param("query") String query, Pageable pageable);
 }
