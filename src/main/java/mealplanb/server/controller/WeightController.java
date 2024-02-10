@@ -5,17 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.WeightException;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
-import mealplanb.server.dto.weight.GetWeightStatisticResponse;
 import mealplanb.server.dto.weight.WeightRequest;
 import mealplanb.server.dto.weight.WeightResponse;
 import mealplanb.server.service.WeightService;
 import mealplanb.server.util.jwt.JwtProvider;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 import static mealplanb.server.dto.weight.GetWeightStatisticResponse.*;
 

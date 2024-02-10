@@ -3,6 +3,7 @@ package mealplanb.server.controller;
 import lombok.RequiredArgsConstructor;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.dto.meal.GetMealFoodResponse;
 import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.dto.meal.PatchMealResponse;
 import mealplanb.server.dto.meal.PostMealRequest;
@@ -39,7 +40,7 @@ public class MealController {
     }
 
     /**
-     *  끼니 기록 조회
+     *  끼니 기록 조회 (홈화면)
      */
     @GetMapping
     public BaseResponse<GetMealResponse> getMealList(@RequestHeader("Authorization") String authorization,
@@ -67,5 +68,15 @@ public class MealController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         mealService.postMealFood(memberId, postMealFoodRequest);
         return new BaseResponse<>(null);
+    }
+
+    /**
+     *  끼니의 식사 리스트 조회
+     */
+    @GetMapping("/{mealId}/food")
+    public BaseResponse<GetMealFoodResponse> getMealFoodList(@RequestHeader("Authorization") String authorization,
+                                                             @PathVariable long mealId){
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<GetMealFoodResponse>(mealService.getMealFoodList(memberId, mealId));
     }
 }

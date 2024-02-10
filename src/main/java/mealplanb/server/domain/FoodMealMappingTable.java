@@ -49,4 +49,8 @@ public class FoodMealMappingTable extends BaseTimeEntity {
         this.isRecommended = isRecommended;
         this.status = BaseStatus.A;
     }
+
+    public Food getFood() {
+        return this.food;
+    }
 }
