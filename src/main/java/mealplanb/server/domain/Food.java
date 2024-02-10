@@ -67,9 +67,9 @@ public class Food extends BaseTimeEntity {
         this.cholesterol = postNewFoodRequest.getCholesterol();
         this.saturatedFattyAcid = postNewFoodRequest.getSaturatedFattyAcid();
         this.transFatAcid = postNewFoodRequest.getTransFatAcid();
-        this.status = BaseStatus.A;
         this.createMemberId = memberId;
         this.adminApproval = false;
+        this.status = BaseStatus.A;
     }
 
     private String findKeyNutrient() {
