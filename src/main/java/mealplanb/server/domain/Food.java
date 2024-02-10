@@ -50,9 +50,6 @@ public class Food extends BaseTimeEntity {
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteMealComponent> favoriteMealComponents = new ArrayList<>();
 
-    /**
-     * 식사 등록 by 사용자
-     */
     public Food(Long memberId, PostNewFoodRequest postNewFoodRequest) {
         super();
         this.name = postNewFoodRequest.getName();
