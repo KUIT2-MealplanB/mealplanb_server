@@ -17,6 +17,6 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
 
     @Query(value = "SELECT * " +
             "FROM food " +
-            "WHERE name LIKE %:query%" , nativeQuery = true)
+            "WHERE name LIKE %:query% AND status = 'A'" , nativeQuery = true)
     Page<Food> getAutoComplete(@Param("query") String query, Pageable pageable);
 }
