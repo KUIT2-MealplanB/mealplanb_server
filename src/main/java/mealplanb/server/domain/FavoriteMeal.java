@@ -1,6 +1,7 @@
 package mealplanb.server.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
@@ -34,5 +35,12 @@ public class FavoriteMeal extends BaseTimeEntity {
     // Favorite_Meal 과 Favorite_Meal_Component : 일대다 관계
     @OneToMany(mappedBy = "favoriteMeal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteMealComponent> favoriteMealComponents = new ArrayList<>();
+
+    @Builder(toBuilder = true)
+    public FavoriteMeal(Member member, String favoriteMealName, BaseStatus status) {
+        this.member = member;
+        this.favoriteMealName = favoriteMealName;
+        this.status = status;
+    }
 
 }
