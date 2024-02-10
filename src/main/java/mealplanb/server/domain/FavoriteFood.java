@@ -1,6 +1,8 @@
 package mealplanb.server.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
@@ -9,7 +11,9 @@ import mealplanb.server.domain.Member.Member;
 
 @Entity
 @Getter
+@Builder(toBuilder = true)
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "favorite_food")
 public class FavoriteFood extends BaseTimeEntity {
     @Id
@@ -28,5 +32,10 @@ public class FavoriteFood extends BaseTimeEntity {
     private Food food;
 
     @Enumerated(EnumType.STRING)
-    private BaseStatus status;
+    @Builder.Default
+    private BaseStatus status = BaseStatus.A;
+
+    public void updateStatus(BaseStatus status) {
+        this.status = status;
+    }
 }

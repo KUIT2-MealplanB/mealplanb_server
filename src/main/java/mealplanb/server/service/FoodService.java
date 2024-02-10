@@ -23,6 +23,7 @@ public class FoodService {
         Food food = foodRepository.findById(foodId)
                 .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return new GetFoodResponse(
+                food.getFoodId(),
                 food.getName(),
                 food.getQuantity(),
                 food.getKcal(),
