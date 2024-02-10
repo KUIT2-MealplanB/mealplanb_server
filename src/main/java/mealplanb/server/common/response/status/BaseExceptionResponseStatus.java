@@ -48,6 +48,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_USER_STATUS(5005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     EMAIL_NOT_FOUND(5006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
     RATIO_NOT_CORRECT(5007,HttpStatus.BAD_REQUEST.value(), "탄,단,지 비율 합이 100이 되지 않습니다."),
+    UNAUTHORIZED_ACCESS(5008, HttpStatus.UNAUTHORIZED.value() , "권한이 없는 멤버입니다."),
+
     /**
      * 6000: Food 오류
      */
@@ -61,7 +63,6 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_MEAL_VALUE(7000, HttpStatus.BAD_REQUEST.value(), "식단 요청에서 잘못된 값이 존재합니다."),
     MEAL_NOT_FOUND(7001, HttpStatus.NOT_FOUND.value(), "식단을 찾을 수 없습니다."),
     DUPLICATE_MEAL(7003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 식단입니다."),
-    UNAUTHORIZED_ACCESS(7004, HttpStatus.UNAUTHORIZED.value() , "해당 식단에 대해 권한이 없는 멤버입니다."),
 
     /**
      * 8000: Weight 오류
