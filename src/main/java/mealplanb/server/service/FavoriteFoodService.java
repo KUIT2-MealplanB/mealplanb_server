@@ -109,11 +109,7 @@ public class FavoriteFoodService {
         FavoriteFood favoriteFood = favoriteFoodRepository.findByMember_MemberIdAndFood_FoodIdAndStatus(memberId,foodId,BaseStatus.A)
                 .orElseThrow(()-> new FoodException(FAVORITE_FOOD_NOT_EXIST));
 
-        FavoriteFood updatedFavoriteFood = favoriteFood.toBuilder()
-                .status(BaseStatus.D)
-                .build();
-
-        favoriteFood.updateStatus(updatedFavoriteFood);
+        favoriteFood.updateStatus(BaseStatus.D);
     }
 
 }

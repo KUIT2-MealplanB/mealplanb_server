@@ -35,7 +35,7 @@ public class FavoriteFood extends BaseTimeEntity {
     @Builder.Default
     private BaseStatus status = BaseStatus.A;
 
-    public void updateStatus(FavoriteFood favoriteFood) {
-        this.status = favoriteFood.status;
+    public void updateStatus(BaseStatus status) {
+        this.status = status;
     }
 }
