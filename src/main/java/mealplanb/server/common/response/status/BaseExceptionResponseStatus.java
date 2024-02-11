@@ -38,7 +38,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     TOKEN_MISMATCH(4006, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
 
     /**
-     * 5000: User 오류
+     * 5000: Member 오류
      */
     INVALID_USER_VALUE(5000, HttpStatus.BAD_REQUEST.value(), "회원가입 요청에서 잘못된 값이 존재합니다."),
     MEMBER_NOT_FOUND(5001, HttpStatus.NOT_FOUND.value(), "회원을 찾을 수 없습니다."),
@@ -47,7 +47,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     PASSWORD_NO_MATCH(5004, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
     INVALID_USER_STATUS(5005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     EMAIL_NOT_FOUND(5006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
-    RATIO_NOT_CORRECT(5007,HttpStatus.BAD_REQUEST.value(), "탄,단,지 비율 합이 100이 되지 않습니다."),
+    RATIO_NOT_CORRECT(5007, HttpStatus.BAD_REQUEST.value(), "탄,단,지 비율 합이 100이 되지 않습니다."),
     /**
      * 6000: Food 오류
      */
@@ -63,6 +63,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     DUPLICATE_MEAL(7003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 식단입니다."),
     UNAUTHORIZED_ACCESS(7004, HttpStatus.UNAUTHORIZED.value() , "해당 식단에 대해 권한이 없는 멤버입니다."),
     FAVORITE_MEAL_NAME_ALREADY_EXIST(7005, HttpStatus.UNAUTHORIZED.value() , "해당 이름을 가진 식단이 이미 존재합니다."),
+    FAVORITE_MEAL_NOT_EXIST(5008,HttpStatus.BAD_REQUEST.value(), "해당 유저의 나의 식단이 존재하지 않습니다."),
+    FAVORITE_MEAL_COMPONENT_NOT_EXIST(5009, HttpStatus.BAD_REQUEST.value(), "나의 식단에 들어있는 식사가 없습니다."),
 
     /**
      * 8000: Weight 오류
