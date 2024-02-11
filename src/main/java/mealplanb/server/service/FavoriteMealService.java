@@ -1,6 +1,5 @@
 package mealplanb.server.service;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.FoodException;
@@ -98,6 +97,19 @@ public class FavoriteMealService {
 
         List<FavoriteMealItem> favoriteMealComponentList = favoriteMealComponentService.getFavoriteMealComponentList(favoriteMeal);
         return new GetMyMealResponse(favoriteMealComponentList);
+    }
+
+    /**
+     * 나의 식단 삭제
+     */
+    @Transactional
+    public void deleteMyMeal(Long memberId, Long favoriteMealId){
+        log.info("[FavoriteMealService.deleteMyMeal]");
+
+        FavoriteMeal favoriteMeal = favoriteMealRepository.findByMember_MemberIdAndFavoriteMealIdAndStatus(memberId, favoriteMealId, BaseStatus.A)
+                .orElseThrow(()->new MealException(FAVORITE_MEAL_NOT_EXIST));
+
+        favoriteMeal.updateStatus(BaseStatus.D);
     }
 
 }

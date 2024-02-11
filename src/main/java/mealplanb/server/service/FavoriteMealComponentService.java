@@ -11,6 +11,7 @@ import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
 import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class FavoriteMealComponentService {
     /**
      * 나의 식단 조회
      */
+    @Transactional(readOnly = true)
     public List<FavoriteMealItem> getFavoriteMealComponentList(List<FavoriteMeal> favoriteMeal){
         log.info("[FavoriteMealComponentService.getFavoriteMealComponentList]");
         List<FavoriteMealItem> mealItemList = new ArrayList<>();
@@ -42,7 +44,7 @@ public class FavoriteMealComponentService {
 
             for (FavoriteMealComponent component : favoriteMealComponentList) {
                 Food food = foodRepository.findByFoodId(component.getFood().getFoodId())
-                        .orElseThrow(() -> new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST));
+                        .orElseThrow(() -> new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST)); // 나의 식단에 들어있는 식사가 없습니다.
 
                 // 식재료 량에 따라 칼로리 계산
                 totalKcal += (int)(food.getKcal() * component.getQuantity() / 100);
@@ -56,5 +58,19 @@ public class FavoriteMealComponentService {
             mealItemList.add(mealItem);
         }
         return mealItemList;
+    }
+
+    /**
+     * 나의 식단 삭제
+     */
+    @Transactional
+    public void deleteMyMealComponent(Long favoriteMealId){
+        log.info("[FavoriteMealComponentService.deleteMyMealComponent]");
+        List<FavoriteMealComponent> favoriteMealComponentList = favoriteMealComponentRepository.findByFavoriteMeal_FavoriteMealIdAndStatus(favoriteMealId,BaseStatus.A)
+                .orElseThrow(()->new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST));
+
+        for(FavoriteMealComponent component : favoriteMealComponentList){
+            component.updateStatus(BaseStatus.D);
+        }
     }
 }
