@@ -52,7 +52,7 @@ public class FavoriteFoodService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        Food food = foodRepository.findByFoodId(foodId)
+        Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                 .orElseThrow(()-> new FoodException(FOOD_NOT_FOUND));
 
         if(favoriteFoodRepository.existsByMemberAndFoodAndStatus(member,food,BaseStatus.A)){

@@ -49,4 +49,17 @@ public class FoodController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(foodService.postNewFood(memberId, postNewFoodRequest));
     }
+
+    /**
+     * 사용자 등록 식품(=식사) 삭제
+     */
+    @PatchMapping("/{foodId}")
+    public BaseResponse<Void> deleteUserCreatedFood(@RequestHeader("Authorization") String authorization,
+                                                    @PathVariable long foodId) {
+        System.out.println("[FoodController.deleteUserCreatedFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        foodService.deleteUserCreatedFood(memberId, foodId);
+        return new BaseResponse<>(null);
+    }
+
 }
