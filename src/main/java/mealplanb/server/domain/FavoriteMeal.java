@@ -43,4 +43,8 @@ public class FavoriteMeal extends BaseTimeEntity {
         this.status = status;
     }
 
+    public void updateStatus(BaseStatus status){
+        this.status = status;
+    }
+
 }
