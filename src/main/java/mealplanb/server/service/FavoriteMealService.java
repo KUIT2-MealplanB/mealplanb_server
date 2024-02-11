@@ -1,5 +1,6 @@
 package mealplanb.server.service;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.FoodException;
@@ -11,6 +12,8 @@ import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.FavoriteMealComponent;
 import mealplanb.server.domain.Food;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.meal.GetMyMealResponse;
+import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
 import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FavoriteMealRepository;
@@ -21,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.FAVORITE_MEAL_NAME_ALREADY_EXIST;
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.FOOD_NOT_FOUND;
+import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -33,6 +35,7 @@ public class FavoriteMealService {
     private final FoodRepository foodRepository;
     private final FavoriteMealRepository favoriteMealRepository;
     private final FavoriteMealComponentRepository favoriteMealComponentRepository;
+    private final FavoriteMealComponentService favoriteMealComponentService;
 
     /**
      * 나의 식단 등록
@@ -55,8 +58,8 @@ public class FavoriteMealService {
 
         favoriteMealRepository.save(favoriteMeal);
 
+        // 이 부분을 FavoriteMealComponentService 로 빼야하는지..
         for (PostMyMealRequest.FoodItem foodItem : postMyMealRequest.getFoods()) {
-            // foodId 로 food 엔티티 조회 & 예외처리
             long foodId = foodItem.getFoodId();
             int quantity = foodItem.getQuantity();
             Food food = foodRepository.findByFoodId(foodId)
@@ -78,4 +81,23 @@ public class FavoriteMealService {
             throw new MealException(FAVORITE_MEAL_NAME_ALREADY_EXIST);
         }
     }
+
+    /**
+     * 나의 식단 조회
+     */
+    @Transactional(readOnly = true)
+    public GetMyMealResponse getMyMeal(Long memberId){
+        log.info("[FavoriteMealService.getMyMeal]");
+
+        if(memberRepository.findById(memberId).isEmpty()){
+            throw new MemberException(MEMBER_NOT_FOUND);
+        }
+
+        List<FavoriteMeal> favoriteMeal = favoriteMealRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A)
+                .orElseThrow(()-> new MealException(FAVORITE_MEAL_NOT_EXIST));
+
+        List<FavoriteMealItem> favoriteMealComponentList = favoriteMealComponentService.getFavoriteMealComponentList(favoriteMeal);
+        return new GetMyMealResponse(favoriteMealComponentList);
+    }
+
 }

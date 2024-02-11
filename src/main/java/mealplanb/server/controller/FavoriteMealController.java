@@ -1,8 +1,10 @@
 package mealplanb.server.controller;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.dto.meal.GetMyMealResponse;
 import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.service.FavoriteMealService;
 import mealplanb.server.util.jwt.JwtProvider;
@@ -27,5 +29,15 @@ public class FavoriteMealController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         favoriteMealService.postMyMeal(memberId, postMyMealRequest);
         return new BaseResponse<>(null);
+    }
+
+    /**
+     * 나의 식단 조회
+     */
+    @GetMapping("")
+    public BaseResponse<GetMyMealResponse> getMyMeal(@RequestHeader ("Authorization") String authorization){
+        log.info("[FavoriteMealController.getMyMeal]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(favoriteMealService.getMyMeal(memberId));
     }
 }
