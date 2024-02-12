@@ -186,7 +186,7 @@ public class FoodService {
                 Map.of("unitGram", 100, "unitName", "조각"));
         foodMap.put("면류",
                 Map.of("unitGram", 100, "unitName", "개"));
-        foodMap.put("햄버거",
+        foodMap.put("버거",
                 Map.of("unitGram", 250, "unitName", "개"));
         foodMap.put("떡볶이",
                 Map.of("unitGram", 200, "unitName", "인분"));
