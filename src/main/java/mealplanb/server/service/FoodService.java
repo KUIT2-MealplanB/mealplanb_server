@@ -129,6 +129,10 @@ public class FoodService {
             }else {
                 gramSuggestion(remainingKcal, cheatDayFoodOptional, cheatDayFoodInfoList);
             }
+        }else{
+            //로그용 else 구문
+            log.info("[FoodService.getCheatDayFood]- 해당하는 음식이 존재하지 않음");
+            //존재하지 안더라도 오류가 아니므로 아래에서 빈 배열을 반환
         }
         return cheatDayFoodInfoList;
     }
@@ -164,13 +168,25 @@ public class FoodService {
     private void addCheatDayFoodInfo(int remainingKcal, List<cheatDayFoodInfo> cheatDayFoodInfoList, Food cheatDayFood, int unitGram, String unitName) {
         Long foodId = cheatDayFood.getFoodId();
         String name = cheatDayFood.getName();
-        double unitKcal = cheatDayFood.getKcal() * (unitGram /100);
-        int offer = (int) (remainingKcal / unitKcal);
+
+        int offer;
+        if (unitName == "g"){
+            double gramKcal = cheatDayFood.getKcal() / unitGram;
+            offer = (int) (remainingKcal / gramKcal);
+            log.info("CheatDayFoodInfo : FoodId={}, Name={}, Offer={}{}, offerKcal= {}, (remainingKcal = {}, unitKcal = {})",
+                    foodId, name, offer, unitName, offer*gramKcal, remainingKcal, gramKcal);
+        }else{
+            double unitKcal = cheatDayFood.getKcal() * (unitGram /100);
+            offer = (int) (remainingKcal / unitKcal);
+            log.info("CheatDayFoodInfo : FoodId={}, Name={}, Offer={}{}, offerKcal= {}, (remainingKcal = {}, unitKcal = {})",
+                    foodId, name, offer, unitName, offer*unitKcal, remainingKcal, unitKcal);
+        }
+
         int offerCarbohydrate = (int) (cheatDayFood.getCarbohydrate() * (unitGram /100) * offer);
         int offerProtein = (int) (cheatDayFood.getProtein() * (unitGram /100) * offer);
         int offerFat = (int) (cheatDayFood.getFat() * (unitGram /100) * offer);
-        log.info("CheatDayFoodInfo added: FoodId={}, Name={}, Offer={}{}, offerKcal= {}, (remainingKcal = {}, unitKcal = {}) offerCarbohydrate={}, offerProtein={}, offerFat={}",
-                foodId, name, offer, unitName, offer*unitKcal, remainingKcal, unitKcal, offerCarbohydrate, offerProtein, offerFat);
+        log.info(" ---and offerCarbohydrate={}, offerProtein={}, offerFat={}",
+                offerCarbohydrate, offerProtein, offerFat);
 
         if (offer!=0){
             cheatDayFoodInfoList.add(new cheatDayFoodInfo(foodId, name, offerCarbohydrate, offerProtein, offerFat, offer+ unitName));
