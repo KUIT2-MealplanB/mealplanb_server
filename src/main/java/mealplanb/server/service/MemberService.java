@@ -449,6 +449,27 @@ public class MemberService {
     }
 
     /**
+     * 유저의 남은 칼로리 계산 (for 치팅데이)
+     */
+    public int calculateRemainingKcal(Long memberId){
+        // 유저 정보 불러오기
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        // 오늘의 끼니 리스트 모아오기
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, LocalDate.now(), BaseStatus.A);
+
+        // 타겟 칼로리
+        int targetKcal = member.getTargetKcal();
+        // 섭취한 총 칼로리
+        int kcal = calculateIntakeKcal(mealsOptional.get());
+        int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
+        log.info("남은 칼로리 = {}", remainingKcal);
+
+        return  remainingKcal;
+    }
+
+    /**
      * 탄단지 그램수 계산
      */
     public int[] calculateNutrientGram(Member member){
@@ -464,4 +485,48 @@ public class MemberService {
 
         return gram;
     }
+
+    /**
+     * 유저에게 가장 부족한 영양소 계산(for 치팅데이)
+     */
+    public String getLackingNutrientName(Long memberId){
+        // 유저 정보 불러오기
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        // 오늘의 끼니 리스트 모아오기
+        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, LocalDate.now(), BaseStatus.A);
+
+        // 원래 섭취해야하는 탄,단,지
+        int[] targetRatio = calculateNutrientGram(member);
+        int targetCarbohydrate = targetRatio[0];
+        int targetProtein = targetRatio[1];
+        int targetFat = targetRatio[2];
+
+        // 섭취한 탄,단,지
+        int[] intakeGram = calculateNutrient(mealsOptional.get());
+        int carbohydrate = intakeGram[0];
+        int protein = intakeGram[1];
+        int fat = intakeGram[2];
+
+        // 부족한 영양소 계산
+        int lackingCarbohydrate = targetCarbohydrate - carbohydrate;
+        int lackingProtein = targetProtein - protein;
+        int lackingFat = targetFat - fat;
+
+        // 가장 부족한 영양소 확인
+        String lackingNutrient;
+        if (lackingCarbohydrate >= lackingProtein && lackingCarbohydrate >= lackingFat) {
+            lackingNutrient = "탄수화물";
+        } else if (lackingProtein >= lackingCarbohydrate && lackingProtein >= lackingFat) {
+            lackingNutrient = "단백질";
+        } else {
+            lackingNutrient = "지방";
+        }
+
+        log.info("남은 탄수화물/단백질/지방양 = {}/{}/{} => {}이 제일 부족", lackingCarbohydrate, lackingProtein, lackingFat, lackingNutrient);
+
+        return lackingNutrient;
+    }
+
 }
