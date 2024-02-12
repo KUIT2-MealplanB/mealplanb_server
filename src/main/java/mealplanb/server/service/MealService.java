@@ -39,6 +39,7 @@ public class MealService {
      * 끼니 등록
      */
     public PostMealResponse postMeal(Long memberId, PostMealRequest mealRequest) {
+        log.info("[MealService.postMeal]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
@@ -89,6 +90,7 @@ public class MealService {
      */
     @Transactional
     public PatchMealResponse deleteMeal(long mealId, Long memberId) {
+        log.info("[MealService.deleteMeal]");
         //해당 mealId, memberId를 가지는 Meal 데이터가 있는지 확인
         Meal meal = mealRepository.findByMealIdAndMember_MemberIdAndStatus(mealId, memberId, BaseStatus.A)
                 .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
@@ -136,6 +138,7 @@ public class MealService {
      * 끼니의 식사 리스트 조회
      */
     public GetMealFoodResponse getMealFoodList(Long memberId, long mealId) {
+        log.info("[MealService.getMealFoodList]");
         // 삭제 처리된 끼니일 경우,
         // FoodMealMappingTable에서 주어진 memberId, mealId에 해당하는 status가 A인 음식을 다 찾아보고 없다고 빈 값을 반환하는 것보다
         // Meal에서 삭제된 끼니면 아예 FoodMealMappingTable을 탐색하지 않도록 했다.

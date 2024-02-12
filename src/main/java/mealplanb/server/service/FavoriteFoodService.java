@@ -35,7 +35,7 @@ public class FavoriteFoodService {
      * 즐겨찾기한 음식인지 여부 반환
      */
     public Boolean isFavorite(long memberId, long foodId){
-        System.out.println("[FavoriteFoodService.isFavorite]");
+        log.info("[FavoriteFoodService.isFavorite]");
         boolean isFavorite = favoriteFoodRepository.existsByFood_FoodIdAndMember_MemberIdAndStatus(foodId, memberId, BaseStatus.A);
         return isFavorite;
     }

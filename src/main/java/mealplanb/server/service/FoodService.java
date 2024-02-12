@@ -7,14 +7,22 @@ import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food;
+import mealplanb.server.dto.food.*;
+import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.food.GetFoodResponse;
 import mealplanb.server.dto.food.PostNewFoodRequest;
 import mealplanb.server.dto.food.PostNewFoodResponse;
 import mealplanb.server.repository.FoodRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,8 +32,11 @@ public class FoodService {
     private final FavoriteFoodService favoriteFoodService;
     private final MemberRepository memberRepository;
 
+    /**
+     * 특정 식사의 상세 정보 반환
+     */
     public GetFoodResponse getFoodDetail(long memberId, long foodId) {
-        System.out.println("[FoodService.getFoodDetail]");
+        log.info("[FoodService.getFoodDetail]");
         Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                 .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return new GetFoodResponse(
@@ -40,8 +51,11 @@ public class FoodService {
         );
     }
 
+    /**
+     * 식사 등록 by 사용자
+     */
     public PostNewFoodResponse postNewFood(Long memberId, PostNewFoodRequest postNewFoodRequest) {
-        System.out.println("[FoodService.postNewFood]");
+        log.info("[FoodService.postNewFood]");
         Food newFood = new Food(memberId, postNewFoodRequest);
         foodRepository.save(newFood);
         //todo: 코드 이렇게 길게 안하는 방법은 없을지...
@@ -64,6 +78,9 @@ public class FoodService {
         );
     }
 
+    /**
+     * 사용자 등록 식품(=식사) 삭제
+     */
     @Transactional
     public void deleteUserCreatedFood(Long memberId, long foodId) {
         log.info("[FoodService.getFoodDetail]");
@@ -77,5 +94,18 @@ public class FoodService {
             new FoodException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
         }
         food.setStatus(BaseStatus.D);
+    }
+
+    /**
+     * 자동완성 검색
+     */
+    public GetFoodAutoCompleteResponse getAutoComplete(String query, int page, int size) {
+        log.info("[FoodService.GetFoodAutoCompleteResponse]");
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Food> autoComplete = foodRepository.getAutoComplete(query.strip(), pageable);
+        List<FoodItem> foods = autoComplete.getContent().stream()
+                .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
+                .collect(Collectors.toList());
+        return new GetFoodAutoCompleteResponse(page, autoComplete.getTotalPages(), foods);
     }
 }
