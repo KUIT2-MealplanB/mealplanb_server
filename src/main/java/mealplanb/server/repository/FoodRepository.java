@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FoodRepository extends JpaRepository<Food, Long> {
@@ -16,4 +17,12 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
             "FROM food " +
             "WHERE name LIKE %:query% AND status = 'A'" , nativeQuery = true)
     Page<Food> getAutoComplete(@Param("query") String query, Pageable pageable);
+
+    @Query("SELECT f FROM Food f " +
+            "WHERE f.keyNutrient = ?2 " +
+            "AND f.category = ?3 " +
+            "AND f.kcal BETWEEN 0 AND ?1 " +
+            "ORDER BY f.kcal DESC "+
+            "LIMIT 10")
+    Optional<List<Food>> getCheatDayFood(int remainingKcal, String lackingNutrientName, String category);
 }
