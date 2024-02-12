@@ -68,6 +68,7 @@ public class FoodMealMappingTableService {
      */
     @Transactional
     public void postMealFood(Member member, Meal meal, List<FoodItem> foods) {
+        log.info("[FoodMealMappingTableService.postMealFood]");
         deleteFoodMealMapping(meal.getMealId());
 
         for (FoodItem foodItem : foods){

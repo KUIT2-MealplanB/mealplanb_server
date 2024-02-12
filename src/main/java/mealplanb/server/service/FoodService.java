@@ -24,7 +24,7 @@ public class FoodService {
     private final FavoriteFoodService favoriteFoodService;
 
     public GetFoodResponse getFoodDetail(long memberId, long foodId) {
-        System.out.println("[FoodService.getFoodDetail]");
+        log.info("[FoodService.getFoodDetail]");
         Food food = foodRepository.findById(foodId)
                 .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return new GetFoodResponse(
@@ -40,7 +40,7 @@ public class FoodService {
     }
 
     public PostNewFoodResponse postNewFood(Long memberId, PostNewFoodRequest postNewFoodRequest) {
-        System.out.println("[FoodService.postNewFood]");
+        log.info("[FoodService.postNewFood]");
         Food newFood = new Food(memberId, postNewFoodRequest);
         foodRepository.save(newFood);
         //todo: 코드 이렇게 길게 안하는 방법은 없을지...
@@ -67,12 +67,12 @@ public class FoodService {
      * 자동완성 검색
      */
     public GetFoodAutoCompleteResponse getAutoComplete(String query, int page, int size) {
+        log.info("[FoodService.GetFoodAutoCompleteResponse]");
         Pageable pageable = PageRequest.of(page, size);
         Page<Food> autoComplete = foodRepository.getAutoComplete(query.strip(), pageable);
         List<FoodItem> foods = autoComplete.getContent().stream()
                 .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
                 .collect(Collectors.toList());
-        log.info("FoodService.getAutoComplete - autoComplete 페이지수 : {}", autoComplete.getTotalPages());
         return new GetFoodAutoCompleteResponse(page, autoComplete.getTotalPages(), foods);
     }
 }
