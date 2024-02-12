@@ -3,6 +3,7 @@ package mealplanb.server.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.dto.food.PostNewFoodRequest;
@@ -35,6 +36,7 @@ public class Food extends BaseTimeEntity {
     private Long createMemberId;
     private boolean adminApproval;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private BaseStatus status;
 

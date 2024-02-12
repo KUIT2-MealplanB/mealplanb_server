@@ -3,15 +3,23 @@ package mealplanb.server.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.FoodException;
+import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
+import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food;
 import mealplanb.server.dto.food.*;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
+import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.food.GetFoodResponse;
+import mealplanb.server.dto.food.PostNewFoodRequest;
+import mealplanb.server.dto.food.PostNewFoodResponse;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,10 +30,14 @@ import java.util.stream.Collectors;
 public class FoodService {
     private final FoodRepository foodRepository;
     private final FavoriteFoodService favoriteFoodService;
+    private final MemberRepository memberRepository;
 
+    /**
+     * 특정 식사의 상세 정보 반환
+     */
     public GetFoodResponse getFoodDetail(long memberId, long foodId) {
         log.info("[FoodService.getFoodDetail]");
-        Food food = foodRepository.findById(foodId)
+        Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                 .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return new GetFoodResponse(
                 food.getFoodId(),
@@ -39,6 +51,9 @@ public class FoodService {
         );
     }
 
+    /**
+     * 식사 등록 by 사용자
+     */
     public PostNewFoodResponse postNewFood(Long memberId, PostNewFoodRequest postNewFoodRequest) {
         log.info("[FoodService.postNewFood]");
         Food newFood = new Food(memberId, postNewFoodRequest);
@@ -61,6 +76,24 @@ public class FoodService {
                 newFood.getSaturatedFattyAcid(),
                 newFood.getTransFatAcid()
         );
+    }
+
+    /**
+     * 사용자 등록 식품(=식사) 삭제
+     */
+    @Transactional
+    public void deleteUserCreatedFood(Long memberId, long foodId) {
+        log.info("[FoodService.getFoodDetail]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+        Food food = foodRepository.findById(foodId)
+                .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
+
+        // 사용자가 식품을 지울 권한이 있는지 검증
+        if (!memberId.equals(food.getCreateMemberId())){
+            new FoodException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
+        }
+        food.setStatus(BaseStatus.D);
     }
 
     /**

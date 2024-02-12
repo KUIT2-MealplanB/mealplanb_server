@@ -414,7 +414,7 @@ public class MemberService {
                 Long foodId = foodItem.getFood().getFoodId();
                 // 음식의 수량
                 int quantity = foodItem.getQuantity();
-                Optional<Food> food = foodRepository.findByFoodId(foodId);
+                Optional<Food> food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A);
 
                 intakeGram[0] += (int)(food.get().getCarbohydrate() * quantity) / 100; // 탄수화물
                 intakeGram[1] += (int)(food.get().getProtein() * quantity) / 100; // 단백질
