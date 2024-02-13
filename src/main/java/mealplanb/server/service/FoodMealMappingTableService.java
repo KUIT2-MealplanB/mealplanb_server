@@ -8,6 +8,7 @@ import mealplanb.server.domain.Food.Food;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
+import mealplanb.server.dto.chat.GetMyFavoriteFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
@@ -109,4 +110,14 @@ public class FoodMealMappingTableService {
         return (int) (quantity * kcalPerGram);
     }
 
+    /**
+     * 채팅(자주먹는)
+     */
+    public GetMyFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
+        log.info("[FoodMealMappingTableService.getMyFavoriteFood]");
+        Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodIdByUserId(memberId);
+        Food myFavoriteFood = foodRepository.findByFoodIdAndStatus(mostEatenFoodId, BaseStatus.A)
+                .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
+        return new GetMyFavoriteFoodResponse(myFavoriteFood.getFoodId(), myFavoriteFood.getName(), (int) myFavoriteFood.getCarbohydrate(), (int) myFavoriteFood.getProtein(), (int) myFavoriteFood.getFat());
+    }
 }
