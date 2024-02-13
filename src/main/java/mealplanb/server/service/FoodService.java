@@ -10,7 +10,6 @@ import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.Food.FoodManager;
 import mealplanb.server.domain.Food.FoodUnit;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
-import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.food.*;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
@@ -18,7 +17,6 @@ import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.food.GetFoodResponse;
 import mealplanb.server.dto.food.PostNewFoodRequest;
 import mealplanb.server.dto.food.PostNewFoodResponse;
-import mealplanb.server.dto.meal.GetMealFoodResponse;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -125,12 +123,9 @@ public class FoodService {
         List<cheatDayFoodInfo> cheatDayFoodInfoList = new ArrayList<>(); // 반환값
 
         if (cheatDayFoodOptional.isPresent()) {
-            Map<String, Map<String, Object>> foodUnitMap = getFoodUnitMap(); // 치팅데이 단위 Map
-
-            if (foodUnitMap.containsKey(category)||category=="분식") { // 단위정보가 있는 음식의 경우
-                unitSuggestion(remainingKcal, category, cheatDayFoodOptional, cheatDayFoodInfoList, foodUnitMap);
-            }else {
-                gramSuggestion(remainingKcal, cheatDayFoodOptional, cheatDayFoodInfoList);
+            for (Food cheatDayFood : cheatDayFoodOptional.get()){
+                FoodUnit foodUnit = getFoodUnit(cheatDayFood);
+                addCheatDayFoodInfo(cheatDayFoodInfoList, remainingKcal, cheatDayFood, foodUnit);
             }
         }else{
             //로그용 else 구문
@@ -141,35 +136,11 @@ public class FoodService {
     }
 
 
-    /** 치팅데이 단위가 있는 음식 추천 로직 */
-    private void unitSuggestion(int remainingKcal, String category, Optional<List<Food>> cheatDayFoodOptional, List<cheatDayFoodInfo> cheatDayFoodInfoList, Map<String, Map<String, Object>> foodUnitMap) {
-        Map<String, Object> categoryInfo = foodUnitMap.get(category); // unitGram:?, unitName:?
-
-        for (Food cheatDayFood : cheatDayFoodOptional.get()){
-
-            // 분식의 경우 해당 음식의 이름으로 categoryInfo 를 갱신 (분식의 경우 categoryInfo 가 null 이었을것임)
-            if(cheatDayFood.getCategory()=="분식"){
-                categoryInfo = foodUnitMap.get(cheatDayFood.getName());
-            }
-            int unitGram = (int) categoryInfo.get("unitGram");
-            String unitName = (String) categoryInfo.get("unitName");
-
-            addCheatDayFoodInfo(remainingKcal, cheatDayFoodInfoList, cheatDayFood, unitGram, unitName);
-        }
-    }
-
-    /** 치팅데이 단위가 없는 음식 추천 로직 */
-    private void gramSuggestion(int remainingKcal, Optional<List<Food>> cheatDayFoodOptional, List<cheatDayFoodInfo> cheatDayFoodInfoList) {
-        int unitGram = 1;
-        String unitName = "g";
-        for (Food cheatDayFood : cheatDayFoodOptional.get()){
-            addCheatDayFoodInfo(remainingKcal, cheatDayFoodInfoList, cheatDayFood, unitGram, unitName);
-        }
-    }
-
     /**cheatDayFoodInfo를 만들어서 cheatDayFoodInfoList에 넣어준다. */
-    private void addCheatDayFoodInfo(int remainingKcal, List<cheatDayFoodInfo> cheatDayFoodInfoList, Food cheatDayFood, int unitGram, String unitName) {
+    private void addCheatDayFoodInfo(List<cheatDayFoodInfo> cheatDayFoodInfoList, int remainingKcal, Food cheatDayFood, FoodUnit foodUnit) {
 
+        int unitGram = foodUnit.getUnitGram();
+        String unitName = foodUnit.getUnitName();
         int offer = calculateOffer(remainingKcal, cheatDayFood, unitGram, unitName);
         int offerCarbohydrate = (int) (cheatDayFood.getCarbohydrate() * (unitGram /100) * offer);
         int offerProtein = (int) (cheatDayFood.getProtein() * (unitGram /100) * offer);
@@ -196,28 +167,15 @@ public class FoodService {
         return offer;
     }
 
-    /** 치팅데이 단위 관리 맵 */
-    private Map<String, Map<String, Object>> getFoodUnitMap() {
-        Map<String, Map<String, Object>> foodMap = new HashMap<>();
-        foodMap.put("치킨",
-                Map.of("unitGram", 100, "unitName", "조각"));
-        foodMap.put("피자",
-                Map.of("unitGram", 100, "unitName", "조각"));
-        foodMap.put("면류",
-                Map.of("unitGram", 100, "unitName", "개"));
-        foodMap.put("버거",
-                Map.of("unitGram", 250, "unitName", "개"));
-        foodMap.put("떡볶이",
-                Map.of("unitGram", 200, "unitName", "인분"));
-        foodMap.put("김말이",
-                Map.of("unitGram", 40, "unitName", "개"));
-        foodMap.put("오징어튀김",
-                Map.of("unitGram", 40, "unitName", "개"));
-        foodMap.put("어묵",
-                Map.of("unitGram", 50, "unitName", "개"));
-        foodMap.put("순대",
-                Map.of("unitGram", 200, "unitName", "인분"));
-        return foodMap;
+    /** 식품의 단위 정보 얻기 */
+    private FoodUnit getFoodUnit(Food food){
+        FoodUnit foodUnit = new FoodUnit(1,"g");
+        if (FoodManager.isContainsKey(food.getCategory())) { // 단위정보가 있는 음식의 경우
+            foodUnit = FoodManager.getFoodUnit(food.getCategory());
+        }else if (food.getCategory().equals("분식")){ //분식 카테고리는 음식이름이 카테고리
+            foodUnit = FoodManager.getFoodUnit(food.getCategory());
+        }
+        return foodUnit;
     }
 
     /**
@@ -227,23 +185,10 @@ public class FoodService {
         Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                 .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
 
-        // 식품의 단위 계산
-        int unitGram = 1;
-        String unitName = "g";
-        Map<String, Map<String, Object>> foodUnitMap = getFoodUnitMap(); // 치팅데이 단위 Map
-        if (foodUnitMap.containsKey(food.getCategory())) { // 단위정보가 있는 음식의 경우
-            Map<String, Object> categoryInfo = foodUnitMap.get(food.getCategory());
-            unitGram = (int) categoryInfo.get("unitGram");
-            unitName = (String) categoryInfo.get("unitName");
-        }else if (food.getCategory().equals("분식")){ //분식 카테고리는 음식이름이 카테고리
-            Map<String, Object> categoryInfo = foodUnitMap.get(food.getName());
-            unitGram = (int) categoryInfo.get("unitGram");
-            unitName = (String) categoryInfo.get("unitName");
-        }
+        FoodUnit foodUnit = getFoodUnit(food);
+        int offer = calculateOffer(remainingKcal, food, foodUnit.getUnitGram(), foodUnit.getUnitName());
+        int offerKcal = (int) (foodUnit.getUnitGram() * (food.getKcal() /100) * offer);
 
-        int offer = calculateOffer(remainingKcal, food, unitGram, unitName);
-        int offerKcal = (int) (unitGram * (food.getKcal() /100) * offer);
-
-        return new GetAmountSuggestionResponse(food.getName(), offer+unitName, offerKcal, remainingKcal);
+        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, remainingKcal);
     }
 }
