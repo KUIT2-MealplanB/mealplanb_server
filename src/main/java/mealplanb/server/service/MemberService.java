@@ -8,7 +8,7 @@ import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberSex;
 import mealplanb.server.domain.Member.MemberStatus;
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.dto.member.*;

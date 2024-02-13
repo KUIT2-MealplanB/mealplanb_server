@@ -1,7 +1,7 @@
 package mealplanb.server.repository;
 
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
