@@ -66,14 +66,14 @@ public class FoodMealMappingTableService {
      * 해당 끼니에 식사 리스트 등록, 수정
      */
     @Transactional
-    public void postMealFood(Member member, Meal meal, List<FoodItem> foods) {
+    public void postMealFood(Member member, Meal meal, List<FoodItem> foods, boolean isRecommended) {
         log.info("[FoodMealMappingTableService.postMealFood]");
         deleteFoodMealMapping(meal.getMealId());
 
         for (FoodItem foodItem : foods){
             Food food = foodRepository.findById(foodItem.getFoodId())
                     .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
-            FoodMealMappingTable foodMealMappingTable = new FoodMealMappingTable(member, meal, food, foodItem.getQuantity(), false);
+            FoodMealMappingTable foodMealMappingTable = new FoodMealMappingTable(member, meal, food, foodItem.getQuantity(), isRecommended);
             foodMealMappingTableRepository.save(foodMealMappingTable);
         }
     }

@@ -133,7 +133,7 @@ public class MealService {
             throw new MealException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
         }
 
-        foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods());
+        foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods(), false);
     }
 
     /**
@@ -190,7 +190,7 @@ public class MealService {
 
         // 끼니에 식품 등록
         foodList.add(food);
-        foodMealMappingTableService.postMealFood(member, meal, foodList);
+        foodMealMappingTableService.postMealFood(member, meal, foodList, true);
     }
 }
 
