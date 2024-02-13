@@ -20,6 +20,6 @@ public class MealTypeConverter {
     }
 
     public static String convertMealTypeLabel(int mealType) {
-        return MEAL_TYPE_MAP.getOrDefault(mealType, "값 없음");
+        return MEAL_TYPE_MAP.getOrDefault(mealType, String.valueOf(mealType)+" 끼");
     }
 }
