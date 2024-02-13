@@ -43,9 +43,10 @@ public class ChatController {
      * 채팅(인기있는)
      */
     @GetMapping("/community-favorite")
-    public BaseResponse<GetFavoriteFoodResponse> getCommunityFavoriteFood(@RequestHeader(value = "Authorization", required = false) String authorization){
+    public BaseResponse<GetFavoriteFoodResponse> getCommunityFavoriteFood(@RequestHeader(value = "Authorization") String authorization){
         log.info("[ChatController.getCommunityFavoriteFood]");
-        return new BaseResponse<>(chatService.getCommunityFavoriteFood());
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(chatService.getCommunityFavoriteFood(memberId));
     }
 
     /**

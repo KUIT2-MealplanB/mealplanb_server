@@ -529,4 +529,9 @@ public class MemberService {
         return lackingNutrient;
     }
 
+    /** 해당 id를 가진 member가 존재하는지 여부 파악, 없으면 MEMBER_NOT_FOUND 에러*/
+    public void checkMemberExist(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    }
 }

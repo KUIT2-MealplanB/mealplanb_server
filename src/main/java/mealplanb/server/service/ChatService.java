@@ -40,8 +40,9 @@ public class ChatService {
     /**
      * 채팅(인기있는)
      */
-    public GetFavoriteFoodResponse getCommunityFavoriteFood() {
+    public GetFavoriteFoodResponse getCommunityFavoriteFood(Long memberId) {
         log.info("[ChatService.getCommunityFavoriteFood]");
+        memberService.checkMemberExist(memberId);
         return foodMealMappingTableService.getCommunityFavoriteFood();
     }
 
