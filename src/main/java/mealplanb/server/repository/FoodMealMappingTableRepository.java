@@ -20,4 +20,12 @@ public interface FoodMealMappingTableRepository extends JpaRepository<FoodMealMa
             "ORDER BY COUNT(*) DESC "+
             "LIMIT 1", nativeQuery = true)
     Long findMostEatenFoodIdByUserId(@Param("memberId") Long memberId);
+
+    @Query(value = "SELECT fm.food_id " +
+            "FROM food_meal_mapping_table fm " +
+            "WHERE fm.status = 'A' "+
+            "GROUP BY fm.food_id " +
+            "ORDER BY COUNT(*) DESC "+
+            "LIMIT 1", nativeQuery = true)
+    Long findMostEatenFoodId();
 }
