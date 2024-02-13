@@ -131,4 +131,9 @@ public class FoodMealMappingTableService {
                 .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return new GetFavoriteFoodResponse(communityFavoriteFood.getFoodId(), communityFavoriteFood.getName(), (int) communityFavoriteFood.getCarbohydrate(), (int) communityFavoriteFood.getProtein(), (int) communityFavoriteFood.getFat());
     }
+
+    public boolean isMealEmpty(Long mealId) {
+        Optional<List<FoodMealMappingTable>> mealFoodList= foodMealMappingTableRepository.findAllByMeal_MealIdAndStatus(mealId, BaseStatus.A);
+        return mealFoodList.isEmpty();
+    }
 }

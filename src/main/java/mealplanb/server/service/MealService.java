@@ -13,6 +13,7 @@ import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.dto.meal.*;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.MealTypeConverter;
+import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.dto.meal.PatchMealResponse;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,6 +150,35 @@ public class MealService {
 
         List<FoodInfo> foodList = foodMealMappingTableService.getMealFoodList(mealId);
         return new GetMealFoodResponse(meal.getMealId(), meal.getMealDate(), meal.getMealType(), foodList);
+    }
+
+    /**
+     * 채팅을 통한 끼니 등록
+     */
+    @Transactional
+    public void postMealSuggestedFood(Long memberId, FoodItem food) {
+        log.info("[MealService.postMealSuggestedFood]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        Optional<Meal> todayLatestMeal = mealRepository.findTodayLatestMeal(memberId, LocalDate.now());
+
+        Meal meal;
+        if (todayLatestMeal.isPresent() && foodMealMappingTableService.isMealEmpty(memberId)){
+            // 마지막 끼니가 빈끼니면 해당 끼니에 식품 추가
+            meal = todayLatestMeal.get();
+        }else{
+            // 그렇지 않다면 새로운 끼니를 생성 후, 식품 추가
+            int mealType = todayLatestMeal.isPresent() ? todayLatestMeal.get().getMealType() + 1 : 1;
+            meal = new Meal(member, LocalDate.now(), mealType);
+            Meal createdMeal = mealRepository.save(meal);
+            meal = createdMeal;
+        }
+
+        log.info("[MealService.postMealSuggestedFood] mealId = {}", meal.getMealId());
+
+        // 끼니에 식품 등록
+        foodMealMappingTableService.postMealFood(member, meal, Arrays.asList(food));
     }
 }
 
