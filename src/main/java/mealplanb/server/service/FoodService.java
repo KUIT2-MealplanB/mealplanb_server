@@ -7,6 +7,7 @@ import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food;
+import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.food.*;
@@ -157,40 +158,40 @@ public class FoodService {
 
     /** 치팅데이 단위가 없는 음식 추천 로직 */
     private void gramSuggestion(int remainingKcal, Optional<List<Food>> cheatDayFoodOptional, List<cheatDayFoodInfo> cheatDayFoodInfoList) {
-        int unitGram = 100;
+        int unitGram = 1;
         String unitName = "g";
         for (Food cheatDayFood : cheatDayFoodOptional.get()){
             addCheatDayFoodInfo(remainingKcal, cheatDayFoodInfoList, cheatDayFood, unitGram, unitName);
         }
     }
 
-    /** unitGram에 따라 얼마나 먹어야하는 지(=offer)를 정해주고, cheatDayFoodInfo를 만들어서 cheatDayFoodInfoList에 넣어준다. */
+    /**cheatDayFoodInfo를 만들어서 cheatDayFoodInfoList에 넣어준다. */
     private void addCheatDayFoodInfo(int remainingKcal, List<cheatDayFoodInfo> cheatDayFoodInfoList, Food cheatDayFood, int unitGram, String unitName) {
-        Long foodId = cheatDayFood.getFoodId();
-        String name = cheatDayFood.getName();
 
-        int offer;
-        if (unitName == "g"){
-            double gramKcal = cheatDayFood.getKcal() / unitGram;
-            offer = (int) (remainingKcal / gramKcal);
-            log.info("CheatDayFoodInfo : FoodId={}, Name={}, Offer={}{}, offerKcal= {}, (remainingKcal = {}, unitKcal = {})",
-                    foodId, name, offer, unitName, offer*gramKcal, remainingKcal, gramKcal);
-        }else{
-            double unitKcal = cheatDayFood.getKcal() * (unitGram /100);
-            offer = (int) (remainingKcal / unitKcal);
-            log.info("CheatDayFoodInfo : FoodId={}, Name={}, Offer={}{}, offerKcal= {}, (remainingKcal = {}, unitKcal = {})",
-                    foodId, name, offer, unitName, offer*unitKcal, remainingKcal, unitKcal);
-        }
-
+        int offer = calculateOffer(remainingKcal, cheatDayFood, unitGram, unitName);
         int offerCarbohydrate = (int) (cheatDayFood.getCarbohydrate() * (unitGram /100) * offer);
         int offerProtein = (int) (cheatDayFood.getProtein() * (unitGram /100) * offer);
         int offerFat = (int) (cheatDayFood.getFat() * (unitGram /100) * offer);
-        log.info(" ---and offerCarbohydrate={}, offerProtein={}, offerFat={}",
+        log.info("-----and offerCarbohydrate={}, offerProtein={}, offerFat={}",
                 offerCarbohydrate, offerProtein, offerFat);
 
         if (offer!=0){
-            cheatDayFoodInfoList.add(new cheatDayFoodInfo(foodId, name, offerCarbohydrate, offerProtein, offerFat, offer+ unitName));
+            cheatDayFoodInfoList.add( new cheatDayFoodInfo(
+                            cheatDayFood.getFoodId(),
+                            cheatDayFood.getName(),
+                            offerCarbohydrate,
+                            offerProtein,
+                            offerFat,
+                            offer+ unitName));
         }
+    }
+
+    /** 제공량 계산 */
+    private int calculateOffer(int remainingKcal, Food food, int unitGram, String unitName) {
+        double unitKcal = unitGram * (food.getKcal() /100);
+        int offer = (int) (remainingKcal / unitKcal);
+        log.info("[FoodService.calculateOffer]  foodName: {}, unitKcal ={}, offer ={}, offerKcal= {}, remainingKcal = {}", food.getName(), unitKcal, offer+unitName, unitKcal*offer, remainingKcal);
+        return offer;
     }
 
     /** 치팅데이 단위 관리 맵 */
@@ -215,5 +216,32 @@ public class FoodService {
         foodMap.put("순대",
                 Map.of("unitGram", 200, "unitName", "인분"));
         return foodMap;
+    }
+
+    /**
+     * 얼마나 먹을까요
+     */
+    public GetAmountSuggestionResponse getAmountSuggestion(int remainingKcal, Long foodId) {
+        Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
+                .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
+
+        // 식품의 단위 계산
+        int unitGram = 1;
+        String unitName = "g";
+        Map<String, Map<String, Object>> foodUnitMap = getFoodUnitMap(); // 치팅데이 단위 Map
+        if (foodUnitMap.containsKey(food.getCategory())) { // 단위정보가 있는 음식의 경우
+            Map<String, Object> categoryInfo = foodUnitMap.get(food.getCategory());
+            unitGram = (int) categoryInfo.get("unitGram");
+            unitName = (String) categoryInfo.get("unitName");
+        }else if (food.getCategory().equals("분식")){ //분식 카테고리는 음식이름이 카테고리
+            Map<String, Object> categoryInfo = foodUnitMap.get(food.getName());
+            unitGram = (int) categoryInfo.get("unitGram");
+            unitName = (String) categoryInfo.get("unitName");
+        }
+
+        int offer = calculateOffer(remainingKcal, food, unitGram, unitName);
+        int offerKcal = (int) (unitGram * (food.getKcal() /100) * offer);
+
+        return new GetAmountSuggestionResponse(food.getName(), offer+unitName, offerKcal, remainingKcal);
     }
 }
