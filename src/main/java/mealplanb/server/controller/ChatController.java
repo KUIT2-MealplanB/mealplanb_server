@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
-import mealplanb.server.dto.chat.GetMyFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
 import mealplanb.server.service.ChatService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +33,19 @@ public class ChatController {
      * 채팅(자주먹는)
      */
     @GetMapping("/my-favorite")
-    public BaseResponse<GetMyFavoriteFoodResponse> getMyFavoriteFood(@RequestHeader("Authorization") String authorization){
+    public BaseResponse<GetFavoriteFoodResponse> getMyFavoriteFood(@RequestHeader("Authorization") String authorization){
         log.info("[ChatController.getMyFavoriteFood]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(chatService.getMyFavoriteFood(memberId));
+    }
+
+    /**
+     * 채팅(인기있는)
+     */
+    @GetMapping("/community-favorite")
+    public BaseResponse<GetFavoriteFoodResponse> getCommunityFavoriteFood(@RequestHeader(value = "Authorization", required = false) String authorization){
+        log.info("[ChatController.getCommunityFavoriteFood]");
+        return new BaseResponse<>(chatService.getCommunityFavoriteFood());
     }
 
     /**
