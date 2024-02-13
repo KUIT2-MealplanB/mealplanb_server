@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GetMyFavoriteFoodResponse {
+public class GetFavoriteFoodResponse {
     private long foodId;
     private String name;
     private int carbohydrate;
