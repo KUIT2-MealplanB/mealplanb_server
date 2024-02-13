@@ -164,13 +164,19 @@ public class MealService {
         Optional<Meal> todayLatestMeal = mealRepository.findTodayLatestMeal(memberId, LocalDate.now());
 
         Meal meal = null;
+        List<FoodItem> foodList = new ArrayList<>();
         if (todayLatestMeal.isPresent()){
             log.info("[MealService.postMealSuggestedFood] - 마지막 끼니 존재");
             // 마지막 끼니가 빈끼니면 해당 끼니에 식품 추가
             if(foodMealMappingTableService.isMealEmpty(todayLatestMeal.get().getMealId())){
                 log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니", todayLatestMeal.get().getMealId());
                 meal = todayLatestMeal.get();
-            }
+            }/*else if (todayLatestMeal.get().getMealType()==10){
+                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니는 아니지만, 열끼 이상 만들지 않기 위해 해당 끼니에 추가", todayLatestMeal.get().getMealId());
+                meal = todayLatestMeal.get();
+                List<FoodInfo> mealFoodList = foodMealMappingTableService.getMealFoodList(meal.getMealId());
+                mealFoodList.forEach(f -> foodList.add(new FoodItem(f.getFoodId(), f.getQuantity())));
+            }*/
         }
 
         if (meal==null){ // 그렇지 않다면 새로운 끼니를 생성 후, 식품 추가
@@ -183,7 +189,8 @@ public class MealService {
         log.info("[MealService.postMealSuggestedFood] mealId = {}", meal.getMealId());
 
         // 끼니에 식품 등록
-        foodMealMappingTableService.postMealFood(member, meal, Arrays.asList(food));
+        foodList.add(food);
+        foodMealMappingTableService.postMealFood(member, meal, foodList);
     }
 }
 
