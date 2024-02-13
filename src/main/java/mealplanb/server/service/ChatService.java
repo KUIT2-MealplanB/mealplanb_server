@@ -6,7 +6,6 @@ import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
-import mealplanb.server.dto.meal.PostMealFoodRequest;
 import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import org.springframework.stereotype.Service;
 

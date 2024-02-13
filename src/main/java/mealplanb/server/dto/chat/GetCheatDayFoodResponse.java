@@ -20,5 +20,6 @@ public class GetCheatDayFoodResponse {
         private int protein;
         private int fat;
         private String offer;
+        private int quantity;
     }
 }
