@@ -163,15 +163,20 @@ public class MealService {
 
         Optional<Meal> todayLatestMeal = mealRepository.findTodayLatestMeal(memberId, LocalDate.now());
 
-        Meal meal;
-        if (todayLatestMeal.isPresent() && foodMealMappingTableService.isMealEmpty(memberId)){
+        Meal meal = null;
+        if (todayLatestMeal.isPresent()){
+            log.info("[MealService.postMealSuggestedFood] - 마지막 끼니 존재");
             // 마지막 끼니가 빈끼니면 해당 끼니에 식품 추가
-            meal = todayLatestMeal.get();
-        }else{
-            // 그렇지 않다면 새로운 끼니를 생성 후, 식품 추가
+            if(foodMealMappingTableService.isMealEmpty(todayLatestMeal.get().getMealId())){
+                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니", todayLatestMeal.get().getMealId());
+                meal = todayLatestMeal.get();
+            }
+        }
+
+        if (meal==null){ // 그렇지 않다면 새로운 끼니를 생성 후, 식품 추가
+            log.info("[MealService.postMealSuggestedFood] - 새로운 끼니 생성");
             int mealType = todayLatestMeal.isPresent() ? todayLatestMeal.get().getMealType() + 1 : 1;
-            meal = new Meal(member, LocalDate.now(), mealType);
-            Meal createdMeal = mealRepository.save(meal);
+            Meal createdMeal = mealRepository.save(new Meal(member, LocalDate.now(), mealType));
             meal = createdMeal;
         }
 

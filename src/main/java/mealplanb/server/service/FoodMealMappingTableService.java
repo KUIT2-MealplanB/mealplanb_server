@@ -91,12 +91,6 @@ public class FoodMealMappingTableService {
         log.info("[FoodMealMappingTableService.makeFoodInfoList]");
         List<FoodInfo> foodInfoList = new ArrayList<>();
 
-        if (foodMealMappingTables.isEmpty()) { // 식사리스트가 없는 경우
-            log.info("[FoodMealMappingTableService.makeFoodInfoList] - 해당 끼니에 만들어진 식사리스트 없음");
-            return foodInfoList;
-        }
-
-        // 식사리스트가 있으면
         for (FoodMealMappingTable i: foodMealMappingTables.get()){
             Food food = i.getFood();
             FoodInfo foodInfo = new FoodInfo(food.getFoodId(), i.getQuantity(), food.getName(), calculateFoodKcal(i.getQuantity(), food.getKcal()));
@@ -134,6 +128,7 @@ public class FoodMealMappingTableService {
 
     public boolean isMealEmpty(Long mealId) {
         Optional<List<FoodMealMappingTable>> mealFoodList= foodMealMappingTableRepository.findAllByMeal_MealIdAndStatus(mealId, BaseStatus.A);
-        return mealFoodList.isEmpty();
+        log.info("[FoodMealMappingTableService.isMealEmpty] mealId {} isMealEmpty = {}", mealId, mealFoodList.get().isEmpty());
+        return mealFoodList.get().isEmpty();
     }
 }
