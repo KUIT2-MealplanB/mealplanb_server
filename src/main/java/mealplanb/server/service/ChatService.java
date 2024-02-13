@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
-import mealplanb.server.dto.chat.GetMyFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,9 +32,17 @@ public class ChatService {
     /**
      * 채팅(자주먹는)
      */
-    public GetMyFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
+    public GetFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
         log.info("[ChatService.getMyFavoriteFood]");
         return foodMealMappingTableService.getMyFavoriteFood(memberId);
+    }
+
+    /**
+     * 채팅(인기있는)
+     */
+    public GetFavoriteFoodResponse getCommunityFavoriteFood() {
+        log.info("[ChatService.getCommunityFavoriteFood]");
+        return foodMealMappingTableService.getCommunityFavoriteFood();
     }
 
     /**
