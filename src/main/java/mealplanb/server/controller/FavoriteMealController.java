@@ -47,13 +47,12 @@ public class FavoriteMealController {
      * 나의 식단 삭제
      */
 
-    @PatchMapping("")
+    @PatchMapping("/{favoriteMealId}")
     public BaseResponse<Void> deleteMyMeal(@RequestHeader("Authorization") String authorization,
                                            @PathVariable Long favoriteMealId){
         log.info("[FavoriteMealController.deleteMyMeal]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         favoriteMealService.deleteMyMeal(memberId, favoriteMealId);
-        favoriteMealComponentService.deleteMyMealComponent(favoriteMealId);
         return new BaseResponse<>(null);
     }
 }
