@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
-import mealplanb.server.domain.Member.MemberStatus;
+import mealplanb.server.domain.Food.Food;
 
 
 @Entity

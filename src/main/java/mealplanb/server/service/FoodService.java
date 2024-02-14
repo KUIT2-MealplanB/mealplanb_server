@@ -6,7 +6,11 @@ import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
+import mealplanb.server.domain.Food.FoodManager;
+import mealplanb.server.domain.Food.FoodUnit;
+import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
+import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.food.*;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
 import mealplanb.server.domain.Member.Member;
@@ -21,7 +25,7 @@ import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -107,5 +111,84 @@ public class FoodService {
                 .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
                 .collect(Collectors.toList());
         return new GetFoodAutoCompleteResponse(page, autoComplete.getTotalPages(), foods);
+    }
+
+    /**
+     * 채팅(치팅데이)
+     */
+    public List<cheatDayFoodInfo> getCheatDayFood(int remainingKcal, String lackingNutrientName, String category) {
+        log.info("[FoodService.getCheatDayFood]");
+
+        Optional<List<Food>> cheatDayFoodOptional= foodRepository.getCheatDayFood(remainingKcal, lackingNutrientName, category);
+        List<cheatDayFoodInfo> cheatDayFoodInfoList = new ArrayList<>(); // 반환값
+
+        if (cheatDayFoodOptional.isPresent()) {
+            for (Food cheatDayFood : cheatDayFoodOptional.get()){
+                FoodUnit foodUnit = getFoodUnit(cheatDayFood);
+                addCheatDayFoodInfo(cheatDayFoodInfoList, remainingKcal, cheatDayFood, foodUnit);
+            }
+        }else{
+            //로그용 else 구문
+            log.info("[FoodService.getCheatDayFood]- 해당하는 음식이 존재하지 않음");
+            //존재하지 안더라도 오류가 아니므로 아래에서 빈 배열을 반환
+        }
+        return cheatDayFoodInfoList;
+    }
+
+
+    /**cheatDayFoodInfo를 만들어서 cheatDayFoodInfoList에 넣어준다. */
+    private void addCheatDayFoodInfo(List<cheatDayFoodInfo> cheatDayFoodInfoList, int remainingKcal, Food cheatDayFood, FoodUnit foodUnit) {
+
+        int unitGram = foodUnit.getUnitGram();
+        String unitName = foodUnit.getUnitName();
+        int offer = calculateOffer(remainingKcal, cheatDayFood, unitGram, unitName);
+        int offerCarbohydrate = (int) (cheatDayFood.getCarbohydrate() * (unitGram /100) * offer);
+        int offerProtein = (int) (cheatDayFood.getProtein() * (unitGram /100) * offer);
+        int offerFat = (int) (cheatDayFood.getFat() * (unitGram /100) * offer);
+        log.info("-----and offerCarbohydrate={}, offerProtein={}, offerFat={}",
+                offerCarbohydrate, offerProtein, offerFat);
+
+        if (offer!=0){
+            cheatDayFoodInfoList.add( new cheatDayFoodInfo(
+                            cheatDayFood.getFoodId(),
+                            cheatDayFood.getName(),
+                            offerCarbohydrate,
+                            offerProtein,
+                            offerFat,
+                            offer+ unitName));
+        }
+    }
+
+    /** 제공량 계산 */
+    private int calculateOffer(int remainingKcal, Food food, int unitGram, String unitName) {
+        double unitKcal = unitGram * (food.getKcal() /100);
+        int offer = (int) (remainingKcal / unitKcal);
+        log.info("[FoodService.calculateOffer]  foodName: {}, unitKcal ={}, offer ={}, offerKcal= {}, remainingKcal = {}", food.getName(), unitKcal, offer+unitName, unitKcal*offer, remainingKcal);
+        return offer;
+    }
+
+    /** 식품의 단위 정보 얻기 */
+    private FoodUnit getFoodUnit(Food food){
+        FoodUnit foodUnit = new FoodUnit(1,"g");
+        if (FoodManager.isContainsKey(food.getCategory())) { // 단위정보가 있는 음식의 경우
+            foodUnit = FoodManager.getFoodUnit(food.getCategory());
+        }else if (food.getCategory().equals("분식")){ //분식 카테고리는 음식이름이 카테고리
+            foodUnit = FoodManager.getFoodUnit(food.getCategory());
+        }
+        return foodUnit;
+    }
+
+    /**
+     * 얼마나 먹을까요
+     */
+    public GetAmountSuggestionResponse getAmountSuggestion(int remainingKcal, Long foodId) {
+        Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
+                .orElseThrow(()-> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
+
+        FoodUnit foodUnit = getFoodUnit(food);
+        int offer = calculateOffer(remainingKcal, food, foodUnit.getUnitGram(), foodUnit.getUnitName());
+        int offerKcal = (int) (foodUnit.getUnitGram() * (food.getKcal() /100) * offer);
+
+        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, remainingKcal);
     }
 }
