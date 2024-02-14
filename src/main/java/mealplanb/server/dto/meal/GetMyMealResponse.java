@@ -24,10 +24,11 @@ public class GetMyMealResponse {
         private int mealKcal;
         private int foodCount; // 내용물 개수
 
-        public FavoriteMealItem(Long favoriteMealId, String favoriteMealName, int totalKcal) {
+        public FavoriteMealItem(Long favoriteMealId, String favoriteMealName, int totalKcal, int foodCount) {
             this.favoriteMealId = favoriteMealId;
             this.favoriteMealName = favoriteMealName;
             this.mealKcal = totalKcal;
+            this.foodCount = foodCount;
         }
     }
 }

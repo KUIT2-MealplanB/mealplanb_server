@@ -76,7 +76,8 @@ public class FavoriteMealComponentService {
             FavoriteMealItem mealItem = new FavoriteMealItem(
                     favoriteMealId,
                     meal.getFavoriteMealName(),
-                    totalKcal
+                    totalKcal,
+                    favoriteMealComponentList.size()
             );
 
             mealItemList.add(mealItem);
