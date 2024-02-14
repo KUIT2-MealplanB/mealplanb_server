@@ -2,12 +2,14 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.FavoriteMealComponent;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
+import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.FAVORITE_MEAL_COMPONENT_NOT_EXIST;
-import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.FAVORITE_MEAL_NOT_EXIST;
+import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
 
 
 @Slf4j
@@ -27,6 +28,29 @@ public class FavoriteMealComponentService {
 
     private final FoodRepository foodRepository;
     private final FavoriteMealComponentRepository favoriteMealComponentRepository;
+
+    /**
+     * 나의 식단 등록
+     */
+    @Transactional
+    public void saveItems(PostMyMealRequest postMyMealRequest,FavoriteMeal favoriteMeal){
+        for (PostMyMealRequest.FoodItem foodItem : postMyMealRequest.getFoods()) {
+            long foodId = foodItem.getFoodId();
+            int quantity = foodItem.getQuantity();
+            Food food = foodRepository.findByFoodId(foodId)
+                    .orElseThrow(() -> new FoodException(FOOD_NOT_FOUND));
+
+            FavoriteMealComponent favoriteMealComponent = FavoriteMealComponent.builder()
+                    .favoriteMeal(favoriteMeal)
+                    .food(food)
+                    .quantity(quantity)
+                    .status(BaseStatus.A)
+                    .build();
+
+            favoriteMealComponentRepository.save(favoriteMealComponent);
+        }
+    }
+
 
     /**
      * 나의 식단 조회
