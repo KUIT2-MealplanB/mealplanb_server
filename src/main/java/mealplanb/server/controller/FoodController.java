@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
-import mealplanb.server.dto.food.GetFoodResponse;
-import mealplanb.server.dto.food.PostNewFoodRequest;
-import mealplanb.server.dto.food.PostNewFoodResponse;
+import mealplanb.server.dto.food.*;
 import mealplanb.server.service.FoodService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -30,7 +28,7 @@ public class FoodController {
     @GetMapping("/{foodId}")
     public BaseResponse<GetFoodResponse> getFoodDetail(@RequestHeader("Authorization") String authorization,
                                                        @PathVariable long foodId) {
-        System.out.println("[FoodController.getFoodDetail]");
+        log.info("[FoodController.getFoodDetail]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(foodService.getFoodDetail(memberId, foodId));
     }
@@ -39,11 +37,39 @@ public class FoodController {
      * 식사 등록 by 사용자
      */
     @PostMapping("")
-    public BaseResponse<PostNewFoodResponse> postNewFood(@Validated @RequestBody PostNewFoodRequest postNewFoodRequest,  BindingResult bindingResult){
-        System.out.println("[FoodController.postNewFood]");
+    public BaseResponse<PostNewFoodResponse> postNewFood(@RequestHeader("Authorization") String authorization,
+                                                         @Validated @RequestBody PostNewFoodRequest postNewFoodRequest,
+                                                         BindingResult bindingResult){
+        log.info("[FoodController.postNewFood]");
         if (bindingResult.hasErrors()) {
             throw new MemberException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-        return new BaseResponse<>(foodService.postNewFood(postNewFoodRequest));
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(foodService.postNewFood(memberId, postNewFoodRequest));
+    }
+
+    /**
+     * 사용자 등록 식품(=식사) 삭제
+     */
+    @PatchMapping("/{foodId}")
+    public BaseResponse<Void> deleteUserCreatedFood(@RequestHeader("Authorization") String authorization,
+                                                    @PathVariable long foodId) {
+        System.out.println("[FoodController.deleteUserCreatedFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        foodService.deleteUserCreatedFood(memberId, foodId);
+        return new BaseResponse<>(null);
+    }
+
+
+    /**
+     * 자동완성 검색
+     */
+    @GetMapping("/auto-complete")
+    public BaseResponse<GetFoodAutoCompleteResponse> getAutoComplete(@RequestHeader(value = "Authorization", required = false) String authorization,
+                                                              @RequestParam String query,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "20") int size){
+        log.info("[FoodController.getAutoComplete]");
+        return new BaseResponse<>(foodService.getAutoComplete(query, page, size));
     }
 }

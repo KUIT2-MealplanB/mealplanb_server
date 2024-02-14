@@ -6,7 +6,7 @@ import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteFood;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse;
 import mealplanb.server.dto.food.PostFavoriteFoodRequest;
@@ -35,7 +35,7 @@ public class FavoriteFoodService {
      * 즐겨찾기한 음식인지 여부 반환
      */
     public Boolean isFavorite(long memberId, long foodId){
-        System.out.println("[FavoriteFoodService.isFavorite]");
+        log.info("[FavoriteFoodService.isFavorite]");
         boolean isFavorite = favoriteFoodRepository.existsByFood_FoodIdAndMember_MemberIdAndStatus(foodId, memberId, BaseStatus.A);
         return isFavorite;
     }
@@ -52,7 +52,7 @@ public class FavoriteFoodService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        Food food = foodRepository.findByFoodId(foodId)
+        Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                 .orElseThrow(()-> new FoodException(FOOD_NOT_FOUND));
 
         if(favoriteFoodRepository.existsByMemberAndFoodAndStatus(member,food,BaseStatus.A)){
