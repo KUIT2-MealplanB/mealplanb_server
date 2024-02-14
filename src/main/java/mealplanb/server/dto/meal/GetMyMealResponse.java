@@ -22,6 +22,7 @@ public class GetMyMealResponse {
         private long favoriteMealId;
         private String favoriteMealName;
         private int mealKcal;
+        private int foodCount; // 내용물 개수
 
         public FavoriteMealItem(Long favoriteMealId, String favoriteMealName, int totalKcal) {
             this.favoriteMealId = favoriteMealId;
