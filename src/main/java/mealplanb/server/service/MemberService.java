@@ -8,7 +8,7 @@ import mealplanb.server.domain.Member.Member;
 import mealplanb.server.domain.Member.MemberSex;
 import mealplanb.server.domain.Member.MemberStatus;
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.dto.member.*;
@@ -529,4 +529,9 @@ public class MemberService {
         return lackingNutrient;
     }
 
+    /** 해당 id를 가진 member가 존재하는지 여부 파악, 없으면 MEMBER_NOT_FOUND 에러*/
+    public void checkMemberExist(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    }
 }

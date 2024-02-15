@@ -1,4 +1,4 @@
-package mealplanb.server.domain;
+package mealplanb.server.domain.Food;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Base.BaseTimeEntity;
+import mealplanb.server.domain.FavoriteFood;
+import mealplanb.server.domain.FavoriteMealComponent;
+import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.dto.food.PostNewFoodRequest;
 import java.util.ArrayList;
 import java.util.List;
