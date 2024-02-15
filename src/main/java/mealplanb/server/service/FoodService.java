@@ -93,7 +93,7 @@ public class FoodService {
 
         // 사용자가 식품을 지울 권한이 있는지 검증
         if (!memberId.equals(food.getCreateMemberId())){
-            new FoodException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
+            new FoodException(BaseExceptionResponseStatus.FOOD_UNAUTHORIZED_ACCESS);
         }
         food.setStatus(BaseStatus.D);
     }
