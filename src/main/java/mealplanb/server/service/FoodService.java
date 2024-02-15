@@ -124,7 +124,7 @@ public class FoodService {
         if (cheatDayFoodOptional.isPresent()) {
             Map<String, Map<String, Object>> foodUnitMap = getFoodUnitMap(); // 치팅데이 단위 Map
 
-            if (foodUnitMap.containsKey(category)||category=="분식") { // 단위정보가 있는 음식의 경우
+            if (foodUnitMap.containsKey(category)||category.equals("분식")) { // 단위정보가 있는 음식의 경우
                 unitSuggestion(remainingKcal, category, cheatDayFoodOptional, cheatDayFoodInfoList, foodUnitMap);
             }else {
                 gramSuggestion(remainingKcal, cheatDayFoodOptional, cheatDayFoodInfoList);
@@ -145,7 +145,7 @@ public class FoodService {
         for (Food cheatDayFood : cheatDayFoodOptional.get()){
 
             // 분식의 경우 해당 음식의 이름으로 categoryInfo 를 갱신 (분식의 경우 categoryInfo 가 null 이었을것임)
-            if(cheatDayFood.getCategory()=="분식"){
+            if(cheatDayFood.getCategory().equals("분식")){
                 categoryInfo = foodUnitMap.get(cheatDayFood.getName());
             }
             int unitGram = (int) categoryInfo.get("unitGram");
@@ -170,7 +170,7 @@ public class FoodService {
         String name = cheatDayFood.getName();
 
         int offer;
-        if (unitName == "g"){
+        if (unitName.equals("g")){
             double gramKcal = cheatDayFood.getKcal() / unitGram;
             offer = (int) (remainingKcal / gramKcal);
             log.info("CheatDayFoodInfo : FoodId={}, Name={}, Offer={}{}, offerKcal= {}, (remainingKcal = {}, unitKcal = {})",
