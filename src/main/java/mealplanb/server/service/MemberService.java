@@ -24,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
@@ -449,27 +451,6 @@ public class MemberService {
     }
 
     /**
-     * 유저의 남은 칼로리 계산 (for 치팅데이)
-     */
-    public int calculateRemainingKcal(Long memberId){
-        // 유저 정보 불러오기
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-        // 오늘의 끼니 리스트 모아오기
-        Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, LocalDate.now(), BaseStatus.A);
-
-        // 타겟 칼로리
-        int targetKcal = member.getTargetKcal();
-        // 섭취한 총 칼로리
-        int kcal = calculateIntakeKcal(mealsOptional.get());
-        int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
-        log.info("남은 칼로리 = {}", remainingKcal);
-
-        return  remainingKcal;
-    }
-
-    /**
      * 탄단지 그램수 계산
      */
     public int[] calculateNutrientGram(Member member){
@@ -487,16 +468,23 @@ public class MemberService {
     }
 
     /**
-     * 유저에게 가장 부족한 영양소 계산(for 치팅데이)
+     * 유저의 남은 칼로리 & 유저에게 가장 부족한 영양소 계산 (for 치팅데이)
      */
-    public String getLackingNutrientName(Long memberId){
+    public Map<String, Object> calculateRemainingKcalAndLackingNutrientName(Long memberId) {
         // 유저 정보 불러오기
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         // 오늘의 끼니 리스트 모아오기
         Optional<List<Meal>> mealsOptional  = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, LocalDate.now(), BaseStatus.A);
 
+        //--------------------------------------------------
+
+        // [유저의 남은 칼로리 계산]
+        int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
+        log.info("남은 칼로리 = {}", remainingKcal);
+
+        //--------------------------------------------------
+
+        // [유저에게 가장 부족한 영양소 계산]
         // 원래 섭취해야하는 탄,단,지
         int[] targetRatio = calculateNutrientGram(member);
         int targetCarbohydrate = targetRatio[0];
@@ -523,10 +511,29 @@ public class MemberService {
         } else {
             lackingNutrient = "지방";
         }
-
         log.info("남은 탄수화물/단백질/지방양 = {}/{}/{} => {}이 제일 부족", lackingCarbohydrate, lackingProtein, lackingFat, lackingNutrient);
 
-        return lackingNutrient;
+        //--------------------------------------------------
+        // 맵에 값을 담아 반환
+        Map<String, Object> result = new HashMap<>();
+        result.put("remainingKcal", remainingKcal);
+        result.put("lackingNutrientName", lackingNutrient);
+        return result;
+    }
+
+    /**
+     * 유저의 남은 칼로리 계산 (for 얼마나 먹을까요)
+     */
+    public int calculateRemainingKcal(Long memberId) {
+        // 유저 정보 불러오기
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        // 오늘의 끼니 리스트 모아오기
+        Optional<List<Meal>> mealsOptional = mealRepository.findByMember_MemberIdAndMealDateAndStatus(memberId, LocalDate.now(), BaseStatus.A);
+
+        // [유저의 남은 칼로리 계산]
+        int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
+        log.info("남은 칼로리 = {}", remainingKcal);
+        return remainingKcal;
     }
 
     /** 해당 id를 가진 member가 존재하는지 여부 파악, 없으면 MEMBER_NOT_FOUND 에러*/

@@ -9,6 +9,7 @@ import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -23,8 +24,9 @@ public class ChatService {
      */
     public GetCheatDayFoodResponse getCheatDayFood(Long memberId, String category) {
         log.info("[ChatService.getCheatDayFood]");
-        int remainingKcal = memberService.calculateRemainingKcal(memberId);
-        String lackingNutrientName = memberService.getLackingNutrientName(memberId);
+        Map<String, Object> result = memberService.calculateRemainingKcalAndLackingNutrientName(memberId);
+        int remainingKcal = (int) result.get("remainingKcal");
+        String lackingNutrientName = (String) result.get("lackingNutrientName");
         List<cheatDayFoodInfo> cheatDayFood = foodService.getCheatDayFood(remainingKcal, lackingNutrientName, category);
         return new GetCheatDayFoodResponse(cheatDayFood);
     }
