@@ -61,8 +61,6 @@ public class FoodService {
         log.info("[FoodService.postNewFood]");
         Food newFood = new Food(memberId, postNewFoodRequest);
         foodRepository.save(newFood);
-        //todo: 코드 이렇게 길게 안하는 방법은 없을지...
-        //todo: 사실 PostNewFoodResponse랑 Food랑 status, updatedAt, createdAt 유무 차이라서 Food를 반환하는게 나을려나.
         return new PostNewFoodResponse(
                 newFood.getFoodId(),
                 newFood.getName(),
