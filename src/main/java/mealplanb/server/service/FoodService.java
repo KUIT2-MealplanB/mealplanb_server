@@ -153,7 +153,8 @@ public class FoodService {
                             offerCarbohydrate,
                             offerProtein,
                             offerFat,
-                            offer+ unitName));
+                            offer+ unitName,
+                            unitGram*offer));
         }
     }
 
