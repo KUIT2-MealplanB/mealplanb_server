@@ -10,9 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class GetFavoriteFoodResponse {
-    /**
-     * 즐겨찾기한 식품 조회
-     */
+    /** 즐겨찾기한 식품 조회 */
     private List<FoodItem> foods;
 
     @Getter
