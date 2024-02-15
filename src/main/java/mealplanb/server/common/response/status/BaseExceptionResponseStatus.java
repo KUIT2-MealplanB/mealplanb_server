@@ -71,7 +71,12 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     /**
      * 8000: Weight 오류
      */
-    WEIGHT_NOT_FOUND(8000, HttpStatus.BAD_REQUEST.value(), "해당 유저의 체중을 찾을 수 없습니다.");
+    WEIGHT_NOT_FOUND(8000, HttpStatus.BAD_REQUEST.value(), "해당 유저의 체중을 찾을 수 없습니다."),
+
+    /**
+     * 9000: Chat Controller 오류
+     */
+    CHAT_CHEAT_DAY_LEFT_KCAL_NOT_EXIST(9000, HttpStatus.BAD_REQUEST.value(), "해당 유저의 잔여 칼로리가 없습니다.");
 
     private final int code;
     private final int status;

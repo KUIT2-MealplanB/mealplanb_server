@@ -2,6 +2,8 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.ChatException;
+import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
@@ -26,6 +28,10 @@ public class ChatService {
         log.info("[ChatService.getCheatDayFood]");
         Map<String, Object> result = memberService.calculateRemainingKcalAndLackingNutrientName(memberId);
         int remainingKcal = (int) result.get("remainingKcal");
+        if (remainingKcal <= 0){
+            throw new ChatException(BaseExceptionResponseStatus.CHAT_CHEAT_DAY_LEFT_KCAL_NOT_EXIST);
+        }
+
         String lackingNutrientName = (String) result.get("lackingNutrientName");
         List<cheatDayFoodInfo> cheatDayFood = foodService.getCheatDayFood(remainingKcal, lackingNutrientName, category);
         return new GetCheatDayFoodResponse(cheatDayFood);
