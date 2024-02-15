@@ -63,10 +63,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_MEAL_VALUE(7000, HttpStatus.BAD_REQUEST.value(), "식단 요청에서 잘못된 값이 존재합니다."),
     MEAL_NOT_FOUND(7001, HttpStatus.NOT_FOUND.value(), "식단을 찾을 수 없습니다."),
     DUPLICATE_MEAL(7003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 식단입니다."),
-    UNAUTHORIZED_ACCESS(7004, HttpStatus.UNAUTHORIZED.value() , "해당 식단에 대해 권한이 없는 멤버입니다."),
-    FAVORITE_MEAL_NAME_ALREADY_EXIST(7005, HttpStatus.UNAUTHORIZED.value() , "해당 이름을 가진 식단이 이미 존재합니다."),
-    FAVORITE_MEAL_NOT_EXIST(5008,HttpStatus.BAD_REQUEST.value(), "해당 유저의 나의 식단이 존재하지 않습니다."),
-    FAVORITE_MEAL_COMPONENT_NOT_EXIST(5009, HttpStatus.BAD_REQUEST.value(), "나의 식단에 들어있는 식사가 없습니다."),
+    FAVORITE_MEAL_NAME_ALREADY_EXIST(7004, HttpStatus.UNAUTHORIZED.value() , "해당 이름을 가진 식단이 이미 존재합니다."),
+    FAVORITE_MEAL_NOT_EXIST(7005,HttpStatus.BAD_REQUEST.value(), "해당 유저의 나의 식단이 존재하지 않습니다."),
+    FAVORITE_MEAL_COMPONENT_NOT_EXIST(7006, HttpStatus.BAD_REQUEST.value(), "나의 식단에 들어있는 식사가 없습니다."),
 
     /**
      * 8000: Weight 오류
