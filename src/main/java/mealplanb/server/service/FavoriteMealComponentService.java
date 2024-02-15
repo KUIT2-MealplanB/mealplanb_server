@@ -6,7 +6,7 @@ import mealplanb.server.common.exception.MealException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.FavoriteMealComponent;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
 import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FoodRepository;
@@ -43,7 +43,7 @@ public class FavoriteMealComponentService {
                     .orElseThrow(()-> new MealException(FAVORITE_MEAL_NOT_EXIST)); //해당 유저의 나의 식단이 존재하지 않습니다.
 
             for (FavoriteMealComponent component : favoriteMealComponentList) {
-                Food food = foodRepository.findByFoodId(component.getFood().getFoodId())
+                Food food = foodRepository.findByFoodIdAndStatus(component.getFood().getFoodId(), BaseStatus.A)
                         .orElseThrow(() -> new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST)); // 나의 식단에 들어있는 식사가 없습니다.
 
                 // 식재료 량에 따라 칼로리 계산

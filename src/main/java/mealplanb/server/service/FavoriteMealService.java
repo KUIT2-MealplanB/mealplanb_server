@@ -9,7 +9,7 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.FavoriteMealComponent;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.GetMyMealResponse;
 import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
@@ -61,7 +61,7 @@ public class FavoriteMealService {
         for (PostMyMealRequest.FoodItem foodItem : postMyMealRequest.getFoods()) {
             long foodId = foodItem.getFoodId();
             int quantity = foodItem.getQuantity();
-            Food food = foodRepository.findByFoodId(foodId)
+            Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
                     .orElseThrow(()-> new FoodException(FOOD_NOT_FOUND));
 
             FavoriteMealComponent favoriteMealComponent = FavoriteMealComponent.builder()
