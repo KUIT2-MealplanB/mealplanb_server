@@ -140,9 +140,9 @@ public class FoodService {
         int unitGram = foodUnit.getUnitGram();
         String unitName = foodUnit.getUnitName();
         int offer = calculateOffer(remainingKcal, cheatDayFood, unitGram, unitName);
-        int offerCarbohydrate = (int) (cheatDayFood.getCarbohydrate() * (unitGram /100) * offer);
-        int offerProtein = (int) (cheatDayFood.getProtein() * (unitGram /100) * offer);
-        int offerFat = (int) (cheatDayFood.getFat() * (unitGram /100) * offer);
+        int offerCarbohydrate = (int) ((cheatDayFood.getCarbohydrate()/100)  * unitGram * offer);
+        int offerProtein = (int) ((cheatDayFood.getProtein()/100)  * unitGram * offer);
+        int offerFat = (int) ((cheatDayFood.getFat()/100)  * unitGram * offer);
         log.info("-----and offerCarbohydrate={}, offerProtein={}, offerFat={}",
                 offerCarbohydrate, offerProtein, offerFat);
 
