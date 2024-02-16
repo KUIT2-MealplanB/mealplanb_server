@@ -32,8 +32,10 @@ public class ChatService {
             throw new ChatException(BaseExceptionResponseStatus.CHAT_CHEAT_DAY_LEFT_KCAL_NOT_EXIST);
         }
 
-        String lackingNutrientName = (String) result.get("lackingNutrientName");
-        List<cheatDayFoodInfo> cheatDayFood = foodService.getCheatDayFood(remainingKcal, lackingNutrientName, category);
+        String lackingNutrient1 = (String) result.get("lackingNutrient1");
+        String lackingNutrient2 = (String) result.get("lackingNutrient2");
+        String lackingNutrient3 = (String) result.get("lackingNutrient3");
+        List<cheatDayFoodInfo> cheatDayFood = foodService.getCheatDayFood(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3, category);
         return new GetCheatDayFoodResponse(cheatDayFood);
     }
 

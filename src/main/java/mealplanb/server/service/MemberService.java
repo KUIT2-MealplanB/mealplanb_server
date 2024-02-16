@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static mealplanb.server.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -471,6 +472,8 @@ public class MemberService {
      * 유저의 남은 칼로리 & 유저에게 가장 부족한 영양소 계산 (for 치팅데이)
      */
     public Map<String, Object> calculateRemainingKcalAndLackingNutrientName(Long memberId) {
+        log.info("[MemberService.calculateRemainingKcalAndLackingNutrientName]");
+
         // 유저 정보 불러오기
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         // 오늘의 끼니 리스트 모아오기
@@ -502,22 +505,27 @@ public class MemberService {
         int lackingProtein = targetProtein - protein;
         int lackingFat = targetFat - fat;
 
-        // 가장 부족한 영양소 확인
-        String lackingNutrient;
-        if (lackingCarbohydrate >= lackingProtein && lackingCarbohydrate >= lackingFat) {
-            lackingNutrient = "탄수화물";
-        } else if (lackingProtein >= lackingCarbohydrate && lackingProtein >= lackingFat) {
-            lackingNutrient = "단백질";
-        } else {
-            lackingNutrient = "지방";
-        }
-        log.info("남은 탄수화물/단백질/지방양 = {}/{}/{} => {}이 제일 부족", lackingCarbohydrate, lackingProtein, lackingFat, lackingNutrient);
+        // 영양소가 부족한 순대로(내림차순) 정렬
+        Map<String, Integer> lackingNutrients = new HashMap<>();
+        lackingNutrients.put("탄수화물", lackingCarbohydrate);
+        lackingNutrients.put("단백질", lackingProtein);
+        lackingNutrients.put("지방", lackingFat);
+
+        Map<String, Integer> sortedLackingNutrients = lackingNutrients.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, HashMap::new));
 
         //--------------------------------------------------
         // 맵에 값을 담아 반환
         Map<String, Object> result = new HashMap<>();
+
+        int i = 1;
+        for (Map.Entry<String, Integer> entry : sortedLackingNutrients.entrySet()) {
+            log.info("{} 순위 부족 영양소 = {}", i, entry.getKey());
+            result.put("lackingNutrient" + i++, entry.getKey());
+        }
+
         result.put("remainingKcal", remainingKcal);
-        result.put("lackingNutrientName", lackingNutrient);
         return result;
     }
 

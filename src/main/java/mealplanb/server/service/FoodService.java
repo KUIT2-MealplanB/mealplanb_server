@@ -114,10 +114,10 @@ public class FoodService {
     /**
      * 채팅(치팅데이)
      */
-    public List<cheatDayFoodInfo> getCheatDayFood(int remainingKcal, String lackingNutrientName, String category) {
+    public List<cheatDayFoodInfo> getCheatDayFood(int remainingKcal, String lackingNutrient1, String lackingNutrient2, String lackingNutrient3, String category) {
         log.info("[FoodService.getCheatDayFood]");
 
-        Optional<List<Food>> cheatDayFoodOptional= foodRepository.getCheatDayFood(remainingKcal, lackingNutrientName, category);
+        Optional<List<Food>> cheatDayFoodOptional= foodRepository.getCheatDayFood(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3, category);
         List<cheatDayFoodInfo> cheatDayFoodInfoList = new ArrayList<>(); // 반환값
 
         if (cheatDayFoodOptional.isPresent()) {
