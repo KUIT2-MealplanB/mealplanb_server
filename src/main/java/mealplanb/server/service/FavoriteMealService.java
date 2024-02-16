@@ -57,22 +57,7 @@ public class FavoriteMealService {
 
         favoriteMealRepository.save(favoriteMeal);
 
-        // 이 부분을 FavoriteMealComponentService 로 빼야하는지..
-        for (PostMyMealRequest.FoodItem foodItem : postMyMealRequest.getFoods()) {
-            long foodId = foodItem.getFoodId();
-            int quantity = foodItem.getQuantity();
-            Food food = foodRepository.findByFoodIdAndStatus(foodId, BaseStatus.A)
-                    .orElseThrow(()-> new FoodException(FOOD_NOT_FOUND));
-
-            FavoriteMealComponent favoriteMealComponent = FavoriteMealComponent.builder()
-                    .favoriteMeal(favoriteMeal)
-                    .food(food)
-                    .quantity(quantity)
-                    .status(BaseStatus.A)
-                    .build();
-
-            favoriteMealComponentRepository.save(favoriteMealComponent);
-        }
+        favoriteMealComponentService.saveItems(postMyMealRequest,favoriteMeal);
     }
 
     private void checkFavoriteMealNameExist(String favoriteMealName) {
@@ -110,6 +95,8 @@ public class FavoriteMealService {
                 .orElseThrow(()->new MealException(FAVORITE_MEAL_NOT_EXIST));
 
         favoriteMeal.updateStatus(BaseStatus.D);
+
+        favoriteMealComponentService.deleteMyMealComponent(favoriteMealId);
     }
 
 }

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public interface FoodRepository extends JpaRepository<Food, Long> {
     Optional<Food> findByFoodIdAndStatus(long foodId, BaseStatus a);
+    Optional<Food> findByFoodId(Long foodId);
 
     @Query(value = "SELECT * " +
             "FROM food " +
