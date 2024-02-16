@@ -172,7 +172,7 @@ public class FoodService {
         if (FoodManager.isContainsKey(food.getCategory())) { // 단위정보가 있는 음식의 경우
             foodUnit = FoodManager.getFoodUnit(food.getCategory());
         }else if (food.getCategory().equals("분식")){ //분식 카테고리는 음식이름이 카테고리
-            foodUnit = FoodManager.getFoodUnit(food.getCategory());
+            foodUnit = FoodManager.getFoodUnit(food.getName());
         }
         return foodUnit;
     }
