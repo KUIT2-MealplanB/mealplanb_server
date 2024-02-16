@@ -67,7 +67,7 @@ public class FavoriteMealComponentService {
                     .orElseThrow(()-> new MealException(FAVORITE_MEAL_NOT_EXIST)); //해당 유저의 나의 식단이 존재하지 않습니다.
 
             for (FavoriteMealComponent component : favoriteMealComponentList) {
-                Food food = foodRepository.findByFoodId(component.getFood().getFoodId())
+                Food food = foodRepository.findByFoodIdAndStatus(component.getFood().getFoodId(), BaseStatus.A)
                         .orElseThrow(() -> new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST)); // 나의 식단에 들어있는 식사가 없습니다.
 
                 // 식재료 량에 따라 칼로리 계산

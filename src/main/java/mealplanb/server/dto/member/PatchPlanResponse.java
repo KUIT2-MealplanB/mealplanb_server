@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class PatchPlanResponse {
+    /** 사용자 목표 수정 */
 
     private double initialWeight;
     private double targetWeight;

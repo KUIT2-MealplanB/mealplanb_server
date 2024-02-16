@@ -9,9 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PostFavoriteFoodRequest {
 
-    /**
-     * 즐겨찾기 식사 등록
-     */
+    /** 즐겨찾기 식사 등록 */
     //private String name;
     private Long foodId;
 }

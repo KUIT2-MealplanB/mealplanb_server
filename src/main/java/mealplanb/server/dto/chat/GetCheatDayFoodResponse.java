@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class GetCheatDayFoodResponse {
-
+    /** 채팅(치팅데이) */
     private List<cheatDayFoodInfo> cheatDayFood;
 
     @Getter
@@ -20,5 +20,6 @@ public class GetCheatDayFoodResponse {
         private int protein;
         private int fat;
         private String offer;
+        private int quantity;
     }
 }

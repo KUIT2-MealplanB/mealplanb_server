@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class GetKcalStatisticResponse {
+    /** 칼로리 일간, 월간, 주간 조회 */
 
     private String statisticType;
     private List<?> kcals;
