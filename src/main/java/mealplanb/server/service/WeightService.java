@@ -46,6 +46,7 @@ public class WeightService {
      * 체중 조회
      */
     public WeightResponse getTodayWeight(Long memberId){
+        log.info("[WeightService.getTodayWeight]");
         Optional<Weight> weight = weightRepository.findTopByMember_MemberIdOrderByWeightDateDesc(memberId);
 
         // 가장 최근 몸무게가 존재하는 경우 그 값을 가져오고, 그렇지 않은 경우 member의 초기 몸무게를 가져옴
@@ -118,6 +119,7 @@ public class WeightService {
      * 체중 일간 조회
      */
     public WeightStatisticResponse getDailyWeight(Long memberId) {
+        log.info("[WeightService.getDailyWeight]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
@@ -161,6 +163,7 @@ public class WeightService {
      * 체중 주간 조회
      */
     public WeightStatisticResponse getWeeklyWeight(Long memberId) {
+        log.info("[WeightService.getWeeklyWeight]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
@@ -204,6 +207,7 @@ public class WeightService {
      * 체중 월간 조회
      */
     public WeightStatisticResponse getMonthlyWeight(Long memberId) {
+        log.info("[WeightService.getMonthlyWeight]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 

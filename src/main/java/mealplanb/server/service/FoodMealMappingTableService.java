@@ -4,10 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.domain.Base.BaseStatus;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
+import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
@@ -15,8 +16,6 @@ import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,6 +67,7 @@ public class FoodMealMappingTableService {
      */
     @Transactional
     public void postMealFood(Member member, Meal meal, List<FoodItem> foods) {
+        log.info("[FoodMealMappingTableService.postMealFood]");
         deleteFoodMealMapping(meal.getMealId());
 
         for (FoodItem foodItem : foods){
@@ -110,4 +110,25 @@ public class FoodMealMappingTableService {
         return (int) (quantity * kcalPerGram);
     }
 
+    /**
+     * 채팅(자주먹는)
+     */
+    public GetFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
+        log.info("[FoodMealMappingTableService.getMyFavoriteFood]");
+        Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodIdByUserId(memberId);
+        Food myFavoriteFood = foodRepository.findByFoodIdAndStatus(mostEatenFoodId, BaseStatus.A)
+                .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
+        return new GetFavoriteFoodResponse(myFavoriteFood.getFoodId(), myFavoriteFood.getName(), (int) myFavoriteFood.getCarbohydrate(), (int) myFavoriteFood.getProtein(), (int) myFavoriteFood.getFat());
+    }
+
+    /**
+     * 채팅(인기있는)
+     */
+    public GetFavoriteFoodResponse getCommunityFavoriteFood() {
+        log.info("[FoodMealMappingTableService.getCommunityFavoriteFood]");
+        Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodId();
+        Food communityFavoriteFood = foodRepository.findByFoodIdAndStatus(mostEatenFoodId, BaseStatus.A)
+                .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
+        return new GetFavoriteFoodResponse(communityFavoriteFood.getFoodId(), communityFavoriteFood.getName(), (int) communityFavoriteFood.getCarbohydrate(), (int) communityFavoriteFood.getProtein(), (int) communityFavoriteFood.getFat());
+    }
 }

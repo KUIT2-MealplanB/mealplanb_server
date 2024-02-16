@@ -42,6 +42,7 @@ public class StatisticService {
      *  칼로리 일간 조회
      */
     public GetKcalStatisticResponse getDailyKcals(Long memberId) {
+        log.info("[StatisticService.getDailyKcals]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
@@ -87,6 +88,7 @@ public class StatisticService {
      *  칼로리 주간 조회
      */
     public GetKcalStatisticResponse getWeeklyKcals(Long memberId) {
+        log.info("[StatisticService.getWeeklyKcals]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
@@ -147,6 +149,7 @@ public class StatisticService {
      *  칼로리 월간 조회
      */
     public GetKcalStatisticResponse getMonthlyKcals(Long memberId) {
+        log.info("[StatisticService.getMonthlyKcals]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 

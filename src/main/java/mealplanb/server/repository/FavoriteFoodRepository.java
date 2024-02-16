@@ -2,7 +2,7 @@ package mealplanb.server.repository;
 
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteFood;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.Member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
