@@ -25,11 +25,23 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
             "AND f.kcal BETWEEN 0 AND ?1 " +
             "ORDER BY " +
             "CASE " +
-            "WHEN f.keyNutrient = ?2 THEN 1 " +
-            "WHEN f.keyNutrient = ?3 THEN 2 " +
-            "WHEN f.keyNutrient = ?4 THEN 3 " +
-            "ELSE 4 " +
-            "END, f.kcal DESC "+
-            "LIMIT 10")
+            "WHEN ?2 = '탄수화물' THEN f.carbohydrate " +
+            "WHEN ?2 = '단백질' THEN f.protein " +
+            "WHEN ?2 = '지방' THEN f.fat " +
+            "ELSE 0 " +
+            "END DESC, " +
+            "CASE " +
+            "WHEN ?3 = '탄수화물' THEN f.carbohydrate " +
+            "WHEN ?3 = '단백질' THEN f.protein " +
+            "WHEN ?3 = '지방' THEN f.fat " +
+            "ELSE 0 " +
+            "END DESC, " +
+            "CASE " +
+            "WHEN ?4 = '탄수화물' THEN f.carbohydrate " +
+            "WHEN ?4 = '단백질' THEN f.protein " +
+            "WHEN ?4 = '지방' THEN f.fat " +
+            "ELSE 0 " +
+            "END DESC, " +
+            "f.kcal DESC")
     Optional<List<Food>> getCheatDayFood(int remainingKcal, String lackingNutrient1, String lackingNutrient2, String lackingNutrient3, String category);
 }
