@@ -2,21 +2,17 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteMeal;
-import mealplanb.server.domain.FavoriteMealComponent;
-import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.meal.GetMyMealListResponse;
 import mealplanb.server.dto.meal.GetMyMealResponse;
 import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
 import mealplanb.server.dto.meal.PostMyMealRequest;
-import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FavoriteMealRepository;
-import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +24,11 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FavoriteMealService {
 
     private final MemberRepository memberRepository;
-    private final FoodRepository foodRepository;
     private final FavoriteMealRepository favoriteMealRepository;
-    private final FavoriteMealComponentRepository favoriteMealComponentRepository;
     private final FavoriteMealComponentService favoriteMealComponentService;
 
     /**
@@ -69,7 +64,6 @@ public class FavoriteMealService {
     /**
      * 나의 식단 조회
      */
-    @Transactional(readOnly = true)
     public GetMyMealResponse getMyMeal(Long memberId){
         log.info("[FavoriteMealService.getMyMeal]");
 
@@ -99,4 +93,19 @@ public class FavoriteMealService {
         favoriteMealComponentService.deleteMyMealComponent(favoriteMealId);
     }
 
+    /**
+     * 나의 식단 선택해서 식사 리스트 조회하기
+     */
+    public GetMyMealListResponse getMyMealList(Long memberId, Long favoriteMealId){
+        log.info("[FavoriteMealService.getMyMealList]");
+
+        if(memberRepository.findById(memberId).isEmpty()){
+            throw new MemberException(MEMBER_NOT_FOUND);
+        }
+
+        if(!favoriteMealRepository.existsByFavoriteMealIdAndStatus(favoriteMealId, BaseStatus.A)){
+            throw new MealException(MEAL_NOT_FOUND); // 식단을 찾을 수 없습니다.
+        }
+        return new GetMyMealListResponse(favoriteMealComponentService.getMyMealList(favoriteMealId));
+    }
 }

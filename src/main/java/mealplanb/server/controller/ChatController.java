@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
+import mealplanb.server.dto.meal.PostMealFoodRequest;
 import mealplanb.server.dto.chat.GetMostEatenFoodResponse;
 import mealplanb.server.service.ChatService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
+
+import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 
 @Slf4j
 @RestController
@@ -58,5 +61,17 @@ public class ChatController {
         log.info("[ChatController.getAmountSuggestion]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(chatService.getAmountSuggestion(memberId, foodId));
+    }
+
+    /**
+     * 채팅을 통한 끼니 등록
+     */
+    @PostMapping("/meal")
+    public BaseResponse<Void> postMealSuggestedFood(@RequestHeader("Authorization") String authorization,
+                                                    @RequestBody FoodItem food){
+        log.info("[ChatController.postMealSuggestedFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        chatService.postMealSuggestedFood(memberId, food);
+        return new BaseResponse<>(null);
     }
 }
