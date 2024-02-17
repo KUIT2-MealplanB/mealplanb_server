@@ -6,9 +6,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GetFavoriteFoodResponse {
+    /** 채팅(자주먹은), 채팅(인기있는) */
     private long foodId;
     private String name;
-    private int carbohydrate;
-    private int protein;
-    private int fat;
+    private String offer;
+    private int offerCarbohydrate;
+    private int offerProtein;
+    private int offerFat;
 }
