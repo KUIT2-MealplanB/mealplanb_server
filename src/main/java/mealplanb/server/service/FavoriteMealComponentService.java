@@ -9,7 +9,7 @@ import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.FavoriteMealComponent;
 import mealplanb.server.domain.Food.Food;
 import mealplanb.server.dto.meal.GetMyMealListResponse;
-import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
+import mealplanb.server.dto.meal.GetMyMealResponse;
 import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FoodRepository;
@@ -57,9 +57,9 @@ public class FavoriteMealComponentService {
     /**
      * 나의 식단 조회
      */
-    public List<FavoriteMealItem> getFavoriteMealComponentList(List<FavoriteMeal> favoriteMeal){
+    public List<GetMyMealResponse> getFavoriteMealComponentList(List<FavoriteMeal> favoriteMeal){
         log.info("[FavoriteMealComponentService.getFavoriteMealComponentList]");
-        List<FavoriteMealItem> mealItemList = new ArrayList<>();
+        List<GetMyMealResponse> mealItemList = new ArrayList<>();
 
         int totalKcal = 0;
         for(FavoriteMeal meal : favoriteMeal){
@@ -74,7 +74,7 @@ public class FavoriteMealComponentService {
                 // 식재료 량에 따라 칼로리 계산
                 totalKcal += (int)(food.getKcal() * component.getQuantity() / 100);
             }
-            FavoriteMealItem mealItem = new FavoriteMealItem(
+            GetMyMealResponse mealItem = new GetMyMealResponse(
                     favoriteMealId,
                     meal.getFavoriteMealName(),
                     totalKcal,

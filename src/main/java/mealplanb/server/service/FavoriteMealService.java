@@ -10,7 +10,6 @@ import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.GetMyMealListResponse;
 import mealplanb.server.dto.meal.GetMyMealResponse;
-import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
 import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.repository.FavoriteMealRepository;
 import mealplanb.server.repository.MemberRepository;
@@ -65,7 +64,7 @@ public class FavoriteMealService {
     /**
      * 나의 식단 조회
      */
-    public GetMyMealResponse getMyMeal(Long memberId){
+    public List<GetMyMealResponse> getMyMeal(Long memberId){
         log.info("[FavoriteMealService.getMyMeal]");
 
         memberService.checkMemberExist(memberId);
@@ -73,8 +72,7 @@ public class FavoriteMealService {
         List<FavoriteMeal> favoriteMeal = favoriteMealRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A)
                 .orElseThrow(()-> new MealException(FAVORITE_MEAL_NOT_EXIST));
 
-        List<FavoriteMealItem> favoriteMealComponentList = favoriteMealComponentService.getFavoriteMealComponentList(favoriteMeal);
-        return new GetMyMealResponse(favoriteMealComponentList);
+        return favoriteMealComponentService.getFavoriteMealComponentList(favoriteMeal);
     }
 
     /**
