@@ -62,8 +62,6 @@ public class FoodService {
         log.info("[FoodService.postNewFood]");
         Food newFood = new Food(memberId, postNewFoodRequest);
         foodRepository.save(newFood);
-        //todo: 코드 이렇게 길게 안하는 방법은 없을지...
-        //todo: 사실 PostNewFoodResponse랑 Food랑 status, updatedAt, createdAt 유무 차이라서 Food를 반환하는게 나을려나.
         return new PostNewFoodResponse(
                 newFood.getFoodId(),
                 newFood.getName(),
@@ -95,7 +93,7 @@ public class FoodService {
 
         // 사용자가 식품을 지울 권한이 있는지 검증
         if (!memberId.equals(food.getCreateMemberId())){
-            new FoodException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
+            new FoodException(BaseExceptionResponseStatus.FOOD_UNAUTHORIZED_ACCESS);
         }
         food.setStatus(BaseStatus.D);
     }
@@ -116,10 +114,10 @@ public class FoodService {
     /**
      * 채팅(치팅데이)
      */
-    public List<cheatDayFoodInfo> getCheatDayFood(int remainingKcal, String lackingNutrientName, String category) {
+    public List<cheatDayFoodInfo> getCheatDayFood(int remainingKcal, String lackingNutrient1, String lackingNutrient2, String lackingNutrient3, String category) {
         log.info("[FoodService.getCheatDayFood]");
 
-        Optional<List<Food>> cheatDayFoodOptional= foodRepository.getCheatDayFood(remainingKcal, lackingNutrientName, category);
+        Optional<List<Food>> cheatDayFoodOptional= foodRepository.getCheatDayFood(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3, category);
         List<cheatDayFoodInfo> cheatDayFoodInfoList = new ArrayList<>(); // 반환값
 
         if (cheatDayFoodOptional.isPresent()) {
@@ -142,9 +140,9 @@ public class FoodService {
         int unitGram = foodUnit.getUnitGram();
         String unitName = foodUnit.getUnitName();
         int offer = calculateOffer(remainingKcal, cheatDayFood, unitGram, unitName);
-        int offerCarbohydrate = (int) (cheatDayFood.getCarbohydrate() * (unitGram /100) * offer);
-        int offerProtein = (int) (cheatDayFood.getProtein() * (unitGram /100) * offer);
-        int offerFat = (int) (cheatDayFood.getFat() * (unitGram /100) * offer);
+        int offerCarbohydrate = (int) ((cheatDayFood.getCarbohydrate()/100)  * unitGram * offer);
+        int offerProtein = (int) ((cheatDayFood.getProtein()/100)  * unitGram * offer);
+        int offerFat = (int) ((cheatDayFood.getFat()/100)  * unitGram * offer);
         log.info("-----and offerCarbohydrate={}, offerProtein={}, offerFat={}",
                 offerCarbohydrate, offerProtein, offerFat);
 
@@ -152,10 +150,11 @@ public class FoodService {
             cheatDayFoodInfoList.add( new cheatDayFoodInfo(
                             cheatDayFood.getFoodId(),
                             cheatDayFood.getName(),
+                        offer+unitName,
                             offerCarbohydrate,
                             offerProtein,
                             offerFat,
-                            offer+ unitName));
+                            unitGram*offer));
         }
     }
 
@@ -173,7 +172,7 @@ public class FoodService {
         if (FoodManager.isContainsKey(food.getCategory())) { // 단위정보가 있는 음식의 경우
             foodUnit = FoodManager.getFoodUnit(food.getCategory());
         }else if (food.getCategory().equals("분식")){ //분식 카테고리는 음식이름이 카테고리
-            foodUnit = FoodManager.getFoodUnit(food.getCategory());
+            foodUnit = FoodManager.getFoodUnit(food.getName());
         }
         return foodUnit;
     }
@@ -188,7 +187,10 @@ public class FoodService {
         FoodUnit foodUnit = getFoodUnit(food);
         int offer = calculateOffer(remainingKcal, food, foodUnit.getUnitGram(), foodUnit.getUnitName());
         int offerKcal = (int) (foodUnit.getUnitGram() * (food.getKcal() /100) * offer);
+        int offerCarbohydrate = (int) (foodUnit.getUnitGram() * (food.getCarbohydrate() /100) * offer);
+        int offerProtein = (int) (foodUnit.getUnitGram() * (food.getProtein() /100) * offer);
+        int offerFat = (int) (foodUnit.getUnitGram() * (food.getFat() /100) * offer);
 
-        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, remainingKcal);
+        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, offerCarbohydrate, offerProtein, offerFat,  remainingKcal);
     }
 }

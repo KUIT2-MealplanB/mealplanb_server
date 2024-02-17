@@ -60,4 +60,10 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
         String getMealIds();
     }
 
+    @Query(value = "SELECT *" +
+            "FROM meal " +
+            "WHERE member_id = :memberId AND status = 'A' AND meal_date = :date " +
+            "ORDER BY meal_type DESC LIMIT 1", nativeQuery = true)
+    Optional<Meal> findTodayLatestMeal(@Param("memberId") Long memberId, @Param("date") LocalDate date);
+
 }

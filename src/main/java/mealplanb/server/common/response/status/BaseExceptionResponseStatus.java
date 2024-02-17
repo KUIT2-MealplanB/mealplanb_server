@@ -48,7 +48,6 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_USER_STATUS(5005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     EMAIL_NOT_FOUND(5006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
     RATIO_NOT_CORRECT(5007,HttpStatus.BAD_REQUEST.value(), "탄,단,지 비율 합이 100이 되지 않습니다."),
-    UNAUTHORIZED_ACCESS(5008, HttpStatus.UNAUTHORIZED.value() , "권한이 없는 멤버입니다."),
   
     /**
      * 6000: Food 오류
@@ -56,6 +55,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     FOOD_NOT_FOUND(6001, HttpStatus.NOT_FOUND.value(), "식품을 찾을 수 없습니다."),
     FAVORITE_FOOD_NOT_EXIST(6002, HttpStatus.NOT_FOUND.value(), "해당 유저의 즐겨찾기 식품을 찾을 수 없습니다."),
     FAVORITE_FOOD_ALREADY_EXIST(6003, HttpStatus.NOT_FOUND.value(), "이미 즐겨찾기한 식사입니다."),
+    FOOD_UNAUTHORIZED_ACCESS(5008, HttpStatus.UNAUTHORIZED.value() , "식품을 지울 권한이 없는 멤버입니다."),
 
     /**
      * 7000: Meal 오류
@@ -63,15 +63,21 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_MEAL_VALUE(7000, HttpStatus.BAD_REQUEST.value(), "식단 요청에서 잘못된 값이 존재합니다."),
     MEAL_NOT_FOUND(7001, HttpStatus.NOT_FOUND.value(), "식단을 찾을 수 없습니다."),
     DUPLICATE_MEAL(7003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 식단입니다."),
-    UNAUTHORIZED_ACCESS(7004, HttpStatus.UNAUTHORIZED.value() , "해당 식단에 대해 권한이 없는 멤버입니다."),
+    MEAL_UNAUTHORIZED_ACCESS(7004, HttpStatus.UNAUTHORIZED.value() , "해당 식단에 대해 권한이 없는 멤버입니다."),
     FAVORITE_MEAL_NAME_ALREADY_EXIST(7005, HttpStatus.UNAUTHORIZED.value() , "해당 이름을 가진 식단이 이미 존재합니다."),
     FAVORITE_MEAL_NOT_EXIST(5008,HttpStatus.BAD_REQUEST.value(), "해당 유저의 나의 식단이 존재하지 않습니다."),
     FAVORITE_MEAL_COMPONENT_NOT_EXIST(5009, HttpStatus.BAD_REQUEST.value(), "나의 식단에 들어있는 식사가 없습니다."),
+    MEAL_MAX_NUM(7006, HttpStatus.BAD_REQUEST.value(), "열 끼 이상의 끼니를 생성할 수 없습니다."),
 
     /**
      * 8000: Weight 오류
      */
-    WEIGHT_NOT_FOUND(8000, HttpStatus.BAD_REQUEST.value(), "해당 유저의 체중을 찾을 수 없습니다.");
+    WEIGHT_NOT_FOUND(8000, HttpStatus.BAD_REQUEST.value(), "해당 유저의 체중을 찾을 수 없습니다."),
+
+    /**
+     * 9000: Chat Controller 오류
+     */
+    CHAT_CHEAT_DAY_LEFT_KCAL_NOT_EXIST(9000, HttpStatus.BAD_REQUEST.value(), "치팅데이 추천을 받을 수 없습니다. (해당 유저의 잔여 칼로리가 없습니다)");
 
     private final int code;
     private final int status;
