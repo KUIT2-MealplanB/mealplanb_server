@@ -65,11 +65,12 @@ public class FoodController {
      * 자동완성 검색
      */
     @GetMapping("/auto-complete")
-    public BaseResponse<GetFoodAutoCompleteResponse> getAutoComplete(@RequestHeader(value = "Authorization", required = false) String authorization,
+    public BaseResponse<GetFoodAutoCompleteResponse> getAutoComplete(@RequestHeader(value = "Authorization") String authorization,
                                                               @RequestParam String query,
                                                               @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "20") int size){
         log.info("[FoodController.getAutoComplete]");
-        return new BaseResponse<>(foodService.getAutoComplete(query, page, size));
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(foodService.getAutoComplete(memberId, query, page, size));
     }
 }

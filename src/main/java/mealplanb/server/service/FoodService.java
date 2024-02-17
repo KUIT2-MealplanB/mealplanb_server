@@ -14,6 +14,7 @@ import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.food.*;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.food.GetFoodAutoCompleteResponse.GetFoodAutoCompleteFoodItem;
 import mealplanb.server.dto.food.GetFoodResponse;
 import mealplanb.server.dto.food.PostNewFoodRequest;
 import mealplanb.server.dto.food.PostNewFoodResponse;
@@ -101,14 +102,14 @@ public class FoodService {
     /**
      * 자동완성 검색
      */
-    public GetFoodAutoCompleteResponse getAutoComplete(String query, int page, int size) {
+    public GetFoodAutoCompleteResponse getAutoComplete(Long memberId, String query, int page, int size) {
         log.info("[FoodService.GetFoodAutoCompleteResponse]");
         Pageable pageable = PageRequest.of(page, size);
-        Page<Food> autoComplete = foodRepository.getAutoComplete(query.strip(), pageable);
-        List<FoodItem> foods = autoComplete.getContent().stream()
-                .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
+        Page<Food> autoComplete = foodRepository.getAutoComplete(memberId, query.strip(), pageable);
+        List<GetFoodAutoCompleteFoodItem> foods = autoComplete.getContent().stream()
+                .map(GetFoodAutoCompleteFoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
                 .collect(Collectors.toList());
-        return new GetFoodAutoCompleteResponse(page, autoComplete.getTotalPages(), foods);
+        return new GetFoodAutoCompleteResponse(page, autoComplete.getTotalPages(),foods);
     }
 
     /**
@@ -150,10 +151,10 @@ public class FoodService {
             cheatDayFoodInfoList.add( new cheatDayFoodInfo(
                             cheatDayFood.getFoodId(),
                             cheatDayFood.getName(),
+                        offer+unitName,
                             offerCarbohydrate,
                             offerProtein,
                             offerFat,
-                            offer+ unitName,
                             unitGram*offer));
         }
     }
@@ -187,7 +188,11 @@ public class FoodService {
         FoodUnit foodUnit = getFoodUnit(food);
         int offer = calculateOffer(remainingKcal, food, foodUnit.getUnitGram(), foodUnit.getUnitName());
         int offerKcal = (int) (foodUnit.getUnitGram() * (food.getKcal() /100) * offer);
+        int offerQuantity = foodUnit.getUnitGram() * offer;
+        int offerCarbohydrate = (int) (foodUnit.getUnitGram() * (food.getCarbohydrate() /100) * offer);
+        int offerProtein = (int) (foodUnit.getUnitGram() * (food.getProtein() /100) * offer);
+        int offerFat = (int) (foodUnit.getUnitGram() * (food.getFat() /100) * offer);
 
-        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, remainingKcal);
+        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, offerQuantity ,offerCarbohydrate, offerProtein, offerFat,  remainingKcal);
     }
 }

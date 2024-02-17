@@ -9,5 +9,4 @@ import java.util.Optional;
 
 public interface FavoriteMealComponentRepository extends JpaRepository<FavoriteMealComponent, Long> {
     Optional<List<FavoriteMealComponent>> findByFavoriteMeal_FavoriteMealIdAndStatus(Long favoriteMealId, BaseStatus A);
-    Optional<FavoriteMealComponent> findOneByFavoriteMeal_FavoriteMealIdAndStatus(Long favoriteMealId, BaseStatus A);
 }

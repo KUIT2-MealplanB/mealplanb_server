@@ -2,6 +2,7 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.ChatException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
@@ -13,6 +14,7 @@ import mealplanb.server.dto.meal.GetMealResponse;
 import mealplanb.server.dto.meal.*;
 import mealplanb.server.dto.meal.GetMealResponse.GetMealItem;
 import mealplanb.server.dto.meal.MealTypeConverter;
+import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import mealplanb.server.dto.meal.PostMealRequest;
 import mealplanb.server.dto.meal.PostMealResponse;
 import mealplanb.server.dto.meal.PatchMealResponse;
@@ -22,9 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -131,7 +131,7 @@ public class MealService {
             throw new MealException(BaseExceptionResponseStatus.MEAL_UNAUTHORIZED_ACCESS);
         }
 
-        foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods());
+        foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods(), false);
     }
 
     /**
@@ -148,6 +148,45 @@ public class MealService {
 
         List<FoodInfo> foodList = foodMealMappingTableService.getMealFoodList(mealId);
         return new GetMealFoodResponse(meal.getMealId(), meal.getMealDate(), meal.getMealType(), foodList);
+    }
+
+    /**
+     * 채팅을 통한 끼니 등록
+     */
+    @Transactional
+    public void postMealSuggestedFood(Long memberId, FoodItem food) {
+        log.info("[MealService.postMealSuggestedFood]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        Optional<Meal> todayLatestMeal = mealRepository.findTodayLatestMeal(memberId, LocalDate.now());
+
+        Meal meal = null;
+        List<FoodItem> foodList = new ArrayList<>();
+        if (todayLatestMeal.isPresent()){
+            log.info("[MealService.postMealSuggestedFood] - 마지막 끼니 존재");
+            // 마지막 끼니가 빈끼니면 해당 끼니에 식품 추가
+            if(foodMealMappingTableService.isMealEmpty(todayLatestMeal.get().getMealId())){
+                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니", todayLatestMeal.get().getMealId());
+                meal = todayLatestMeal.get();
+            }else if (todayLatestMeal.get().getMealType()==10){
+                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니가 아니라서 새로운 끼니를 생성해야하는데, 더 이상의 끼니를 생성할 수 없을 때", todayLatestMeal.get().getMealId());
+                throw new ChatException(BaseExceptionResponseStatus.MEAL_MAX_NUM);
+            }
+        }
+
+        if (meal==null){ // 그렇지 않다면 새로운 끼니를 생성 후, 식품 추가
+            log.info("[MealService.postMealSuggestedFood] - 새로운 끼니 생성");
+            int mealType = todayLatestMeal.isPresent() ? todayLatestMeal.get().getMealType() + 1 : 1;
+            Meal createdMeal = mealRepository.save(new Meal(member, LocalDate.now(), mealType));
+            meal = createdMeal;
+        }
+
+        log.info("[MealService.postMealSuggestedFood] mealId = {}", meal.getMealId());
+
+        // 끼니에 식품 등록
+        foodList.add(food);
+        foodMealMappingTableService.postMealFood(member, meal, foodList, true);
     }
 }
 

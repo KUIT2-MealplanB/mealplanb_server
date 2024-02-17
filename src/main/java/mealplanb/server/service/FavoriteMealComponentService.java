@@ -8,7 +8,8 @@ import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.FavoriteMealComponent;
 import mealplanb.server.domain.Food.Food;
-import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
+import mealplanb.server.dto.meal.GetMyMealListResponse;
+import mealplanb.server.dto.meal.GetMyMealResponse;
 import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.repository.FavoriteMealComponentRepository;
 import mealplanb.server.repository.FoodRepository;
@@ -24,6 +25,7 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FavoriteMealComponentService {
 
     private final FoodRepository foodRepository;
@@ -55,10 +57,9 @@ public class FavoriteMealComponentService {
     /**
      * 나의 식단 조회
      */
-    @Transactional(readOnly = true)
-    public List<FavoriteMealItem> getFavoriteMealComponentList(List<FavoriteMeal> favoriteMeal){
+    public List<GetMyMealResponse> getFavoriteMealComponentList(List<FavoriteMeal> favoriteMeal){
         log.info("[FavoriteMealComponentService.getFavoriteMealComponentList]");
-        List<FavoriteMealItem> mealItemList = new ArrayList<>();
+        List<GetMyMealResponse> mealItemList = new ArrayList<>();
 
         int totalKcal = 0;
         for(FavoriteMeal meal : favoriteMeal){
@@ -73,7 +74,7 @@ public class FavoriteMealComponentService {
                 // 식재료 량에 따라 칼로리 계산
                 totalKcal += (int)(food.getKcal() * component.getQuantity() / 100);
             }
-            FavoriteMealItem mealItem = new FavoriteMealItem(
+            GetMyMealResponse mealItem = new GetMyMealResponse(
                     favoriteMealId,
                     meal.getFavoriteMealName(),
                     totalKcal,
@@ -98,4 +99,35 @@ public class FavoriteMealComponentService {
             component.updateStatus(BaseStatus.D);
         }
     }
+
+    /**
+     * 나의 식단 선택해서 식사 리스트 조회하기
+     */
+    public List<GetMyMealListResponse> getMyMealList(Long favoriteMealId){
+        log.info("[FavoriteMealComponentService.getMyMealList]");
+        List<GetMyMealListResponse> myMealItemList = new ArrayList<>();
+
+        List<FavoriteMealComponent> favoriteMealComponentList = favoriteMealComponentRepository.findByFavoriteMeal_FavoriteMealIdAndStatus(favoriteMealId,BaseStatus.A)
+                .orElseThrow(()->new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST));
+
+        for(FavoriteMealComponent component : favoriteMealComponentList){
+            int kcal = 0;
+            long foodId = component.getFood().getFoodId();
+            Food food = foodRepository.findByFoodId(foodId)
+                    .orElseThrow(() -> new MealException(FOOD_NOT_FOUND));
+
+            // 식재료 량에 따라 칼로리 계산
+            kcal = (int)(food.getKcal() * component.getQuantity() / 100);
+
+            GetMyMealListResponse getMyMealItem= new GetMyMealListResponse(
+                    foodId,
+                    food.getName(),
+                    component.getQuantity(),
+                    kcal
+            );
+            myMealItemList.add(getMyMealItem);
+        }
+        return myMealItemList;
+    }
+
 }
