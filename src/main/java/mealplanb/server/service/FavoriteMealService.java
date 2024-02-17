@@ -96,7 +96,7 @@ public class FavoriteMealService {
     /**
      * 나의 식단 선택해서 식사 리스트 조회하기
      */
-    public GetMyMealListResponse getMyMealList(Long memberId, Long favoriteMealId){
+    public List<GetMyMealListResponse> getMyMealList(Long memberId, Long favoriteMealId){
         log.info("[FavoriteMealService.getMyMealList]");
 
         if(memberRepository.findById(memberId).isEmpty()){
@@ -106,6 +106,6 @@ public class FavoriteMealService {
         if(!favoriteMealRepository.existsByFavoriteMealIdAndStatus(favoriteMealId, BaseStatus.A)){
             throw new MealException(MEAL_NOT_FOUND); // 식단을 찾을 수 없습니다.
         }
-        return new GetMyMealListResponse(favoriteMealComponentService.getMyMealList(favoriteMealId));
+        return favoriteMealComponentService.getMyMealList(favoriteMealId);
     }
 }
