@@ -44,9 +44,9 @@ public class ChatService {
      */
     public GetFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
         log.info("[ChatService.getMyFavoriteFood]");
-        long myFavoriteFood = foodMealMappingTableService.getMyFavoriteFoodId(memberId);
-        GetAmountSuggestionResponse amountSuggestion = getAmountSuggestion(memberId, myFavoriteFood);
-        return new GetFavoriteFoodResponse(myFavoriteFood, amountSuggestion.getFoodName(), amountSuggestion.getOffer(), amountSuggestion.getOfferCarbohydrate(), amountSuggestion.getOfferProtein(), amountSuggestion.getOfferFat());
+        long myFavoriteFoodId = foodMealMappingTableService.getMyFavoriteFoodId(memberId);
+        GetAmountSuggestionResponse amountSuggestion = getAmountSuggestion(memberId, myFavoriteFoodId);
+        return new GetFavoriteFoodResponse(myFavoriteFoodId, amountSuggestion.getFoodName(), amountSuggestion.getOffer(), amountSuggestion.getOfferCarbohydrate(), amountSuggestion.getOfferProtein(), amountSuggestion.getOfferFat());
     }
 
     /**
