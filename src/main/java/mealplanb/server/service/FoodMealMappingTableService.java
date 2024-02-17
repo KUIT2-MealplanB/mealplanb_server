@@ -3,22 +3,29 @@ package mealplanb.server.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.MealException;
+import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food.Food;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
+import mealplanb.server.dto.meal.MealTypeConverter;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
+import mealplanb.server.repository.MealRepository;
+import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.*;
 
 import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 
@@ -26,8 +33,10 @@ import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 @Service
 @RequiredArgsConstructor
 public class FoodMealMappingTableService {
+    private final MemberRepository memberRepository;
     private final FoodMealMappingTableRepository foodMealMappingTableRepository;
     private final FoodRepository foodRepository;
+    private final MealRepository mealRepository;
 
     /**
      * 해당 끼니의 총 칼로리 반환
@@ -131,5 +140,42 @@ public class FoodMealMappingTableService {
         Optional<List<FoodMealMappingTable>> mealFoodList= foodMealMappingTableRepository.findAllByMeal_MealIdAndStatus(mealId, BaseStatus.A);
         log.info("[FoodMealMappingTableService.isMealEmpty] mealId {} isMealEmpty = {}", mealId, mealFoodList.get().isEmpty());
         return mealFoodList.get().isEmpty();
+    }
+
+    /**
+     * 채팅을 통해 추천받은 끼니 조회 (등록식단 모아보기)
+     */
+    public List<GetMealSuggestedFoodResponse> getMealSuggestedFood(Long memberId) {
+        log.info("[MealService.getMealSuggestedFood]");
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
+
+        List<FoodMealMappingTable> suggestedFoodList = foodMealMappingTableRepository.findAllMealSuggestedFood(memberId)
+                .orElse(Collections.emptyList());
+
+        List<GetMealSuggestedFoodResponse> responseList = new ArrayList<>();
+        for (FoodMealMappingTable suggestedFood: suggestedFoodList){
+            Meal meal = mealRepository.findByMealIdAndStatus(suggestedFood.getMeal().getMealId(), BaseStatus.A)
+                    .orElseThrow(()-> new MealException(BaseExceptionResponseStatus.MEAL_NOT_FOUND));
+
+            String date = meal.getMealDate() + " " + convertMealDateLabel(meal.getMealDate().getDayOfWeek());
+            String mealType = MealTypeConverter.convertMealTypeLabel(meal.getMealType());
+
+            String name = suggestedFood.getFood().getName();
+            int quantity = suggestedFood.getQuantity();
+            int offerCarbohydrate = (int) (suggestedFood.getFood().getCarbohydrate() * quantity);
+            int offerProtein = (int) (suggestedFood.getFood().getProtein() * quantity);
+            int offerFat = (int) (suggestedFood.getFood().getFat() * quantity);
+
+            GetMealSuggestedFoodResponse response = new GetMealSuggestedFoodResponse(date, mealType, name, offerCarbohydrate, offerProtein, offerFat);
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
+
+    public static String convertMealDateLabel(DayOfWeek dayOfWeek) {
+        // 요일에 따라 한글 요일을 반환
+        return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);
     }
 }
