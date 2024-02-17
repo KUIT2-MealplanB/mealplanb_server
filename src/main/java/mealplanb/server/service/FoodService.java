@@ -99,10 +99,10 @@ public class FoodService {
     /**
      * 자동완성 검색
      */
-    public GetFoodAutoCompleteResponse getAutoComplete(String query, int page, int size) {
+    public GetFoodAutoCompleteResponse getAutoComplete(Long memberId, String query, int page, int size) {
         log.info("[FoodService.GetFoodAutoCompleteResponse]");
         Pageable pageable = PageRequest.of(page, size);
-        Page<Food> autoComplete = foodRepository.getAutoComplete(query.strip(), pageable);
+        Page<Food> autoComplete = foodRepository.getAutoComplete(memberId, query.strip(), pageable);
         List<FoodItem> foods = autoComplete.getContent().stream()
                 .map(FoodItem::new) // autoComplete.getContent()를 하면 List<Food>가 결과로 나오는데 각 요소인 Food를 FoodItem으로 변환
                 .collect(Collectors.toList());

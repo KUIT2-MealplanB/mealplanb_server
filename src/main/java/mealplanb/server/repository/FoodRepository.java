@@ -14,6 +14,7 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     Optional<Food> findByFoodIdAndStatus(long foodId, BaseStatus a);
     @Query(value = "SELECT * " +
             "FROM food " +
-            "WHERE name LIKE %:query% AND status = 'A'" , nativeQuery = true)
-    Page<Food> getAutoComplete(@Param("query") String query, Pageable pageable);
+            "WHERE name LIKE %:query% AND status = 'A' " +
+            "AND (create_member_id = :memberId OR admin_approval = true)", nativeQuery = true)
+    Page<Food> getAutoComplete(@Param("memberId") Long memberId, @Param("query") String query, Pageable pageable);
 }
