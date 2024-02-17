@@ -10,7 +10,6 @@ import mealplanb.server.domain.FavoriteMeal;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.meal.GetMyMealListResponse;
 import mealplanb.server.dto.meal.GetMyMealResponse;
-import mealplanb.server.dto.meal.GetMyMealResponse.FavoriteMealItem;
 import mealplanb.server.dto.meal.PostMyMealRequest;
 import mealplanb.server.repository.FavoriteMealRepository;
 import mealplanb.server.repository.MemberRepository;
@@ -27,6 +26,7 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @Transactional(readOnly = true)
 public class FavoriteMealService {
 
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final FavoriteMealRepository favoriteMealRepository;
     private final FavoriteMealComponentService favoriteMealComponentService;
@@ -64,18 +64,15 @@ public class FavoriteMealService {
     /**
      * 나의 식단 조회
      */
-    public GetMyMealResponse getMyMeal(Long memberId){
+    public List<GetMyMealResponse> getMyMeal(Long memberId){
         log.info("[FavoriteMealService.getMyMeal]");
 
-        if(memberRepository.findById(memberId).isEmpty()){
-            throw new MemberException(MEMBER_NOT_FOUND);
-        }
+        memberService.checkMemberExist(memberId);
 
         List<FavoriteMeal> favoriteMeal = favoriteMealRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A)
                 .orElseThrow(()-> new MealException(FAVORITE_MEAL_NOT_EXIST));
 
-        List<FavoriteMealItem> favoriteMealComponentList = favoriteMealComponentService.getFavoriteMealComponentList(favoriteMeal);
-        return new GetMyMealResponse(favoriteMealComponentList);
+        return favoriteMealComponentService.getFavoriteMealComponentList(favoriteMeal);
     }
 
     /**
@@ -96,16 +93,14 @@ public class FavoriteMealService {
     /**
      * 나의 식단 선택해서 식사 리스트 조회하기
      */
-    public GetMyMealListResponse getMyMealList(Long memberId, Long favoriteMealId){
+    public List<GetMyMealListResponse> getMyMealList(Long memberId, Long favoriteMealId){
         log.info("[FavoriteMealService.getMyMealList]");
 
-        if(memberRepository.findById(memberId).isEmpty()){
-            throw new MemberException(MEMBER_NOT_FOUND);
-        }
+        memberService.checkMemberExist(memberId);
 
         if(!favoriteMealRepository.existsByFavoriteMealIdAndStatus(favoriteMealId, BaseStatus.A)){
             throw new MealException(MEAL_NOT_FOUND); // 식단을 찾을 수 없습니다.
         }
-        return new GetMyMealListResponse(favoriteMealComponentService.getMyMealList(favoriteMealId));
+        return favoriteMealComponentService.getMyMealList(favoriteMealId);
     }
 }
