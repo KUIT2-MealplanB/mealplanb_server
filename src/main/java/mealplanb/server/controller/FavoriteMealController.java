@@ -11,6 +11,8 @@ import mealplanb.server.service.FavoriteMealService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -59,8 +61,8 @@ public class FavoriteMealController {
      * 나의 식단 선택해서 식사 리스트 조회하기
      */
     @GetMapping("/{favoriteMealId}")
-    public BaseResponse<GetMyMealListResponse> getMyMealList(@RequestHeader("Authorization") String authorization,
-                                                             @PathVariable Long favoriteMealId){
+    public BaseResponse<List<GetMyMealListResponse>> getMyMealList(@RequestHeader("Authorization") String authorization,
+                                                                   @PathVariable Long favoriteMealId){
         log.info("[FavoriteMealController.getMyMealList]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(favoriteMealService.getMyMealList(memberId, favoriteMealId));
