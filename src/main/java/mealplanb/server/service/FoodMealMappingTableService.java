@@ -156,9 +156,9 @@ public class FoodMealMappingTableService {
 
             String name = suggestedFood.getFood().getName();
             int quantity = suggestedFood.getQuantity();
-            int offerCarbohydrate = (int) (suggestedFood.getFood().getCarbohydrate() * quantity);
-            int offerProtein = (int) (suggestedFood.getFood().getProtein() * quantity);
-            int offerFat = (int) (suggestedFood.getFood().getFat() * quantity);
+            int offerCarbohydrate = (int) (suggestedFood.getFood().getCarbohydrate()/100 * quantity);
+            int offerProtein = (int) (suggestedFood.getFood().getProtein()/100 * quantity);
+            int offerFat = (int) (suggestedFood.getFood().getFat()/100 * quantity);
 
             GetMealSuggestedFoodResponse response = new GetMealSuggestedFoodResponse(date, mealType, name, offerCarbohydrate, offerProtein, offerFat);
             responseList.add(response);
