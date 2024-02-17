@@ -17,21 +17,18 @@ public class GetFavoriteFoodResponse {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class FoodItem {
         private Long foodId;
         private String foodName;
         private int kcal;
-
-        public FoodItem(Long foodId, String name, int kcal) {
-            this.foodId = foodId;
-            this.foodName = name;
-            this.kcal = kcal;
-        }
+        private boolean isMemberCreated;
 
         public FoodItem(Food food) {
             this.foodId = food.getFoodId();
             this.foodName = food.getName();
             this.kcal = (int) food.getKcal();
+            this.isMemberCreated = food.getCreateMemberId()==null?false:true;
         }
     }
 
