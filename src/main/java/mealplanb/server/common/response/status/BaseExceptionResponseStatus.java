@@ -77,7 +77,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     /**
      * 9000: Chat Controller 오류
      */
-    CHAT_CHEAT_DAY_LEFT_KCAL_NOT_EXIST(9000, HttpStatus.BAD_REQUEST.value(), "치팅데이 추천을 받을 수 없습니다. (해당 유저의 잔여 칼로리가 없습니다)");
+    CHAT_LEFT_KCAL_NOT_EXIST(9000, HttpStatus.BAD_REQUEST.value(), "추천을 받을 수 없습니다. (해당 유저의 잔여 칼로리가 없습니다)");
 
     private final int code;
     private final int status;

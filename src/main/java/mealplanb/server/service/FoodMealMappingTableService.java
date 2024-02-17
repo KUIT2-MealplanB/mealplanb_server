@@ -4,13 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MealException;
-import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food.Food;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
-import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
 import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
@@ -22,7 +20,6 @@ import mealplanb.server.repository.MealRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.*;
 

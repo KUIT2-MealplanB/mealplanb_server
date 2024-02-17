@@ -540,6 +540,8 @@ public class MemberService {
 
         // [유저의 남은 칼로리 계산]
         int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
+        remainingKcal = Math.max(0, remainingKcal);
+
         log.info("남은 칼로리 = {}", remainingKcal);
         return remainingKcal;
     }

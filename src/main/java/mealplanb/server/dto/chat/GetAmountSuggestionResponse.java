@@ -10,6 +10,7 @@ public class GetAmountSuggestionResponse {
     private String foodName;
     private String offer;
     private int offerKcal;
+    private int offerQuantity;
     private int offerCarbohydrate;
     private int offerProtein;
     private int offerFat;
