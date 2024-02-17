@@ -2,6 +2,7 @@ package mealplanb.server.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.ChatException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
@@ -171,12 +172,10 @@ public class MealService {
             if(foodMealMappingTableService.isMealEmpty(todayLatestMeal.get().getMealId())){
                 log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니", todayLatestMeal.get().getMealId());
                 meal = todayLatestMeal.get();
-            }/*else if (todayLatestMeal.get().getMealType()==10){
-                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니는 아니지만, 열끼 이상 만들지 않기 위해 해당 끼니에 추가", todayLatestMeal.get().getMealId());
-                meal = todayLatestMeal.get();
-                List<FoodInfo> mealFoodList = foodMealMappingTableService.getMealFoodList(meal.getMealId());
-                mealFoodList.forEach(f -> foodList.add(new FoodItem(f.getFoodId(), f.getQuantity())));
-            }*/
+            }else if (todayLatestMeal.get().getMealType()==10){
+                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니라서 새로운 끼니를 생성해야하는데, 더 이상의 끼니를 생성할 수 없을 때", todayLatestMeal.get().getMealId());
+                throw new ChatException(BaseExceptionResponseStatus.MEAL_MAX_NUM);
+            }
         }
 
         if (meal==null){ // 그렇지 않다면 새로운 끼니를 생성 후, 식품 추가
