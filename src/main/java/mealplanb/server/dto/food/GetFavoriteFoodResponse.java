@@ -20,14 +20,6 @@ public class GetFavoriteFoodResponse {
         private Long foodId;
         private String foodName;
         private int kcal;
-        private boolean isMemberCreated;
-
-        public FoodItem(Food food) {
-            this.foodId = food.getFoodId();
-            this.foodName = food.getName();
-            this.kcal = (int) food.getKcal();
-            this.isMemberCreated = food.getCreateMemberId()==null?false:true;
-        }
     }
 
 }

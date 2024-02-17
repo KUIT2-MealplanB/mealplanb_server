@@ -87,8 +87,7 @@ public class FavoriteFoodService {
             GetFavoriteFoodResponse.FoodItem foodDto = new GetFavoriteFoodResponse.FoodItem(
                     favoriteFood.getFood().getFoodId(),
                     favoriteFood.getFood().getName(),
-                    (int)favoriteFood.getFood().getKcal(),
-                    favoriteFood.getFood().getCreateMemberId()==null?false:true
+                    (int)favoriteFood.getFood().getKcal()
             );
             return foodDto;
         }).collect(Collectors.toList());
