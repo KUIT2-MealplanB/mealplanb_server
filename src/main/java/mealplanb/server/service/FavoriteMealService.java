@@ -27,6 +27,7 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @Transactional(readOnly = true)
 public class FavoriteMealService {
 
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final FavoriteMealRepository favoriteMealRepository;
     private final FavoriteMealComponentService favoriteMealComponentService;
@@ -99,9 +100,7 @@ public class FavoriteMealService {
     public List<GetMyMealListResponse> getMyMealList(Long memberId, Long favoriteMealId){
         log.info("[FavoriteMealService.getMyMealList]");
 
-        if(memberRepository.findById(memberId).isEmpty()){
-            throw new MemberException(MEMBER_NOT_FOUND);
-        }
+        memberService.checkMemberExist(memberId);
 
         if(!favoriteMealRepository.existsByFavoriteMealIdAndStatus(favoriteMealId, BaseStatus.A)){
             throw new MealException(MEAL_NOT_FOUND); // 식단을 찾을 수 없습니다.
