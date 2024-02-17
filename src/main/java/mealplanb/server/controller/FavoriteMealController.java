@@ -38,7 +38,7 @@ public class FavoriteMealController {
      * 나의 식단 조회
      */
     @GetMapping("")
-    public BaseResponse<GetMyMealResponse> getMyMeal(@RequestHeader ("Authorization") String authorization){
+    public BaseResponse<List<GetMyMealResponse>> getMyMeal(@RequestHeader ("Authorization") String authorization){
         log.info("[FavoriteMealController.getMyMeal]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(favoriteMealService.getMyMeal(memberId));
