@@ -114,7 +114,7 @@ public class FavoriteMealComponentService {
             int kcal = 0;
             long foodId = component.getFood().getFoodId();
             Food food = foodRepository.findByFoodId(foodId)
-                    .orElseThrow(() -> new MealException(FAVORITE_MEAL_COMPONENT_NOT_EXIST)); // 나의 식단에 들어있는 식사가 없습니다.
+                    .orElseThrow(() -> new MealException(FOOD_NOT_FOUND));
 
             // 식재료 량에 따라 칼로리 계산
             kcal = (int)(food.getKcal() * component.getQuantity() / 100);
