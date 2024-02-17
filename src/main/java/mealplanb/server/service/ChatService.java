@@ -8,6 +8,7 @@ import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
+import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ChatService {
     private final MemberService memberService;
     private final FoodService foodService;
     private final FoodMealMappingTableService foodMealMappingTableService;
+    private final MealService mealService;
 
     /**
      * 채팅(치팅데이)
@@ -67,5 +69,13 @@ public class ChatService {
         log.info("[ChatService.getAmountSuggestion]");
         int remainingKcal = memberService.calculateRemainingKcal(memberId);
         return foodService.getAmountSuggestion(remainingKcal, foodId);
+    }
+
+    /**
+     * 채팅을 통한 끼니 등록
+     */
+    public void postMealSuggestedFood(Long memberId, FoodItem food) {
+        memberService.checkMemberExist(memberId);
+        mealService.postMealSuggestedFood(memberId, food);
     }
 }

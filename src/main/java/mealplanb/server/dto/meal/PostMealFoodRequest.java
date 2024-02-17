@@ -1,5 +1,6 @@
 package mealplanb.server.dto.meal;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class PostMealFoodRequest {
     @Getter
     @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class FoodItem {
         private long foodId;
         private int quantity;
