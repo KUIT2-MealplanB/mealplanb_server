@@ -150,10 +150,10 @@ public class FoodService {
             cheatDayFoodInfoList.add( new cheatDayFoodInfo(
                             cheatDayFood.getFoodId(),
                             cheatDayFood.getName(),
+                        offer+unitName,
                             offerCarbohydrate,
                             offerProtein,
                             offerFat,
-                            offer+ unitName,
                             unitGram*offer));
         }
     }
