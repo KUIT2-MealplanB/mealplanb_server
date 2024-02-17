@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PatchPlanRequest {
+    /** 사용자 목표 수정 */
 
     @NotNull(message = "initialWeight: {NotNull}")
     private double initialWeight;
