@@ -7,7 +7,7 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
-import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetMostEatenFoodResponse;
 import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import org.springframework.stereotype.Service;
 
@@ -44,22 +44,22 @@ public class ChatService {
     /**
      * 채팅(자주먹는)
      */
-    public GetFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
+    public GetMostEatenFoodResponse getMyFavoriteFood(Long memberId) {
         log.info("[ChatService.getMyFavoriteFood]");
         long myFavoriteFoodId = foodMealMappingTableService.getMyFavoriteFoodId(memberId);
         GetAmountSuggestionResponse amountSuggestion = getAmountSuggestion(memberId, myFavoriteFoodId);
-        return new GetFavoriteFoodResponse(myFavoriteFoodId, amountSuggestion.getFoodName(), amountSuggestion.getOffer(), amountSuggestion.getOfferCarbohydrate(), amountSuggestion.getOfferProtein(), amountSuggestion.getOfferFat());
+        return new GetMostEatenFoodResponse(myFavoriteFoodId, amountSuggestion.getFoodName(), amountSuggestion.getOffer(), amountSuggestion.getOfferQuantity(), amountSuggestion.getOfferCarbohydrate(), amountSuggestion.getOfferProtein(), amountSuggestion.getOfferFat());
     }
 
     /**
      * 채팅(인기있는)
      */
-    public GetFavoriteFoodResponse getCommunityFavoriteFood(Long memberId) {
+    public GetMostEatenFoodResponse getCommunityFavoriteFood(Long memberId) {
         log.info("[ChatService.getCommunityFavoriteFood]");
         memberService.checkMemberExist(memberId);
         long communityFavoriteFoodId = foodMealMappingTableService.getCommunityFavoriteFoodId();
         GetAmountSuggestionResponse amountSuggestion = getAmountSuggestion(memberId, communityFavoriteFoodId);
-        return new GetFavoriteFoodResponse(communityFavoriteFoodId, amountSuggestion.getFoodName(), amountSuggestion.getOffer(), amountSuggestion.getOfferCarbohydrate(), amountSuggestion.getOfferProtein(), amountSuggestion.getOfferFat());
+        return new GetMostEatenFoodResponse(communityFavoriteFoodId, amountSuggestion.getFoodName(), amountSuggestion.getOffer(), amountSuggestion.getOfferQuantity(), amountSuggestion.getOfferCarbohydrate(), amountSuggestion.getOfferProtein(), amountSuggestion.getOfferFat());
     }
 
     /**

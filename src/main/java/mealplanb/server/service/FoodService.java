@@ -187,10 +187,11 @@ public class FoodService {
         FoodUnit foodUnit = getFoodUnit(food);
         int offer = calculateOffer(remainingKcal, food, foodUnit.getUnitGram(), foodUnit.getUnitName());
         int offerKcal = (int) (foodUnit.getUnitGram() * (food.getKcal() /100) * offer);
+        int offerQuantity = foodUnit.getUnitGram() * offer;
         int offerCarbohydrate = (int) (foodUnit.getUnitGram() * (food.getCarbohydrate() /100) * offer);
         int offerProtein = (int) (foodUnit.getUnitGram() * (food.getProtein() /100) * offer);
         int offerFat = (int) (foodUnit.getUnitGram() * (food.getFat() /100) * offer);
 
-        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, offerCarbohydrate, offerProtein, offerFat,  remainingKcal);
+        return new GetAmountSuggestionResponse(food.getName(), offer+foodUnit.getUnitName(), offerKcal, offerQuantity ,offerCarbohydrate, offerProtein, offerFat,  remainingKcal);
     }
 }
