@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MealTypeConverter {
+    /** ex) 1 -> 첫끼로 바꿔주는 컨버터
+     * MealTypeConverter.convertMealTypeLabel(meal.getMealType())
+     * 위와 같이 호출해서 사용 가능 */
+
     private static final Map<Integer, String> MEAL_TYPE_MAP = new HashMap<>();
 
     static {

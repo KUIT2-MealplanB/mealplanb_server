@@ -130,7 +130,7 @@ public class MealService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
         if (!meal.getMember().equals(member)) {
-            throw new MealException(BaseExceptionResponseStatus.UNAUTHORIZED_ACCESS);
+            throw new MealException(BaseExceptionResponseStatus.MEAL_UNAUTHORIZED_ACCESS);
         }
 
         foodMealMappingTableService.postMealFood(member, meal, postMealFoodRequest.getFoods(), false);
