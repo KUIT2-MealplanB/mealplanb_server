@@ -68,9 +68,7 @@ public class FavoriteMealService {
     public GetMyMealResponse getMyMeal(Long memberId){
         log.info("[FavoriteMealService.getMyMeal]");
 
-        if(memberRepository.findById(memberId).isEmpty()){
-            throw new MemberException(MEMBER_NOT_FOUND);
-        }
+        memberService.checkMemberExist(memberId);
 
         List<FavoriteMeal> favoriteMeal = favoriteMealRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A)
                 .orElseThrow(()-> new MealException(FAVORITE_MEAL_NOT_EXIST));
