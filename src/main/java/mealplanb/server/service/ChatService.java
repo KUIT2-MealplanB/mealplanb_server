@@ -75,7 +75,7 @@ public class ChatService {
      * 채팅을 통한 끼니 등록
      */
     public void postMealSuggestedFood(Long memberId, FoodItem food) {
-        memberService.checkMemberExist(memberId);
+        log.info("[ChatService.postMealSuggestedFood]");
         mealService.postMealSuggestedFood(memberId, food);
     }
 }
