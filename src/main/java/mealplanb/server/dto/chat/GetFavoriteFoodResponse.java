@@ -8,7 +8,8 @@ import lombok.Getter;
 public class GetFavoriteFoodResponse {
     private long foodId;
     private String name;
-    private int carbohydrate;
-    private int protein;
-    private int fat;
+    private String offer;
+    private int offerCarbohydrate;
+    private int offerProtein;
+    private int offerFat;
 }
