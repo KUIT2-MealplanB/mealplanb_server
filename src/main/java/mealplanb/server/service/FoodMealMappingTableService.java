@@ -19,7 +19,6 @@ import mealplanb.server.dto.meal.MealTypeConverter;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MealRepository;
-import mealplanb.server.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -33,7 +32,6 @@ import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 @Service
 @RequiredArgsConstructor
 public class FoodMealMappingTableService {
-    private final MemberRepository memberRepository;
     private final FoodMealMappingTableRepository foodMealMappingTableRepository;
     private final FoodRepository foodRepository;
     private final MealRepository mealRepository;
@@ -147,8 +145,6 @@ public class FoodMealMappingTableService {
      */
     public List<GetMealSuggestedFoodResponse> getMealSuggestedFood(Long memberId) {
         log.info("[MealService.getMealSuggestedFood]");
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new MemberException(BaseExceptionResponseStatus.MEMBER_NOT_FOUND));
 
         List<FoodMealMappingTable> suggestedFoodList = foodMealMappingTableRepository.findAllMealSuggestedFood(memberId)
                 .orElse(Collections.emptyList());

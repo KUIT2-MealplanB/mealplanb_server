@@ -85,6 +85,7 @@ public class ChatService {
      */
     public List<GetMealSuggestedFoodResponse> getMealSuggestedFood(Long memberId) {
         log.info("[ChatService.getMealSuggestedFood]");
+        memberService.checkMemberExist(memberId);
         return foodMealMappingTableService.getMealSuggestedFood(memberId);
     }
 }
