@@ -8,6 +8,7 @@ import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
 import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +78,13 @@ public class ChatService {
     public void postMealSuggestedFood(Long memberId, FoodItem food) {
         log.info("[ChatService.postMealSuggestedFood]");
         mealService.postMealSuggestedFood(memberId, food);
+    }
+
+    /**
+     * 채팅을 통해 추천받은 끼니 조회 (등록식단 모아보기)
+     */
+    public List<GetMealSuggestedFoodResponse> getMealSuggestedFood(Long memberId) {
+        log.info("[ChatService.getMealSuggestedFood]");
+        return foodMealMappingTableService.getMealSuggestedFood(memberId);
     }
 }
