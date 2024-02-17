@@ -7,6 +7,7 @@ import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
+import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
 import mealplanb.server.dto.chat.GetMostEatenFoodResponse;
 import mealplanb.server.dto.meal.PostMealFoodRequest.FoodItem;
 import org.springframework.stereotype.Service;
@@ -78,7 +79,16 @@ public class ChatService {
      * 채팅을 통한 끼니 등록
      */
     public void postMealSuggestedFood(Long memberId, FoodItem food) {
-        memberService.checkMemberExist(memberId);
+        log.info("[ChatService.postMealSuggestedFood]");
         mealService.postMealSuggestedFood(memberId, food);
+    }
+
+    /**
+     * 채팅을 통해 추천받은 끼니 조회 (등록식단 모아보기)
+     */
+    public List<GetMealSuggestedFoodResponse> getMealSuggestedFood(Long memberId) {
+        log.info("[ChatService.getMealSuggestedFood]");
+        memberService.checkMemberExist(memberId);
+        return foodMealMappingTableService.getMealSuggestedFood(memberId);
     }
 }
