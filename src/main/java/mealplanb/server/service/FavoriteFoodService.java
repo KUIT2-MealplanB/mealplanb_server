@@ -6,7 +6,7 @@ import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.FavoriteFood;
-import mealplanb.server.domain.Food;
+import mealplanb.server.domain.Food.Food;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse;
 import mealplanb.server.dto.food.PostFavoriteFoodRequest;
