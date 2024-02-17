@@ -6,10 +6,13 @@ import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
 import mealplanb.server.dto.meal.PostMealFoodRequest;
 import mealplanb.server.service.ChatService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 
@@ -74,4 +77,15 @@ public class ChatController {
         chatService.postMealSuggestedFood(memberId, food);
         return new BaseResponse<>(null);
     }
+
+    /**
+     * 채팅을 통해 추천받은 끼니 조회 (등록식단 모아보기)
+     */
+    @GetMapping("/meal")
+    public BaseResponse<List<GetMealSuggestedFoodResponse>> getMealSuggestedFood(@RequestHeader("Authorization") String authorization){
+        log.info("[ChatController.getMealSuggestedFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(chatService.getMealSuggestedFood(memberId));
+    }
+
 }
