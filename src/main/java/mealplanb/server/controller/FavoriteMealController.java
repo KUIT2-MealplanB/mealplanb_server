@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.response.BaseResponse;
+import mealplanb.server.dto.meal.GetMyMealListResponse;
 import mealplanb.server.dto.meal.GetMyMealResponse;
 import mealplanb.server.dto.meal.PostMyMealRequest;
-import mealplanb.server.service.FavoriteMealComponentService;
 import mealplanb.server.service.FavoriteMealService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,6 @@ public class FavoriteMealController {
 
     private final JwtProvider jwtProvider;
     private final FavoriteMealService favoriteMealService;
-    private final FavoriteMealComponentService favoriteMealComponentService;
 
     /**
      * 나의 식단 등록
@@ -55,4 +54,16 @@ public class FavoriteMealController {
         favoriteMealService.deleteMyMeal(memberId, favoriteMealId);
         return new BaseResponse<>(null);
     }
+
+    /**
+     * 나의 식단 선택해서 식사 리스트 조회하기
+     */
+    @GetMapping("/{favoriteMealId}")
+    public BaseResponse<GetMyMealListResponse> getMyMealList(@RequestHeader("Authorization") String authorization,
+                                                             @PathVariable Long favoriteMealId){
+        log.info("[FavoriteMealController.getMyMealList]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(favoriteMealService.getMyMealList(memberId, favoriteMealId));
+    }
+
 }
