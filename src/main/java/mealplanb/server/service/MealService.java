@@ -173,7 +173,7 @@ public class MealService {
                 log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니", todayLatestMeal.get().getMealId());
                 meal = todayLatestMeal.get();
             }else if (todayLatestMeal.get().getMealType()==10){
-                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니라서 새로운 끼니를 생성해야하는데, 더 이상의 끼니를 생성할 수 없을 때", todayLatestMeal.get().getMealId());
+                log.info("[MealService.postMealSuggestedFood] - 마지막 끼니{} 가 빈끼니가 아니라서 새로운 끼니를 생성해야하는데, 더 이상의 끼니를 생성할 수 없을 때", todayLatestMeal.get().getMealId());
                 throw new ChatException(BaseExceptionResponseStatus.MEAL_MAX_NUM);
             }
         }
