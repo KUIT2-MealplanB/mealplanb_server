@@ -8,7 +8,6 @@ import mealplanb.server.domain.Food.Food;
 import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
-import mealplanb.server.dto.chat.GetFavoriteFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
