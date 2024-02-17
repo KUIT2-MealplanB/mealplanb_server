@@ -107,23 +107,24 @@ public class FoodMealMappingTableService {
     /**
      * 채팅(자주먹는)
      */
-    public GetFavoriteFoodResponse getMyFavoriteFood(Long memberId) {
+    public long getMyFavoriteFoodId(Long memberId) {
         log.info("[FoodMealMappingTableService.getMyFavoriteFood]");
         Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodIdByUserId(memberId);
         Food myFavoriteFood = foodRepository.findByFoodIdAndStatus(mostEatenFoodId, BaseStatus.A)
                 .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
-        return new GetFavoriteFoodResponse(myFavoriteFood.getFoodId(), myFavoriteFood.getName(), (int) myFavoriteFood.getCarbohydrate(), (int) myFavoriteFood.getProtein(), (int) myFavoriteFood.getFat());
+        return myFavoriteFood.getFoodId();
     }
 
     /**
      * 채팅(인기있는)
      */
-    public GetFavoriteFoodResponse getCommunityFavoriteFood() {
+    public long getCommunityFavoriteFoodId() {
         log.info("[FoodMealMappingTableService.getCommunityFavoriteFood]");
         Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodId();
         Food communityFavoriteFood = foodRepository.findByFoodIdAndStatus(mostEatenFoodId, BaseStatus.A)
                 .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
-        return new GetFavoriteFoodResponse(communityFavoriteFood.getFoodId(), communityFavoriteFood.getName(), (int) communityFavoriteFood.getCarbohydrate(), (int) communityFavoriteFood.getProtein(), (int) communityFavoriteFood.getFat());
+
+        return communityFavoriteFood.getFoodId();
     }
 
     public boolean isMealEmpty(Long mealId) {
