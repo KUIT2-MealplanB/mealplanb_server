@@ -3,7 +3,7 @@ package mealplanb.server.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mealplanb.server.common.exception.MemberException;
+import mealplanb.server.common.exception.ChatException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food.Food;
