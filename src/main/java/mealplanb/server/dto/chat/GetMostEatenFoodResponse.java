@@ -5,14 +5,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GetAmountSuggestionResponse {
-    /** 얼마나 먹을까요 */
-    private String foodName;
+public class GetMostEatenFoodResponse {
+    /** 채팅(자주먹은), 채팅(인기있는)*/
+    private long foodId;
+    private String name;
     private String offer;
-    private int offerKcal;
     private int offerQuantity;
     private int offerCarbohydrate;
     private int offerProtein;
     private int offerFat;
-    private int remainingKcal;
 }

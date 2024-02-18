@@ -107,22 +107,23 @@ public class MemberController {
      * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
      */
     @GetMapping("/plan/diet-type")
-    public BaseResponse<GetDietTypeResponse> getDietType(@Validated @RequestBody GetDietTypeRequest getDietTypeRequest,
-                                                         @RequestHeader("Authorization") String authorization){
+    public BaseResponse<GetDietTypeResponse> getDietType(@RequestHeader("Authorization") String authorization,
+                                                         @RequestParam(name = "type") String dietType){
         log.info("[MemberController.getDietType]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        return new BaseResponse<>(memberService.getDietType(memberId, getDietTypeRequest));
+        return new BaseResponse<>(memberService.getDietType(memberId, dietType));
     }
 
     /**
      * 사용자 목표 조회 (권장 칼로리 반환)
      */
     @GetMapping("/plan/recommended-kcal")
-    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@Validated @RequestBody GetRecommendedKcalRequest getRecommendedKcalRequest,
-                                                                       @RequestHeader("Authorization") String authorization) {
+    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@RequestHeader("Authorization") String authorization,
+                                                                       @RequestParam("initial_weight") double initialWeight,
+                                                                       @RequestParam("target_weight") double targetWeight) {
         log.info("[MemberController.getRecommendedKcal]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        return new BaseResponse<>(memberService.getRecommendedKcal(memberId, getRecommendedKcalRequest));
+        return new BaseResponse<>(memberService.getRecommendedKcal(memberId, initialWeight,targetWeight));
     }
 
     /**

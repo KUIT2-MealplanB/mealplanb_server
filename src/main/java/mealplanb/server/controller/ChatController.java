@@ -5,10 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
-import mealplanb.server.dto.chat.GetMyFavoriteFoodResponse;
+import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
+import mealplanb.server.dto.meal.PostMealFoodRequest;
+import mealplanb.server.dto.chat.GetMostEatenFoodResponse;
 import mealplanb.server.service.ChatService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 
 @Slf4j
 @RestController
@@ -33,10 +39,20 @@ public class ChatController {
      * 채팅(자주먹는)
      */
     @GetMapping("/my-favorite")
-    public BaseResponse<GetMyFavoriteFoodResponse> getMyFavoriteFood(@RequestHeader("Authorization") String authorization){
+    public BaseResponse<GetMostEatenFoodResponse> getMyFavoriteFood(@RequestHeader("Authorization") String authorization){
         log.info("[ChatController.getMyFavoriteFood]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(chatService.getMyFavoriteFood(memberId));
+    }
+
+    /**
+     * 채팅(인기있는)
+     */
+    @GetMapping("/community-favorite")
+    public BaseResponse<GetMostEatenFoodResponse> getCommunityFavoriteFood(@RequestHeader(value = "Authorization") String authorization){
+        log.info("[ChatController.getCommunityFavoriteFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(chatService.getCommunityFavoriteFood(memberId));
     }
 
     /**
@@ -49,4 +65,27 @@ public class ChatController {
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(chatService.getAmountSuggestion(memberId, foodId));
     }
+
+    /**
+     * 채팅을 통한 끼니 등록
+     */
+    @PostMapping("/meal")
+    public BaseResponse<Void> postMealSuggestedFood(@RequestHeader("Authorization") String authorization,
+                                                    @RequestBody FoodItem food){
+        log.info("[ChatController.postMealSuggestedFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        chatService.postMealSuggestedFood(memberId, food);
+        return new BaseResponse<>(null);
+    }
+
+    /**
+     * 채팅을 통해 추천받은 끼니 조회 (등록식단 모아보기)
+     */
+    @GetMapping("/meal")
+    public BaseResponse<List<GetMealSuggestedFoodResponse>> getMealSuggestedFood(@RequestHeader("Authorization") String authorization){
+        log.info("[ChatController.getMealSuggestedFood]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(chatService.getMealSuggestedFood(memberId));
+    }
+
 }
