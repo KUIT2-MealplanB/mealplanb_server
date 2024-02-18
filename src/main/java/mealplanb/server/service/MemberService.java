@@ -340,7 +340,7 @@ public class MemberService {
     /**
      * 사용자 목표 조회 (권장 칼로리 반환)
      */
-    public GetRecommendedKcalResponse getRecommendedKcal(Long memberId, GetRecommendedKcalRequest getRecommendedKcalRequest){
+    public GetRecommendedKcalResponse getRecommendedKcal(Long memberId, double initialWeight, double targetWeight){
         log.info("[MemberService.getRecommendedKcal]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -348,8 +348,6 @@ public class MemberService {
         MemberSex sex = member.getSex();
         int age = member.getAge();
         int height = member.getHeight();
-        double initialWeight = getRecommendedKcalRequest.getInitialWeight();
-        double targetWeight = getRecommendedKcalRequest.getTargetWeight();
 
         int recommendedKcal = calRecommendedKcal(sex, age, height, initialWeight, targetWeight);
 
