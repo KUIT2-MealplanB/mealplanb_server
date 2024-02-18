@@ -177,7 +177,7 @@ public class FoodMealMappingTableService {
         log.info("[FoodMealMappingTableService.getRecommendedFoodList]");
         List<GetFavoriteFoodResponse> recommendedFoodList = new ArrayList<>();
 
-        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatus(memberId,true,BaseStatus.A).get();
+        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatusOrderByCreatedAtDesc(memberId,true,BaseStatus.A).get();
 
         if(FoodList.isEmpty()){
             return recommendedFoodList;
