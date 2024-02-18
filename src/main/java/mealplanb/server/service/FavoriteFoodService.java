@@ -26,7 +26,10 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FavoriteFoodService {
+
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final FavoriteFoodRepository favoriteFoodRepository;
     private final FoodRepository foodRepository;
@@ -71,28 +74,31 @@ public class FavoriteFoodService {
     /**
      * 즐겨찾기한 식사 조회
      */
-    @Transactional(readOnly = true)
-    public GetFavoriteFoodResponse getFavoriteFoodList(Long memberId){
+    public List<GetFavoriteFoodResponse> getFavoriteFoodList(Long memberId){
         log.info("[FavoriteFoodService.getFavoriteFoodList]");
+        memberService.checkMemberExist(memberId);
 
-        if(memberRepository.findById(memberId).isEmpty()){
-            throw new MemberException(MEMBER_NOT_FOUND);
-        }
-        Optional<List<FavoriteFood>> favoriteFoodList = favoriteFoodRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A);
-        if(favoriteFoodList.isEmpty()){
-            return new GetFavoriteFoodResponse(new ArrayList<>()); // 비어 있는 리스트로 응답
+        List<GetFavoriteFoodResponse> favoriteFoodList = new ArrayList<>();
+        List<FavoriteFood> favoriteFoodListOptional = favoriteFoodRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A).get();
+
+        if(favoriteFoodListOptional.isEmpty()){
+            return favoriteFoodList;
         }
 
-        List<GetFavoriteFoodResponse.FoodItem> foodList = favoriteFoodList.get().stream().map(favoriteFood -> {
-            GetFavoriteFoodResponse.FoodItem foodDto = new GetFavoriteFoodResponse.FoodItem(
-                    favoriteFood.getFood().getFoodId(),
-                    favoriteFood.getFood().getName(),
-                    (int)favoriteFood.getFood().getKcal()
+        for(FavoriteFood food : favoriteFoodListOptional){
+            Long foodId = food.getFood().getFoodId();
+            String foodName = food.getFood().getName();
+            int kcal = (int) food.getFood().getKcal();
+
+            GetFavoriteFoodResponse foodItem = new GetFavoriteFoodResponse(
+                    foodId,
+                    foodName,
+                    kcal
             );
-            return foodDto;
-        }).collect(Collectors.toList());
 
-        return new GetFavoriteFoodResponse(foodList);
+            favoriteFoodList.add(foodItem);
+        }
+        return favoriteFoodList;
     }
 
     /**
