@@ -10,6 +10,7 @@ import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
+import mealplanb.server.dto.food.GetFavoriteFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
@@ -170,5 +171,26 @@ public class FoodMealMappingTableService {
     public static String convertMealDateLabel(DayOfWeek dayOfWeek) {
         // 요일에 따라 한글 요일을 반환
         return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);
+    }
+
+    public List<GetFavoriteFoodResponse> getRecommendedFoodList(Long memberId){
+        log.info("[FoodMealMappingTableService.getRecommendedFoodList]");
+        List<GetFavoriteFoodResponse> recommendedFoodList = new ArrayList<>();
+
+        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatus(memberId,1,BaseStatus.A).get();
+
+        for(FoodMealMappingTable component : FoodList){
+            Long foodId = component.getFood().getFoodId();
+            String foodName = component.getFood().getName();
+            int kcal = (int) component.getFood().getKcal();
+
+            GetFavoriteFoodResponse foodItem = new GetFavoriteFoodResponse(
+                    foodId,
+                    foodName,
+                    kcal
+            );
+            recommendedFoodList.add(foodItem);
+        }
+        return recommendedFoodList;
     }
 }
