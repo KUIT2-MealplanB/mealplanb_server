@@ -18,6 +18,8 @@ import mealplanb.server.dto.meal.MealTypeConverter;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MealRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -176,8 +178,8 @@ public class FoodMealMappingTableService {
     public List<GetFavoriteFoodResponse> getRecommendedFoodList(Long memberId){
         log.info("[FoodMealMappingTableService.getRecommendedFoodList]");
         List<GetFavoriteFoodResponse> recommendedFoodList = new ArrayList<>();
-
-        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatusOrderByCreatedAtDesc(memberId,true,BaseStatus.A).get();
+        Pageable pageable = PageRequest.of(0, 20);
+        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatusOrderByCreatedAtDesc(memberId,true, pageable, BaseStatus.A).get();
 
         if(FoodList.isEmpty()){
             return recommendedFoodList;
