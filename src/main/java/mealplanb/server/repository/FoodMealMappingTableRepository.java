@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface FoodMealMappingTableRepository extends JpaRepository<FoodMealMappingTable, Long> {
     Optional<List<FoodMealMappingTable>> findAllByMeal_MealIdAndStatus(long mealId, BaseStatus a);
-    Optional<List<FoodMealMappingTable>> findByMember_MemberIdAndIsRecommendedAndStatus(Long memberId, int isRecommended, BaseStatus A);
+    Optional<List<FoodMealMappingTable>> findByMember_MemberIdAndIsRecommendedAndStatus(Long memberId, boolean isRecommended, BaseStatus A);
 
     @Query(value = "SELECT fm.food_id " +
             "FROM food_meal_mapping_table fm " +

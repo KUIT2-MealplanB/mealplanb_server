@@ -177,7 +177,11 @@ public class FoodMealMappingTableService {
         log.info("[FoodMealMappingTableService.getRecommendedFoodList]");
         List<GetFavoriteFoodResponse> recommendedFoodList = new ArrayList<>();
 
-        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatus(memberId,1,BaseStatus.A).get();
+        List<FoodMealMappingTable> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatus(memberId,true,BaseStatus.A).get();
+
+        if(FoodList.isEmpty()){
+            return recommendedFoodList;
+        }
 
         for(FoodMealMappingTable component : FoodList){
             Long foodId = component.getFood().getFoodId();
