@@ -12,7 +12,6 @@ import mealplanb.server.domain.Food.FoodUnit;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse.cheatDayFoodInfo;
 import mealplanb.server.dto.food.*;
-import mealplanb.server.dto.food.GetFavoriteFoodResponse.FoodItem;
 import mealplanb.server.domain.Member.Member;
 import mealplanb.server.dto.food.GetFoodAutoCompleteResponse.GetFoodAutoCompleteFoodItem;
 import mealplanb.server.dto.food.GetFoodResponse;
