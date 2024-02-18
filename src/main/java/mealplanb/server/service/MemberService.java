@@ -322,12 +322,10 @@ public class MemberService {
     /**
      * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
      */
-    public GetDietTypeResponse getDietType(Long memberId, GetDietTypeRequest getDietTypeRequest){
+    public GetDietTypeResponse getDietType(Long memberId, String dietType){
         log.info("[MemberService.getDietType]");
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        String dietType = getDietTypeRequest.getDietType();
+        checkMemberExist(memberId); // 존재하는 유저인지 확인
 
         int[] ratio = calculateRate(dietType);
         int carbohydrateRate = ratio[0];
