@@ -118,11 +118,12 @@ public class MemberController {
      * 사용자 목표 조회 (권장 칼로리 반환)
      */
     @GetMapping("/plan/recommended-kcal")
-    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@Validated @RequestBody GetRecommendedKcalRequest getRecommendedKcalRequest,
-                                                                       @RequestHeader("Authorization") String authorization) {
+    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@RequestHeader("Authorization") String authorization,
+                                                                       @RequestParam("initial_weight") double initialWeight,
+                                                                       @RequestParam("target_weight") double targetWeight) {
         log.info("[MemberController.getRecommendedKcal]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        return new BaseResponse<>(memberService.getRecommendedKcal(memberId, getRecommendedKcalRequest));
+        return new BaseResponse<>(memberService.getRecommendedKcal(memberId, initialWeight,targetWeight));
     }
 
     /**
