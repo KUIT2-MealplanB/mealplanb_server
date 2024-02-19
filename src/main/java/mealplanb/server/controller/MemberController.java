@@ -60,6 +60,17 @@ public class MemberController {
     }
 
     /**
+     * 회원 탈퇴
+     */
+    @PatchMapping("")
+    public BaseResponse<Void> deleteMember(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.deleteMember]");
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+        memberService.deleteMember(jwtToken);
+        return new BaseResponse<>(null);
+    }
+
+    /**
      * 아바타 정보 조회
      * */
     @GetMapping("/avatar")
@@ -84,7 +95,7 @@ public class MemberController {
      */
     @PatchMapping("/avatar/appearance")
     public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
-            @RequestHeader("Authorization") String authorization){
+                                                                              @RequestHeader("Authorization") String authorization){
         log.info("[MemberController.modifyAvatarAppearance]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
