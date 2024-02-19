@@ -11,6 +11,7 @@ import mealplanb.server.common.exception.FoodException;
 import mealplanb.server.common.response.status.BaseExceptionResponseStatus;
 import mealplanb.server.domain.FoodMealMappingTable;
 import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
+import mealplanb.server.dto.food.GetFavoriteFoodResponse;
 import mealplanb.server.dto.meal.GetMealFoodResponse.FoodInfo;
 import mealplanb.server.domain.Meal.Meal;
 import mealplanb.server.domain.Member.Member;
@@ -18,8 +19,11 @@ import mealplanb.server.dto.meal.MealTypeConverter;
 import mealplanb.server.repository.FoodMealMappingTableRepository;
 import mealplanb.server.repository.FoodRepository;
 import mealplanb.server.repository.MealRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -172,5 +176,32 @@ public class FoodMealMappingTableService {
     public static String convertMealDateLabel(DayOfWeek dayOfWeek) {
         // 요일에 따라 한글 요일을 반환
         return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);
+    }
+
+    /**
+     * 최근 추천
+     */
+    public List<GetFavoriteFoodResponse> getRecommendedFoodList(Long memberId){
+        log.info("[FoodMealMappingTableService.getRecommendedFoodList]");
+        List<GetFavoriteFoodResponse> recommendedFoodList = new ArrayList<>();
+        Pageable pageable = PageRequest.of(0, 20);
+        Optional<List<FoodMealMappingTable>> FoodList = foodMealMappingTableRepository.findByMember_MemberIdAndIsRecommendedAndStatusOrderByCreatedAtDesc(memberId,true, pageable, BaseStatus.A);
+
+        FoodList.ifPresent(foodList -> {
+            for (FoodMealMappingTable component : foodList) {
+                Long foodId = component.getFood().getFoodId();
+                String foodName = component.getFood().getName();
+                int kcal = (int) component.getFood().getKcal();
+
+                GetFavoriteFoodResponse foodItem = new GetFavoriteFoodResponse(
+                        foodId,
+                        foodName,
+                        kcal
+                );
+                recommendedFoodList.add(foodItem);
+            }
+        });
+
+        return recommendedFoodList;
     }
 }
