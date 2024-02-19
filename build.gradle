@@ -47,6 +47,9 @@ dependencies {
     // Json을 결과로 매핑하기 위한 의존성 추가
     implementation 'com.google.code.gson:gson:2.8.6'
 
+    // Spring Boot Redis Starter
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
