@@ -170,7 +170,7 @@ public class MemberService {
     }
 
     private void validateEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmailAndStatus(email,MemberStatus.A)) {
             throw new MemberException(DUPLICATE_EMAIL);
         }
     }
@@ -224,6 +224,28 @@ public class MemberService {
             throw new MemberException(EXPIRED_TOKEN);
         }
         tokenService.invalidateToken(jwtToken); // redis 에서 토큰 삭제
+    }
+
+    /**
+     * 회원 탈퇴
+     */
+    @Transactional
+    public void deleteMember(String jwtToken){
+        log.info("[MemberService.deleteMember]");
+        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+        if(memberRepository.existsByMemberIdAndStatus(memberId,MemberStatus.A)){
+            deleteMemberInfo(memberId);
+            tokenService.invalidateToken(jwtToken); // redis 에서 토큰 삭제
+        }else{
+            throw new MemberException(MEMBER_NOT_FOUND); // 회원을 찾을 수 없습니다.
+        }
+    }
+
+    public void deleteMemberInfo(Long memberId){
+        log.info("[MemberService.deleteMemberInfo]");
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(()-> new MemberException(MEMBER_NOT_FOUND));
+        member.updateStatus(MemberStatus.D);
     }
 
     /**
