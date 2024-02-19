@@ -31,9 +31,6 @@ public class ChatService {
         log.info("[ChatService.getCheatDayFood]");
         Map<String, Object> result = memberService.calculateRemainingKcalAndLackingNutrientName(memberId);
         int remainingKcal = (int) result.get("remainingKcal");
-        if (remainingKcal <= 0){
-            throw new ChatException(BaseExceptionResponseStatus.CHAT_LEFT_KCAL_NOT_EXIST);
-        }
 
         String lackingNutrient1 = (String) result.get("lackingNutrient1");
         String lackingNutrient2 = (String) result.get("lackingNutrient2");

@@ -6,9 +6,10 @@ import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.chat.GetAmountSuggestionResponse;
 import mealplanb.server.dto.chat.GetCheatDayFoodResponse;
 import mealplanb.server.dto.chat.GetMealSuggestedFoodResponse;
-import mealplanb.server.dto.meal.PostMealFoodRequest;
+import mealplanb.server.dto.food.GetFavoriteFoodResponse;
 import mealplanb.server.dto.chat.GetMostEatenFoodResponse;
 import mealplanb.server.service.ChatService;
+import mealplanb.server.service.FoodMealMappingTableService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import static mealplanb.server.dto.meal.PostMealFoodRequest.*;
 public class ChatController {
     private final JwtProvider jwtProvider;
     private final ChatService chatService;
+    private final FoodMealMappingTableService foodMealMappingTableService;
 
     /**
      * 채팅(치팅데이)
@@ -86,6 +88,16 @@ public class ChatController {
         log.info("[ChatController.getMealSuggestedFood]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(chatService.getMealSuggestedFood(memberId));
+    }
+
+    /**
+     * “최근추천”을 누르면 추천받은 식사 조회
+     */
+    @GetMapping("/recommended-meal")
+    public BaseResponse<List<GetFavoriteFoodResponse>> getRecommendedFoodList(@RequestHeader("Authorization") String authorization){
+        log.info("[ChatController.getRecommendedFoodList]");
+        Long memberId = jwtProvider.extractIdFromHeader(authorization);
+        return new BaseResponse<>(foodMealMappingTableService.getRecommendedFoodList(memberId));
     }
 
 }

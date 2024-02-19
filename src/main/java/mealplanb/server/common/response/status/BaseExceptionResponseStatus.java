@@ -48,7 +48,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_USER_STATUS(5005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     EMAIL_NOT_FOUND(5006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
     RATIO_NOT_CORRECT(5007,HttpStatus.BAD_REQUEST.value(), "탄,단,지 비율 합이 100이 되지 않습니다."),
-  
+
     /**
      * 6000: Food 오류
      */
@@ -77,7 +77,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     /**
      * 9000: Chat Controller 오류
      */
-    CHAT_LEFT_KCAL_NOT_EXIST(9000, HttpStatus.BAD_REQUEST.value(), "추천을 받을 수 없습니다. (해당 유저의 잔여 칼로리가 없습니다)");
+    CHAT_LEFT_KCAL_NOT_EXIST(9000, HttpStatus.BAD_REQUEST.value(), "추천을 받을 수 없습니다. (해당 유저의 잔여 칼로리가 없습니다)"),
+    MEMBER_NO_EATEN_FOOD(9001,HttpStatus.BAD_REQUEST.value(), "\"자주먹은 음식\" 추천을 받을 수 없습니다. (해당 유저의 먹은 음식이 없습니다)" );
 
     private final int code;
     private final int status;
