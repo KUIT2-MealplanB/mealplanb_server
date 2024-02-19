@@ -147,3 +147,8 @@ spring:
             client-name: kakao
             scope:
               - profile_nickname
+---
+spring:
+  redis:
+    host: localhost
+    port: 6379

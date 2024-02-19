@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
-import mealplanb.server.dto.food.GetFavoriteFoodResponse;
-import mealplanb.server.dto.food.PostFavoriteFoodRequest;
 import mealplanb.server.dto.member.*;
-import mealplanb.server.service.FavoriteFoodService;
 import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -49,6 +46,17 @@ public class MemberController {
             throw new MemberException(MEMBER_NOT_FOUND, getErrorMessages(bindingResult));
         }
         return new BaseResponse<>(memberService.login(postLoginRequest));
+    }
+
+    /**
+     * 로그아웃
+     */
+    @PostMapping("/logout")
+    public BaseResponse<Void> logout(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.logout]");
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+        memberService.logout(jwtToken);
+        return new BaseResponse<>(null);
     }
 
     /**
