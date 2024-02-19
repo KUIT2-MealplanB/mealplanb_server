@@ -52,9 +52,10 @@ public class MemberController {
      * 로그아웃
      */
     @PostMapping("/logout")
-    public BaseResponse<Void> logout(@RequestHeader("Authorization") String authorizationHeader){
+    public BaseResponse<Void> logout(@RequestHeader("Authorization") String authorization){
         log.info("[MemberController.logout]");
-        memberService.logout(authorizationHeader);
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+        memberService.logout(jwtToken);
         return new BaseResponse<>(null);
     }
 

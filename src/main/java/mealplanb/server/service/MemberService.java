@@ -218,10 +218,8 @@ public class MemberService {
     /**
      * 로그아웃
      */
-    public void logout(String authorizationHeader){
+    public void logout(String jwtToken){
         log.info("[MemberService.logout]");
-        String jwtToken = authorizationHeader.substring(7); // "Bearer " 부분을 제외하고 토큰 추출
-
         if(jwtProvider.isExpiredToken(jwtToken)){
             throw new MemberException(EXPIRED_TOKEN);
         }
