@@ -3,6 +3,7 @@ package mealplanb.server.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mealplanb.server.common.exception.ChatException;
 import mealplanb.server.common.exception.MealException;
 import mealplanb.server.domain.Base.BaseStatus;
 import mealplanb.server.domain.Food.Food;
@@ -113,7 +114,8 @@ public class FoodMealMappingTableService {
      */
     public long getMyFavoriteFoodId(Long memberId) {
         log.info("[FoodMealMappingTableService.getMyFavoriteFood]");
-        Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodIdByUserId(memberId);
+        Long mostEatenFoodId = foodMealMappingTableRepository.findMostEatenFoodIdByUserId(memberId)
+                .orElseThrow(() -> new ChatException(BaseExceptionResponseStatus.MEMBER_NO_EATEN_FOOD));
         Food myFavoriteFood = foodRepository.findByFoodIdAndStatus(mostEatenFoodId, BaseStatus.A)
                 .orElseThrow(() -> new FoodException(BaseExceptionResponseStatus.FOOD_NOT_FOUND));
         return myFavoriteFood.getFoodId();
