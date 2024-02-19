@@ -78,27 +78,26 @@ public class FavoriteFoodService {
         log.info("[FavoriteFoodService.getFavoriteFoodList]");
         memberService.checkMemberExist(memberId);
 
-        List<GetFavoriteFoodResponse> favoriteFoodList = new ArrayList<>();
-        List<FavoriteFood> favoriteFoodListOptional = favoriteFoodRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A).get();
+        List<GetFavoriteFoodResponse> favoriteFoods = new ArrayList<>();
+        Optional<List<FavoriteFood>>favoriteFoodListOptional = favoriteFoodRepository.findByMember_MemberIdAndStatus(memberId,BaseStatus.A);
 
-        if(favoriteFoodListOptional.isEmpty()){
-            return favoriteFoodList;
-        }
+        favoriteFoodListOptional.ifPresent(favoriteFoodList->{
+                for(FavoriteFood food : favoriteFoodList) {
+                    Long foodId = food.getFood().getFoodId();
+                    String foodName = food.getFood().getName();
+                    int kcal = (int) food.getFood().getKcal();
 
-        for(FavoriteFood food : favoriteFoodListOptional){
-            Long foodId = food.getFood().getFoodId();
-            String foodName = food.getFood().getName();
-            int kcal = (int) food.getFood().getKcal();
+                    GetFavoriteFoodResponse foodItem = new GetFavoriteFoodResponse(
+                            foodId,
+                            foodName,
+                            kcal
+                    );
 
-            GetFavoriteFoodResponse foodItem = new GetFavoriteFoodResponse(
-                    foodId,
-                    foodName,
-                    kcal
-            );
-
-            favoriteFoodList.add(foodItem);
-        }
-        return favoriteFoodList;
+                    favoriteFoods.add(foodItem);
+                }
+            }
+        );
+        return favoriteFoods;
     }
 
     /**
