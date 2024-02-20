@@ -36,6 +36,8 @@ import static mealplanb.server.common.response.status.BaseExceptionResponseStatu
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+
+    private final TokenService tokenService;
     private final MemberRepository memberRepository;
     private final MealRepository mealRepository;
     private final FoodRepository foodRepository;
@@ -52,8 +54,11 @@ public class MemberService {
         validateEmail(postUserRequest.getEmail()); // 이메일 유효성 검사
         Member member = createAndSaveMember(postUserRequest);
         String jwt = generateJwtToken(postUserRequest.getEmail(), member.getMemberId());
+        tokenService.storeToken(jwt, member.getMemberId()); // redis 에 토큰 저장
         return new PostMemberResponse(member.getMemberId(), jwt);
     }
+
+
 
     private Member createAndSaveMember(PostMemberRequest postMemberRequest) {
         String email = postMemberRequest.getEmail();
@@ -165,7 +170,7 @@ public class MemberService {
     }
 
     private void validateEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmailAndStatus(email,MemberStatus.A)) {
             throw new MemberException(DUPLICATE_EMAIL);
         }
     }
@@ -180,6 +185,7 @@ public class MemberService {
 
         if (passwordEncoder.matches(postLoginRequest.getPassword(), encodedPassword)) {
             String jwt = generateJwtToken(postLoginRequest.getEmail(), memberId);
+            tokenService.storeToken(jwt, memberId); // redis 에 토큰 저장
             return new PostLoginResponse(memberId, jwt);
         } else {
             throw new MemberException(PASSWORD_NO_MATCH);
@@ -207,6 +213,39 @@ public class MemberService {
     private String generateJwtToken(String email, Long memberId) {
         String jwt = jwtProvider.createToken(email, memberId);
         return jwt;
+    }
+
+    /**
+     * 로그아웃
+     */
+    public void logout(String jwtToken){
+        log.info("[MemberService.logout]");
+        if(jwtProvider.isExpiredToken(jwtToken)){
+            throw new MemberException(EXPIRED_TOKEN);
+        }
+        tokenService.invalidateToken(jwtToken); // redis 에서 토큰 삭제
+    }
+
+    /**
+     * 회원 탈퇴
+     */
+    @Transactional
+    public void deleteMember(String jwtToken){
+        log.info("[MemberService.deleteMember]");
+        Long memberId = jwtProvider.extractMemberIdFromJwtToken(jwtToken);
+        if(memberRepository.existsByMemberIdAndStatus(memberId,MemberStatus.A)){
+            deleteMemberInfo(memberId);
+            tokenService.invalidateToken(jwtToken); // redis 에서 토큰 삭제
+        }else{
+            throw new MemberException(MEMBER_NOT_FOUND); // 회원을 찾을 수 없습니다.
+        }
+    }
+
+    public void deleteMemberInfo(Long memberId){
+        log.info("[MemberService.deleteMemberInfo]");
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(()-> new MemberException(MEMBER_NOT_FOUND));
+        member.updateStatus(MemberStatus.D);
     }
 
     /**
@@ -322,12 +361,10 @@ public class MemberService {
     /**
      * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
      */
-    public GetDietTypeResponse getDietType(Long memberId, GetDietTypeRequest getDietTypeRequest){
+    public GetDietTypeResponse getDietType(Long memberId, String dietType){
         log.info("[MemberService.getDietType]");
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        String dietType = getDietTypeRequest.getDietType();
+        checkMemberExist(memberId); // 존재하는 유저인지 확인
 
         int[] ratio = calculateRate(dietType);
         int carbohydrateRate = ratio[0];
@@ -340,7 +377,7 @@ public class MemberService {
     /**
      * 사용자 목표 조회 (권장 칼로리 반환)
      */
-    public GetRecommendedKcalResponse getRecommendedKcal(Long memberId, GetRecommendedKcalRequest getRecommendedKcalRequest){
+    public GetRecommendedKcalResponse getRecommendedKcal(Long memberId, double initialWeight, double targetWeight){
         log.info("[MemberService.getRecommendedKcal]");
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -348,8 +385,6 @@ public class MemberService {
         MemberSex sex = member.getSex();
         int age = member.getAge();
         int height = member.getHeight();
-        double initialWeight = getRecommendedKcalRequest.getInitialWeight();
-        double targetWeight = getRecommendedKcalRequest.getTargetWeight();
 
         int recommendedKcal = calRecommendedKcal(sex, age, height, initialWeight, targetWeight);
 
@@ -540,6 +575,8 @@ public class MemberService {
 
         // [유저의 남은 칼로리 계산]
         int remainingKcal = member.getTargetKcal() - calculateIntakeKcal(mealsOptional.get());// 해당 날짜의 남은 칼로리 계산
+        remainingKcal = Math.max(0, remainingKcal);
+
         log.info("남은 칼로리 = {}", remainingKcal);
         return remainingKcal;
     }

@@ -1,10 +1,7 @@
 package mealplanb.server.domain.Member;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import mealplanb.server.domain.*;
 import mealplanb.server.domain.Base.BaseTimeEntity;
 import mealplanb.server.domain.Meal.Meal;
@@ -20,8 +17,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "member")
 public class Member extends BaseTimeEntity {
     @Id
@@ -112,6 +109,10 @@ public class Member extends BaseTimeEntity {
         this.bodyFatMass = bodyFatMass;
         this.status = status;
         this.targetUpdatedAt = LocalDate.now();
+    }
+
+    public void updateStatus(MemberStatus status) {
+        this.status = status;
     }
 
 }

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mealplanb.server.common.exception.MemberException;
 import mealplanb.server.common.response.BaseResponse;
-import mealplanb.server.dto.food.GetFavoriteFoodResponse;
-import mealplanb.server.dto.food.PostFavoriteFoodRequest;
 import mealplanb.server.dto.member.*;
-import mealplanb.server.service.FavoriteFoodService;
 import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.validation.BindingResult;
@@ -52,6 +49,28 @@ public class MemberController {
     }
 
     /**
+     * 로그아웃
+     */
+    @PostMapping("/logout")
+    public BaseResponse<Void> logout(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.logout]");
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+        memberService.logout(jwtToken);
+        return new BaseResponse<>(null);
+    }
+
+    /**
+     * 회원 탈퇴
+     */
+    @PatchMapping("")
+    public BaseResponse<Void> deleteMember(@RequestHeader("Authorization") String authorization){
+        log.info("[MemberController.deleteMember]");
+        String jwtToken = jwtProvider.extractJwtToken(authorization);
+        memberService.deleteMember(jwtToken);
+        return new BaseResponse<>(null);
+    }
+
+    /**
      * 아바타 정보 조회
      * */
     @GetMapping("/avatar")
@@ -76,7 +95,7 @@ public class MemberController {
      */
     @PatchMapping("/avatar/appearance")
     public BaseResponse<PatchAvatarAppearanceResponse> modifyAvatarAppearance(@Validated @RequestBody PatchAvatarAppearanceRequest patchAvatarAppearanceRequest,
-            @RequestHeader("Authorization") String authorization){
+                                                                              @RequestHeader("Authorization") String authorization){
         log.info("[MemberController.modifyAvatarAppearance]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(memberService.modifyAvatarAppearance(memberId,patchAvatarAppearanceRequest));
@@ -107,22 +126,23 @@ public class MemberController {
      * 사용자 목표 조회 (식단타입에 따른 탄단지 조회)
      */
     @GetMapping("/plan/diet-type")
-    public BaseResponse<GetDietTypeResponse> getDietType(@Validated @RequestBody GetDietTypeRequest getDietTypeRequest,
-                                                         @RequestHeader("Authorization") String authorization){
+    public BaseResponse<GetDietTypeResponse> getDietType(@RequestHeader("Authorization") String authorization,
+                                                         @RequestParam(name = "type") String dietType){
         log.info("[MemberController.getDietType]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        return new BaseResponse<>(memberService.getDietType(memberId, getDietTypeRequest));
+        return new BaseResponse<>(memberService.getDietType(memberId, dietType));
     }
 
     /**
      * 사용자 목표 조회 (권장 칼로리 반환)
      */
     @GetMapping("/plan/recommended-kcal")
-    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@Validated @RequestBody GetRecommendedKcalRequest getRecommendedKcalRequest,
-                                                                       @RequestHeader("Authorization") String authorization) {
+    public BaseResponse<GetRecommendedKcalResponse> getRecommendedKcal(@RequestHeader("Authorization") String authorization,
+                                                                       @RequestParam("initial_weight") double initialWeight,
+                                                                       @RequestParam("target_weight") double targetWeight) {
         log.info("[MemberController.getRecommendedKcal]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
-        return new BaseResponse<>(memberService.getRecommendedKcal(memberId, getRecommendedKcalRequest));
+        return new BaseResponse<>(memberService.getRecommendedKcal(memberId, initialWeight,targetWeight));
     }
 
     /**

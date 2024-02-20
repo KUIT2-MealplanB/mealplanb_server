@@ -6,9 +6,10 @@ import mealplanb.server.common.response.BaseResponse;
 import mealplanb.server.dto.food.GetFavoriteFoodResponse;
 import mealplanb.server.dto.food.PostFavoriteFoodRequest;
 import mealplanb.server.service.FavoriteFoodService;
-import mealplanb.server.service.MemberService;
 import mealplanb.server.util.jwt.JwtProvider;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -35,7 +36,7 @@ public class FavoriteFoodController {
      * 즐겨찾기 식사 조회
      */
     @GetMapping("")
-    public BaseResponse<GetFavoriteFoodResponse> getFavoriteFoodList(@RequestHeader("Authorization") String authorization){
+    public BaseResponse<List<GetFavoriteFoodResponse>> getFavoriteFoodList(@RequestHeader("Authorization") String authorization){
         log.info("[MemberController.getFavoriteFoodList]");
         Long memberId = jwtProvider.extractIdFromHeader(authorization);
         return new BaseResponse<>(favoriteFoodService.getFavoriteFoodList(memberId));
