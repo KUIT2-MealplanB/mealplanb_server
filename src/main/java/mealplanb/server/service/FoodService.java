@@ -116,8 +116,16 @@ public class FoodService {
      */
     public List<cheatDayFoodInfo> getCheatDayFood(int remainingKcal, String lackingNutrient1, String lackingNutrient2, String lackingNutrient3, String category) {
         log.info("[FoodService.getCheatDayFood]");
+        Optional<List<Food>> cheatDayFoodOptional;
 
-        Optional<List<Food>> cheatDayFoodOptional= foodRepository.getCheatDayFood(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3, category);
+        if (category.equals("면류")){
+            cheatDayFoodOptional = foodRepository.getCheatDayFoodNoodle(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3);
+        } else if(category.equals("디저트")){
+            cheatDayFoodOptional = foodRepository.getCheatDayFoodDessert(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3);
+        }else {
+            cheatDayFoodOptional = foodRepository.getCheatDayFood(remainingKcal, lackingNutrient1, lackingNutrient2, lackingNutrient3, category);
+        }
+
         List<cheatDayFoodInfo> cheatDayFoodInfoList = new ArrayList<>(); // 반환값
 
         if (cheatDayFoodOptional.isPresent()) {
