@@ -42,6 +42,6 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
             "WHEN ?4 = '지방' THEN f.fat " +
             "ELSE 0 " +
             "END DESC, " +
-            "f.kcal DESC")
+            "f.kcal DESC LIMIT 10")
     Optional<List<Food>> getCheatDayFood(int remainingKcal, String lackingNutrient1, String lackingNutrient2, String lackingNutrient3, String category);
 }
